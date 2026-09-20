@@ -1,5 +1,53 @@
 @import "tailwindcss";
 
+:root {
+  --arfam-color-canvas: #070707;
+  --arfam-color-matte: #0c0c0c;
+  --arfam-color-gloss: #151515;
+  --arfam-color-elevated: #1b1b1b;
+  --arfam-color-silver: #d6d6d2;
+  --arfam-color-silver-bright: #f1f1ee;
+  --arfam-color-muted: #8f8f8a;
+  --arfam-color-subtle: #666662;
+  --arfam-color-line: #292927;
+  --arfam-color-line-strong: #3b3b38;
+  --arfam-color-danger: #c77878;
+
+  --arfam-font-body: Tahoma, "Segoe UI", Arial, sans-serif;
+  --arfam-font-display: "Iowan Old Style", Baskerville, "Times New Roman", serif;
+  --arfam-font-latin: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --arfam-header-height: 5.25rem;
+  --arfam-page-gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --arfam-content-width: 90rem;
+  --arfam-reading-width: 46rem;
+
+  --arfam-radius-sm: 0.125rem;
+  --arfam-radius-md: 0.25rem;
+  --arfam-shadow-soft: 0 1.5rem 4rem rgb(0 0 0 / 35%);
+  --arfam-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --arfam-duration-fast: 180ms;
+  --arfam-duration-base: 320ms;
+}
+
+@theme inline {
+  --color-canvas: var(--arfam-color-canvas);
+  --color-matte: var(--arfam-color-matte);
+  --color-gloss: var(--arfam-color-gloss);
+  --color-elevated: var(--arfam-color-elevated);
+  --color-silver: var(--arfam-color-silver);
+  --color-silver-bright: var(--arfam-color-silver-bright);
+  --color-muted: var(--arfam-color-muted);
+  --color-subtle: var(--arfam-color-subtle);
+  --color-line: var(--arfam-color-line);
+  --color-line-strong: var(--arfam-color-line-strong);
+  --color-danger: var(--arfam-color-danger);
+  --font-sans: var(--arfam-font-body);
+  --font-display: var(--arfam-font-display);
+  --font-latin: var(--arfam-font-latin);
+  --shadow-soft: var(--arfam-shadow-soft);
+}
+
 *,
 *::before,
 *::after {
@@ -8,14 +56,21 @@
 
 html {
   min-width: 320px;
+  background: var(--arfam-color-canvas);
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background: #0a0a0a;
-  color: #f2f2f2;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--arfam-color-canvas);
+  color: var(--arfam-color-silver);
+  font-family: var(--arfam-font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.8;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -23,4 +78,77 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--arfam-color-silver);
+  color: var(--arfam-color-canvas);
+}
+
+:focus-visible {
+  outline: 1px solid var(--arfam-color-silver-bright);
+  outline-offset: 4px;
+}
+
+.arfam-container {
+  width: min(100%, var(--arfam-content-width));
+  margin-inline: auto;
+  padding-inline: var(--arfam-page-gutter);
+}
+
+.arfam-wordmark {
+  font-family: var(--arfam-font-latin);
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  line-height: 1;
+}
+
+.arfam-eyebrow {
+  font-family: var(--arfam-font-latin);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.arfam-gloss-surface {
+  background:
+    linear-gradient(110deg, rgb(255 255 255 / 3%), transparent 28%),
+    var(--arfam-color-matte);
+}
+
+@media (max-width: 47.999rem) {
+  :root {
+    --arfam-header-height: 4.5rem;
+  }
+
+  body {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
