@@ -11,7 +11,7 @@ const headerActionClass =
 
 export function SiteHeader() {
   return (
-    <header className="arfam-gloss-surface sticky top-0 z-50 border-b border-line/90 backdrop-blur-xl">
+    <header className="site-header arfam-gloss-surface sticky top-0 z-50 border-b border-line/90 backdrop-blur-xl">
       <Container className="grid h-[var(--arfam-header-height)] grid-cols-[1fr_auto_1fr] items-center gap-4">
         <nav aria-label="پیمایش اصلی" className="hidden md:block">
           <ul className="flex items-center gap-6 lg:gap-9">

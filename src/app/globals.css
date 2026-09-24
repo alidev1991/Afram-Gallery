@@ -13,7 +13,8 @@
   --arfam-color-line-strong: #3b3b38;
   --arfam-color-danger: #c77878;
 
-  --arfam-font-body: Tahoma, "Segoe UI", Arial, sans-serif;
+  /* The licensed Iran Sans font file must be supplied before self-hosting it. */
+  --arfam-font-body: "IRANSans", "IRANSansWeb", Tahoma, "Segoe UI", Arial, sans-serif;
   --arfam-font-display: "Iowan Old Style", Baskerville, "Times New Roman", serif;
   --arfam-font-latin: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
@@ -126,6 +127,12 @@ a {
   background:
     linear-gradient(110deg, rgb(255 255 255 / 3%), transparent 28%),
     var(--arfam-color-matte);
+}
+
+body:has(.home-hero) .site-header {
+  background: linear-gradient(180deg, rgb(0 0 0 / 72%), rgb(0 0 0 / 22%));
+  border-color: transparent;
+  backdrop-filter: none;
 }
 
 @media (max-width: 47.999rem) {
