@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand/brand-logo";
-import { AccountIcon, BagIcon } from "@/components/icons/interface-icons";
+import { CartIndicator } from "@/components/cart/cart-indicator";
+import { AccountIcon } from "@/components/icons/interface-icons";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { Container } from "@/components/ui/container";
 import { primaryNavigation } from "@/config/navigation";
@@ -38,9 +39,7 @@ export function SiteHeader() {
           <Link href="/account" aria-label="حساب کاربری" className={headerActionClass}>
             <AccountIcon className="size-5" />
           </Link>
-          <Link href="/cart" aria-label="سبد خرید" className={headerActionClass}>
-            <BagIcon className="size-5" />
-          </Link>
+          <CartIndicator className={headerActionClass} />
         </div>
       </Container>
     </header>

@@ -12,8 +12,7 @@ export function SiteFooter() {
           <div>
             <BrandLogo className="justify-start" />
             <p className="mt-6 max-w-md text-sm leading-7 text-muted">
-              گالری دیجیتال آرفام؛ روایتی آرام و انتخاب‌شده از اشیای ماندگار و
-              طراحی معاصر.
+              فروشگاه آنلاین محصولات دکوراتیو و اکسسوری آرفام.
             </p>
           </div>
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductGallery } from "@/components/catalog/product-gallery";
-import { Button } from "@/components/ui/button";
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { Container } from "@/components/ui/container";
 import {
   catalogProducts,
@@ -83,9 +83,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.description}
             </p>
 
-            <Button className="mt-10 w-full sm:w-auto lg:w-full">
-              افزودن به سبد خرید
-            </Button>
+            <AddToCartButton product={product} />
 
             <section aria-labelledby="product-specifications" className="mt-12 border-t border-line pt-8">
               <h2 id="product-specifications" className="text-sm font-medium text-silver-bright">
