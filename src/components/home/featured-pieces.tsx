@@ -1,16 +1,16 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { SectionIntro } from "@/components/home/section-intro";
 import { Container } from "@/components/ui/container";
-import { featuredPieces } from "@/data/home-content";
+import { featuredProducts } from "@/data/catalog";
+import { formatToman } from "@/lib/format-price";
 
 const pieceLayout = [
   "lg:col-span-4",
   "ms-[14%] lg:col-span-3 lg:col-start-6 lg:mt-40 lg:ms-0",
   "me-[8%] lg:col-span-3 lg:col-start-10 lg:mt-16 lg:me-0",
 ] as const;
-
-const priceFormatter = new Intl.NumberFormat("fa-IR");
 
 export function FeaturedPieces() {
   return (
@@ -26,12 +26,17 @@ export function FeaturedPieces() {
         />
 
         <div className="mt-16 grid gap-20 sm:mt-24 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
-          {featuredPieces.map((piece, index) => (
-            <article key={piece.id} className={pieceLayout[index]}>
+          {featuredProducts.map((piece, index) => (
+            <article key={piece.slug} className={pieceLayout[index]}>
+              <Link
+                href={`/products/${piece.slug}`}
+                className="group block"
+                aria-label={`مشاهده ${piece.name}`}
+              >
               <div className="group relative aspect-[8/11] overflow-hidden bg-matte">
                 <Image
-                  src={piece.image}
-                  alt={piece.imageAlt}
+                  src={piece.primaryImage.src}
+                  alt={piece.primaryImage.alt}
                   fill
                   sizes="(max-width: 1023px) calc(86vw - 2.5rem), 31vw"
                   className="object-contain transition-transform duration-700 ease-[var(--arfam-ease)] lg:object-cover lg:group-hover:scale-[1.025]"
@@ -47,9 +52,10 @@ export function FeaturedPieces() {
                   </h3>
                 </div>
                 <p className="shrink-0 pt-7 text-xs text-muted">
-                  {priceFormatter.format(piece.priceToman)} تومان
+                  {formatToman(piece.priceToman)}
                 </p>
               </div>
+              </Link>
             </article>
           ))}
         </div>
