@@ -93,7 +93,10 @@ export function MobileNavigation() {
           onKeyDown={keepFocusInside}
         >
           <div className="flex h-[var(--arfam-header-height)] items-center justify-between border-b border-line px-5">
-            <BrandLogo />
+            <BrandLogo
+              imageSrc="/brand/arfam-logo-full-transparent.png"
+              mobileImageSrc="/brand/arfam-symbol-transparent.png"
+            />
             <IconButton
               ref={closeButtonRef}
               label="بستن منوی اصلی"

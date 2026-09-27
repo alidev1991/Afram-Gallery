@@ -33,7 +33,12 @@ export function SiteHeader() {
           <MobileNavigation />
         </div>
 
-        <BrandLogo className="justify-self-center" priority />
+        <BrandLogo
+          imageSrc="/brand/arfam-logo-full-transparent.png"
+          mobileImageSrc="/brand/arfam-symbol-transparent.png"
+          className="justify-self-center"
+          priority
+        />
 
         <div className="flex items-center justify-self-end">
           <Link href="/account" aria-label="حساب کاربری" className={headerActionClass}>
