@@ -16,6 +16,7 @@ const primaryCheckoutClass =
 export default function CartPage() {
   const {
     items,
+    itemCount,
     totalToman,
     isHydrated,
     setQuantity,
@@ -34,7 +35,9 @@ export default function CartPage() {
             </h1>
           </div>
           {items.length > 0 ? (
-            <p className="text-xs text-muted">{items.length} محصول</p>
+            <p className="text-xs text-muted">
+              {itemCount.toLocaleString("fa-IR")} کالا
+            </p>
           ) : null}
         </div>
 
@@ -87,8 +90,8 @@ export default function CartPage() {
                         >
                           −
                         </button>
-                        <span className="min-w-8 text-center font-latin text-xs text-silver-bright">
-                          {item.quantity}
+                        <span className="min-w-8 text-center text-xs text-silver-bright">
+                          {item.quantity.toLocaleString("fa-IR")}
                         </span>
                         <button
                           type="button"

@@ -63,7 +63,7 @@ export default function CheckoutPage() {
                       <div className="relative aspect-[4/5] overflow-hidden bg-matte">
                         <Image src={item.imageSrc} alt={item.imageAlt} fill sizes="72px" className="object-contain" />
                       </div>
-                      <div><p className="text-sm text-silver-bright">{item.name}</p><p className="mt-1 text-xs text-muted">تعداد: {item.quantity}</p></div>
+                      <div><p className="text-sm text-silver-bright">{item.name}</p><p className="mt-1 text-xs text-muted">تعداد: {item.quantity.toLocaleString("fa-IR")}</p></div>
                       <p className="text-xs text-silver">{formatToman(item.priceToman * item.quantity)}</p>
                     </li>
                   ))}
@@ -74,8 +74,8 @@ export default function CheckoutPage() {
             <aside className="h-fit border border-line bg-matte p-6 sm:p-8 lg:sticky lg:top-[calc(var(--arfam-header-height)+2rem)]">
               <h2 className="text-lg text-silver-bright">خلاصه سفارش</h2>
               <div className="mt-7 flex justify-between border-y border-line py-5 text-sm"><span className="text-muted">مجموع</span><strong className="font-normal text-silver-bright">{formatToman(totalToman)}</strong></div>
-              <button type="button" disabled className="mt-7 min-h-11 w-full border border-line-strong px-6 text-xs text-muted opacity-70">پرداخت در نسخه Demo غیرفعال است</button>
-              <p className="mt-4 text-[0.6875rem] leading-5 text-subtle">در این نسخه سفارش و پرداخت واقعی ثبت نمی‌شود.</p>
+              <button type="button" disabled aria-describedby="payment-status" className="mt-7 min-h-11 w-full border border-line-strong px-6 text-xs text-muted opacity-70">پرداخت آنلاین</button>
+              <p id="payment-status" className="mt-4 text-[0.6875rem] leading-5 text-subtle">در حال حاضر امکان پرداخت آنلاین وجود ندارد.</p>
             </aside>
           </div>
         )}

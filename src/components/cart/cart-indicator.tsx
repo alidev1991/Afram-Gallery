@@ -16,8 +16,8 @@ export function CartIndicator({ className = "" }: { className?: string }) {
     >
       <BagIcon className="size-5" />
       {itemCount > 0 ? (
-        <span className="absolute end-0.5 top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-silver-bright px-1 font-latin text-[0.5625rem] font-semibold leading-none text-canvas">
-          {itemCount > 99 ? "99+" : itemCount}
+        <span className="absolute end-0.5 top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-silver-bright px-1 text-[0.5625rem] font-semibold leading-none text-canvas">
+          {itemCount > 99 ? "+۹۹" : itemCount.toLocaleString("fa-IR")}
         </span>
       ) : null}
     </Link>

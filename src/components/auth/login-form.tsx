@@ -124,9 +124,13 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
       </Button>
 
       <div className="mt-6 border border-line bg-gloss p-4 text-xs leading-6 text-muted">
-        <p className="text-silver">ورود نمایشی</p>
-        <p className="mt-1" dir="ltr">{DEMO_CUSTOMER_CREDENTIALS.mobile}</p>
-        <p dir="ltr">{DEMO_CUSTOMER_CREDENTIALS.password}</p>
+        <p className="text-silver">دسترسی ارائه</p>
+        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 text-[0.6875rem]">
+          <dt>موبایل</dt>
+          <dd dir="ltr" className="text-start">{DEMO_CUSTOMER_CREDENTIALS.mobile}</dd>
+          <dt>رمز عبور</dt>
+          <dd dir="ltr" className="text-start">{DEMO_CUSTOMER_CREDENTIALS.password}</dd>
+        </dl>
       </div>
 
       <p className="mt-7 text-center text-xs text-muted">
