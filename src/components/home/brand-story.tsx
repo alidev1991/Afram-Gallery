@@ -6,7 +6,7 @@ export function BrandStory() {
   return (
     <section
       aria-labelledby="brand-story-heading"
-      className="relative overflow-hidden border-t border-line bg-matte py-28 sm:py-36 lg:py-52"
+      className="relative overflow-hidden border-t border-line bg-transparent py-28 sm:py-36 lg:py-52"
     >
       <div
         aria-hidden="true"

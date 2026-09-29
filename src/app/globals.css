@@ -129,6 +129,24 @@ a {
     var(--arfam-color-matte);
 }
 
+.storefront-signature-background {
+  background-image: url("/media/brand/arfam-signature-background.webp");
+  background-position: 28% center;
+  background-repeat: no-repeat;
+  background-size: auto 138vh;
+  opacity: 0.4;
+}
+
+.storefront-shell > footer {
+  position: relative;
+  z-index: 10;
+}
+
+.storefront-content > main.bg-canvas,
+.storefront-content > main.bg-canvas > section.bg-canvas {
+  background-color: transparent;
+}
+
 body:has(.home-hero) .site-header {
   background: linear-gradient(180deg, rgb(0 0 0 / 72%), rgb(0 0 0 / 22%));
   border-color: transparent;
@@ -142,6 +160,12 @@ body:has(.home-hero) .site-header {
 
   body {
     font-size: 0.9375rem;
+  }
+
+  .storefront-signature-background {
+    background-position: 56% center;
+    background-size: auto 110vh;
+    opacity: 0.34;
   }
 }
 

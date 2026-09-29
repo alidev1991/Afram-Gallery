@@ -15,7 +15,7 @@ export function SelectedCollections() {
   return (
     <section
       aria-labelledby="collections-heading"
-      className="bg-matte py-24 sm:py-32 lg:py-44"
+      className="bg-transparent py-24 sm:py-32 lg:py-44"
     >
       <Container>
         <SectionIntro
