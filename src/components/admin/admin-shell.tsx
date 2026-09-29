@@ -24,7 +24,22 @@ export function AdminShell({ children }: { children: ReactNode }) {
       <aside className="border-b border-line bg-matte lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-l">
         <div className="flex h-20 items-center justify-between px-5 lg:h-auto lg:block lg:px-7 lg:py-8">
           <BrandLogo className="justify-start" />
-          <span className="arfam-eyebrow text-subtle lg:mt-4 lg:block">ADMIN DEMO</span>
+          <span className="arfam-eyebrow hidden text-subtle lg:mt-4 lg:block">ADMIN</span>
+          <div className="flex items-center gap-4 text-[0.6875rem] text-muted lg:hidden">
+            <Link href="/" className="transition-colors hover:text-silver-bright">
+              فروشگاه
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                router.replace("/admin/login");
+              }}
+              className="transition-colors hover:text-silver-bright"
+            >
+              خروج
+            </button>
+          </div>
         </div>
         <nav aria-label="پیمایش مدیریت" className="overflow-x-auto border-t border-line lg:mt-5">
           <ul className="flex min-w-max px-3 lg:block lg:min-w-0 lg:px-0">

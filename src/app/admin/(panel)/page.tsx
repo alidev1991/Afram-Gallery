@@ -12,7 +12,7 @@ const metrics = [
 export default function AdminDashboardPage() {
   return (
     <>
-      <AdminPageHeading eyebrow="DASHBOARD" title="داشبورد" description="نمای کلی اطلاعات Demo فروشگاه" />
+      <AdminPageHeading eyebrow="DASHBOARD" title="داشبورد" description="نمای کلی فروشگاه" />
       <section aria-label="خلاصه فروشگاه" className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((metric) => (
           <article key={metric.label} className="border border-line bg-matte p-6">
@@ -23,7 +23,23 @@ export default function AdminDashboardPage() {
       </section>
       <section className="mt-10">
         <h2 className="mb-5 text-lg text-silver-bright">سفارش‌های اخیر</h2>
-        <div className="overflow-x-auto border border-line">
+        <div className="space-y-3 md:hidden">
+          {adminOrders.slice(0, 3).map((order) => (
+            <article key={`${order.id}-card`} className="border border-line bg-matte p-5">
+              <div className="flex items-start justify-between gap-5">
+                <div>
+                  <h3 className="text-sm text-silver-bright">{order.customer}</h3>
+                  <p className="mt-2 text-xs text-muted">{order.status}</p>
+                </div>
+                <div className="text-end">
+                  <p dir="ltr" className="font-latin text-[0.625rem] text-subtle">{order.id}</p>
+                  <p className="mt-2 text-xs text-silver">{formatToman(order.amountToman)}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="hidden overflow-x-auto border border-line md:block">
           <table className="w-full min-w-[42rem] border-collapse text-start text-sm">
             <thead className="bg-matte text-xs text-muted"><tr><th className="p-4 text-start font-normal">شناسه</th><th className="p-4 text-start font-normal">مشتری</th><th className="p-4 text-start font-normal">مبلغ</th><th className="p-4 text-start font-normal">وضعیت</th></tr></thead>
             <tbody className="divide-y divide-line">{adminOrders.slice(0, 3).map((order) => <tr key={order.id}><td className="p-4 font-latin text-xs text-silver">{order.id}</td><td className="p-4 text-silver">{order.customer}</td><td className="p-4 text-silver">{formatToman(order.amountToman)}</td><td className="p-4 text-muted">{order.status}</td></tr>)}</tbody>

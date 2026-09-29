@@ -38,7 +38,7 @@ export function AdminCustomersTable() {
       registeredCustomers.map((customer) => customer.mobile),
     );
     const registered = registeredCustomers.map((customer, index) => ({
-      id: `DEMO-${String(index + 1).padStart(3, "0")}`,
+      id: `CU-R${String(index + 1).padStart(2, "0")}`,
       ...customer,
       orders: 0,
     }));
