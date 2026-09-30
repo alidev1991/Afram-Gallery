@@ -14,7 +14,7 @@ export function SiteHeader() {
   return (
     <header className="site-header arfam-gloss-surface sticky top-0 z-50 border-b border-line/90 backdrop-blur-xl">
       <Container className="grid h-[var(--arfam-header-height)] grid-cols-[1fr_auto_1fr] items-center gap-4">
-        <nav aria-label="پیمایش اصلی" className="hidden md:block">
+        <nav aria-label="پیمایش اصلی" className="hidden xl:block">
           <ul className="flex items-center gap-6 lg:gap-9">
             {primaryNavigation.map((item) => (
               <li key={item.href}>
@@ -29,7 +29,7 @@ export function SiteHeader() {
           </ul>
         </nav>
 
-        <div className="md:hidden">
+        <div className="xl:hidden">
           <MobileNavigation />
         </div>
 

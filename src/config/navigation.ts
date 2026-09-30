@@ -4,16 +4,12 @@ export type NavigationItem = {
 };
 
 export const primaryNavigation: readonly NavigationItem[] = [
-  { href: "/", label: "خانه" },
-  { href: "/collections", label: "مجموعه‌ها" },
+  { href: "/", label: "صفحه اصلی" },
+  { href: "/products", label: "محصولات" },
+  { href: "/collections", label: "کالکشن‌ها" },
+  { href: "/magazine", label: "مجله آرفام" },
   { href: "/about", label: "درباره آرفام" },
-  { href: "/account", label: "حساب کاربری" },
-  { href: "/admin", label: "مدیریت" },
+  { href: "/contact", label: "ارتباط با آرفام" },
 ];
 
-export const footerNavigation: readonly NavigationItem[] = [
-  { href: "/collections", label: "مجموعه‌ها" },
-  { href: "/about", label: "درباره آرفام" },
-  { href: "/account", label: "حساب کاربری" },
-  { href: "/admin", label: "پنل مدیریت" },
-];
+export const footerNavigation: readonly NavigationItem[] = primaryNavigation;

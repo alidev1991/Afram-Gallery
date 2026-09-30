@@ -1,3 +1,5 @@
+import { storeCollections } from "@/data/site-structure";
+
 export type CatalogImage = {
   src: string;
   alt: string;
@@ -16,7 +18,9 @@ export type CatalogCollection = {
 
 export type CatalogProduct = {
   slug: string;
-  collectionSlug: string;
+  categorySlug: string;
+  subcategorySlug: string;
+  collectionSlugs: readonly string[];
   category: string;
   name: string;
   priceToman: number;
@@ -78,8 +82,10 @@ const images = {
 export const catalogProducts: readonly CatalogProduct[] = [
   {
     slug: "noir-vessel",
-    collectionSlug: "objects",
-    category: "Decorative Object",
+    categorySlug: "flowers-vases",
+    subcategorySlug: "decorative-vases",
+    collectionSlugs: ["newest"],
+    category: "Decorative Vase",
     name: "گلدان نوآر",
     priceToman: 8_900_000,
     description: "گلدان دکوراتیو سرامیکی با پرداخت مات مشکی و فرم دست‌ساز.",
@@ -95,7 +101,9 @@ export const catalogProducts: readonly CatalogProduct[] = [
   },
   {
     slug: "arc-sculpture",
-    collectionSlug: "objects",
+    categorySlug: "decorative-accessories",
+    subcategorySlug: "sculptures-figurines",
+    collectionSlugs: ["arfam-signature"],
     category: "Sculpture",
     name: "مجسمه آرک",
     priceToman: 14_600_000,
@@ -112,7 +120,9 @@ export const catalogProducts: readonly CatalogProduct[] = [
   },
   {
     slug: "line-candlesticks",
-    collectionSlug: "table",
+    categorySlug: "decorative-accessories",
+    subcategorySlug: "candlesticks",
+    collectionSlugs: ["best-sellers"],
     category: "Candleware",
     name: "شمعدان لاین",
     priceToman: 6_750_000,
@@ -129,7 +139,9 @@ export const catalogProducts: readonly CatalogProduct[] = [
   },
   {
     slug: "floor-light",
-    collectionSlug: "light",
+    categorySlug: "lighting",
+    subcategorySlug: "floor-lamps",
+    collectionSlugs: ["newest"],
     category: "Lighting",
     name: "چراغ فلور",
     priceToman: 21_800_000,
@@ -146,36 +158,33 @@ export const catalogProducts: readonly CatalogProduct[] = [
   },
 ] as const;
 
-export const catalogCollections: readonly CatalogCollection[] = [
-  {
-    slug: "objects",
-    eyebrow: "Objects",
-    title: "آبجکت‌های ماندگار",
-    description: "آبجکت‌های دکوراتیو، ظروف سرامیکی و مجسمه‌های منتخب.",
+const collectionPresentation = {
+  newest: {
     coverImage: images.objects,
-    productSlugs: ["noir-vessel", "arc-sculpture"],
+    productSlugs: ["noir-vessel", "floor-light"],
   },
-  {
-    slug: "table",
-    eyebrow: "Table",
-    title: "آیین میزبانی",
-    description: "ظروف پذیرایی و اکسسوری‌های میز با پالت تیره و خنثی.",
+  "best-sellers": {
     coverImage: images.table,
     productSlugs: ["line-candlesticks"],
   },
-  {
-    slug: "light",
-    eyebrow: "Light",
-    title: "نورهای مجسمه‌وار",
-    description: "چراغ‌های دکوراتیو برای نورپردازی متمرکز فضاهای داخلی.",
-    coverImage: images.light,
-    productSlugs: ["floor-light"],
+  "arfam-signature": {
+    coverImage: images.sculpture,
+    productSlugs: ["arc-sculpture"],
   },
-] as const;
+  "limited-editions": {
+    coverImage: images.light,
+    productSlugs: [],
+  },
+} as const;
 
-export const featuredProducts = catalogProducts.filter(
-  (product) => product.featured,
+export const catalogCollections: readonly CatalogCollection[] = storeCollections.map(
+  (collection) => ({
+    ...collection,
+    ...collectionPresentation[collection.slug],
+  }),
 );
+
+export const featuredProducts = catalogProducts.filter((product) => product.featured);
 
 export function getCollectionBySlug(slug: string) {
   return catalogCollections.find((collection) => collection.slug === slug);
@@ -190,4 +199,19 @@ export function getProductsForCollection(collection: CatalogCollection) {
     const product = getProductBySlug(slug);
     return product ? [product] : [];
   });
+}
+
+export function getProductsForCategory(categorySlug: string) {
+  return catalogProducts.filter((product) => product.categorySlug === categorySlug);
+}
+
+export function getProductsForSubcategory(
+  categorySlug: string,
+  subcategorySlug: string,
+) {
+  return catalogProducts.filter(
+    (product) =>
+      product.categorySlug === categorySlug &&
+      product.subcategorySlug === subcategorySlug,
+  );
 }

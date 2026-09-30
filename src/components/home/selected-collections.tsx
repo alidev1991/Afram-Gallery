@@ -25,7 +25,7 @@ export function SelectedCollections() {
         />
 
         <div className="mt-16 grid gap-16 sm:mt-24 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
-          {catalogCollections.map((collection, index) => (
+          {catalogCollections.slice(0, 3).map((collection, index) => (
             <article
               key={collection.slug}
               className={`${collectionLayout[index]} ${index === 1 ? "ms-[12%] lg:ms-0" : ""} ${index === 2 ? "me-[12%] lg:me-0" : ""}`}

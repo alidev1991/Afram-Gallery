@@ -21,10 +21,10 @@ export default function AboutPage() {
           </h1>
         </header>
 
-        <section
-          aria-label="معرفی آرفام"
-          className="grid gap-10 py-16 sm:py-24 lg:grid-cols-12 lg:py-32"
-        >
+        <section aria-labelledby="brand-story" className="grid gap-10 py-16 sm:py-24 lg:grid-cols-12 lg:py-32">
+          <h2 id="brand-story" className="text-2xl font-light text-silver-bright lg:col-span-3">
+            داستان برند
+          </h2>
           <p className="text-sm font-light leading-8 text-muted sm:text-base sm:leading-9 lg:col-span-6 lg:col-start-6 lg:text-lg lg:leading-10">
             آرفام گالری با تمرکز بر اکسسوری‌های دکوراتیو، ساعت‌های دیواری، سرویس
             پذیرایی، دیوارکوب‌های هنری و ... نگاهی دقیق به آنچه یک فضا را تعریف
@@ -32,45 +32,49 @@ export default function AboutPage() {
           </p>
         </section>
 
-        <section
-          aria-label="طراحی و انتخاب محصولات"
-          className="grid gap-14 border-t border-line py-16 sm:gap-20 sm:py-24 lg:grid-cols-12 lg:gap-x-8 lg:py-32"
-        >
-          <p className="text-sm font-light leading-8 text-muted sm:text-base sm:leading-9 lg:col-span-5">
+        <section aria-labelledby="design-production" className="grid gap-10 border-t border-line py-16 sm:py-24 lg:grid-cols-12 lg:py-32">
+          <h2 id="design-production" className="text-2xl font-light text-silver-bright lg:col-span-3">
+            طراحی و تولید
+          </h2>
+          <p className="text-sm font-light leading-8 text-muted sm:text-base sm:leading-9 lg:col-span-6 lg:col-start-6">
             بخشی از محصولات آرفام، حاصل طراحی و تولید مستقیم مجموعه است؛ رویکردی
             که امکان توجه دقیق‌تر به کیفیت اجرا، پرداخت نهایی و جزئیات محصول را
             فراهم می‌کند. در کنار آن، مجموعه‌ای از اکسسوری‌های منتخب را گرد هم
             آورده‌ایم تا هر محصول، فارغ از اندازه و کاربردش، با زبان بصری فضای
             شما هماهنگ باشد.
           </p>
-          <p className="text-sm font-light leading-8 text-muted sm:text-base sm:leading-9 lg:col-span-5 lg:col-start-8 lg:mt-28">
+        </section>
+
+        <section aria-labelledby="quality-materials" className="grid gap-10 border-t border-line py-16 sm:py-24 lg:grid-cols-12 lg:py-32">
+          <h2 id="quality-materials" className="text-2xl font-light text-silver-bright lg:col-span-3">
+            کیفیت و متریال
+          </h2>
+          <p className="text-sm font-light leading-8 text-muted sm:text-base sm:leading-9 lg:col-span-6 lg:col-start-6">
             ما به لوکس بودن به‌عنوان یک نمایش پرزرق‌وبرق نگاه نمی‌کنیم. برای ما،
             لوکس بودن در تناسب، کیفیت متریال، دقت در ساخت و انتخابی معنا پیدا
             می‌کند که با گذشت زمان همچنان ارزش خود را حفظ کند.
           </p>
         </section>
 
-        <section
-          aria-label="تجربه انتخاب"
-          className="grid gap-10 border-t border-line py-16 sm:py-24 lg:grid-cols-12 lg:py-32"
-        >
-          <p className="text-sm font-light leading-8 text-muted sm:text-base sm:leading-9 lg:col-span-6 lg:col-start-2">
-            به همین دلیل، در گالری آرفام، انتخاب محصول تنها بخشی از تجربه شماست.
-            با ارائه مشاوره متناسب با فضای شما و امکان بررسی چیدمان محصولات در
-            محیط، تلاش می‌کنیم انتخاب نهایی با معماری، رنگ‌ها و شخصیت فضای شما
-            هماهنگ باشد.
-          </p>
-        </section>
-
-        <section
-          aria-label="نگاه آرفام"
-          className="grid border-y border-line py-16 sm:py-24 lg:grid-cols-12 lg:py-32"
-        >
-          <p className="text-[clamp(1.65rem,3.4vw,3.5rem)] font-light leading-[1.65] tracking-[-0.02em] text-silver-bright lg:col-span-8 lg:col-start-4">
-            آرفام برای کسانی است که میان زیبا بودن و درست طراحی شدن تفاوت
-            قائل‌اند؛ کسانی که به جزئیات توجه می‌کنند و ترجیح می‌دهند فضای
-            زندگی‌شان بازتابی از سلیقه شخصی خودشان باشد.
-          </p>
+        <section aria-labelledby="arfam-vision" className="border-y border-line py-16 sm:py-24 lg:py-32">
+          <div className="grid gap-10 lg:grid-cols-12">
+            <h2 id="arfam-vision" className="text-2xl font-light text-silver-bright lg:col-span-3">
+              چشم‌انداز آرفام
+            </h2>
+            <div className="space-y-12 lg:col-span-7 lg:col-start-5">
+              <p className="text-sm font-light leading-8 text-muted sm:text-base sm:leading-9">
+                به همین دلیل، در گالری آرفام، انتخاب محصول تنها بخشی از تجربه شماست.
+                با ارائه مشاوره متناسب با فضای شما و امکان بررسی چیدمان محصولات در
+                محیط، تلاش می‌کنیم انتخاب نهایی با معماری، رنگ‌ها و شخصیت فضای شما
+                هماهنگ باشد.
+              </p>
+              <p className="text-[clamp(1.65rem,3.4vw,3.5rem)] font-light leading-[1.65] tracking-[-0.02em] text-silver-bright">
+                آرفام برای کسانی است که میان زیبا بودن و درست طراحی شدن تفاوت
+                قائل‌اند؛ کسانی که به جزئیات توجه می‌کنند و ترجیح می‌دهند فضای
+                زندگی‌شان بازتابی از سلیقه شخصی خودشان باشد.
+              </p>
+            </div>
+          </div>
         </section>
       </Container>
     </main>

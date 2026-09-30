@@ -7,7 +7,7 @@ import { catalogCollections } from "@/data/catalog";
 
 export const metadata: Metadata = {
   title: "مجموعه‌ها",
-  description: "مجموعه‌های دکوراسیون و اکسسوری آرفام",
+  description: "کالکشن‌های رسمی محصولات و اکسسوری‌های آرفام",
 };
 
 const collectionLayout = [
@@ -22,6 +22,10 @@ const collectionLayout = [
   {
     media: "lg:col-span-7",
     content: "lg:col-span-4 lg:col-start-9",
+  },
+  {
+    media: "lg:col-span-6 lg:col-start-7",
+    content: "lg:col-span-4 lg:col-start-2 lg:row-start-1",
   },
 ] as const;
 

@@ -2,14 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ProductGallery } from "@/components/catalog/product-gallery";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
+import { ProductGallery } from "@/components/catalog/product-gallery";
 import { Container } from "@/components/ui/container";
-import {
-  catalogProducts,
-  getCollectionBySlug,
-  getProductBySlug,
-} from "@/data/catalog";
+import { catalogProducts, getProductBySlug } from "@/data/catalog";
+import { getProductCategory } from "@/data/site-structure";
 import { formatToman } from "@/lib/format-price";
 
 type ProductPageProps = {
@@ -44,23 +41,25 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const collection = getCollectionBySlug(product.collectionSlug);
+  const category = getProductCategory(product.categorySlug);
 
   return (
     <main id="main-content" className="bg-canvas">
       <Container className="pb-24 pt-10 sm:pb-32 sm:pt-16 lg:pb-44 lg:pt-20">
         <nav aria-label="مسیر صفحه" className="flex flex-wrap gap-3 border-b border-line pb-6 text-xs text-muted">
-          <Link href="/collections" className="transition-colors hover:text-silver-bright">
-            مجموعه‌ها
+          <Link href="/products" className="transition-colors hover:text-silver-bright">
+            محصولات
           </Link>
-          <span aria-hidden="true">/</span>
-          {collection ? (
-            <Link
-              href={`/collections/${collection.slug}`}
-              className="transition-colors hover:text-silver-bright"
-            >
-              {collection.title}
-            </Link>
+          {category ? (
+            <>
+              <span aria-hidden="true">/</span>
+              <Link
+                href={`/products/category/${category.slug}`}
+                className="transition-colors hover:text-silver-bright"
+              >
+                {category.title}
+              </Link>
+            </>
           ) : null}
         </nav>
 

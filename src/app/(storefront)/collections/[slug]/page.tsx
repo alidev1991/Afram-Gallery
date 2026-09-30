@@ -95,21 +95,27 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
             </h2>
           </div>
 
-          <div className="mt-14 grid gap-20 sm:mt-20 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
-            {products.map((product, index) => (
-              <ProductEditorialCard
-                key={product.slug}
-                product={product}
-                className={
-                  products.length === 1
-                    ? "lg:col-span-5 lg:col-start-7"
-                    : index === 0
-                      ? "lg:col-span-5"
-                      : "lg:col-span-4 lg:col-start-8 lg:mt-32"
-                }
-              />
-            ))}
-          </div>
+          {products.length > 0 ? (
+            <div className="mt-14 grid gap-20 sm:mt-20 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
+              {products.map((product, index) => (
+                <ProductEditorialCard
+                  key={product.slug}
+                  product={product}
+                  className={
+                    products.length === 1
+                      ? "lg:col-span-5 lg:col-start-7"
+                      : index === 0
+                        ? "lg:col-span-5"
+                        : "lg:col-span-4 lg:col-start-8 lg:mt-32"
+                  }
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-12 border-y border-line py-8 text-sm text-muted">
+              محصولات این کالکشن پس از انتشار در این بخش نمایش داده می‌شوند.
+            </p>
+          )}
         </section>
       </Container>
     </main>
