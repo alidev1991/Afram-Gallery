@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { ProductGallery } from "@/components/catalog/product-gallery";
+import { Reveal } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { catalogProducts, getProductBySlug } from "@/data/catalog";
 import { getProductCategory } from "@/data/site-structure";
@@ -68,7 +69,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <ProductGallery images={product.galleryImages} />
           </div>
 
-          <aside className="lg:sticky lg:top-[calc(var(--arfam-header-height)+2.5rem)] lg:col-span-4 lg:col-start-9">
+          <Reveal
+            direction="left"
+            distance={40}
+            className="lg:sticky lg:top-[calc(var(--arfam-header-height)+2.5rem)] lg:col-span-4 lg:col-start-9"
+          >
+          <aside>
             <p className="arfam-eyebrow text-subtle" dir="ltr">
               {product.category}
             </p>
@@ -98,6 +104,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </dl>
             </section>
           </aside>
+          </Reveal>
         </div>
       </Container>
     </main>

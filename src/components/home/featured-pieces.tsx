@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { SectionIntro } from "@/components/home/section-intro";
+import { RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { featuredProducts } from "@/data/catalog";
 import { formatToman } from "@/lib/format-price";
@@ -25,9 +26,16 @@ export function FeaturedPieces() {
           title="محصولات منتخب"
         />
 
-        <div className="mt-16 grid gap-20 sm:mt-24 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
+        <RevealGroup
+          className="mt-16 grid gap-20 sm:mt-24 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0"
+          stagger={0.1}
+        >
           {featuredProducts.map((piece, index) => (
             <article key={piece.slug} className={pieceLayout[index]}>
+              <RevealItem
+                direction={index === 1 ? "right" : index === 2 ? "left" : "bottom"}
+                distance={38}
+              >
               <Link
                 href={`/products/${piece.slug}`}
                 className="group block"
@@ -56,9 +64,10 @@ export function FeaturedPieces() {
                 </p>
               </div>
               </Link>
+              </RevealItem>
             </article>
           ))}
-        </div>
+        </RevealGroup>
       </Container>
     </section>
   );

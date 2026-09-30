@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { RevealItem } from "@/components/motion/reveal";
 import type { CatalogProduct } from "@/data/catalog";
 import { formatToman } from "@/lib/format-price";
 
@@ -15,6 +16,7 @@ export function ProductEditorialCard({
 }: ProductEditorialCardProps) {
   return (
     <article className={className}>
+      <RevealItem direction="bottom" distance={36}>
       <Link
         href={`/products/${product.slug}`}
         className="group block"
@@ -44,6 +46,7 @@ export function ProductEditorialCard({
           </p>
         </div>
       </Link>
+      </RevealItem>
     </article>
   );
 }

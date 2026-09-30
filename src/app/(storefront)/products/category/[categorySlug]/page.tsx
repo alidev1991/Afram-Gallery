@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductEditorialCard } from "@/components/catalog/product-editorial-card";
+import { Reveal, RevealGroup } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { getProductsForCategory } from "@/data/catalog";
 import { getProductCategory, productCategories } from "@/data/site-structure";
@@ -38,14 +39,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <Link href="/products" className="transition-colors hover:text-silver-bright">محصولات ←</Link>
         </nav>
 
-        <header className="border-b border-line py-16 sm:py-20 lg:grid lg:grid-cols-12 lg:items-end lg:py-28">
+        <Reveal direction="fade">
+          <header className="border-b border-line py-16 sm:py-20 lg:grid lg:grid-cols-12 lg:items-end lg:py-28">
           <p className="arfam-eyebrow text-subtle lg:col-span-3" dir="ltr">Product Category</p>
           <h1 className="mt-6 text-[clamp(2.75rem,7vw,7rem)] font-light leading-[1.2] tracking-[-0.04em] text-silver-bright lg:col-span-7 lg:col-start-6 lg:mt-0">
             {category.title}
           </h1>
-        </header>
+          </header>
+        </Reveal>
 
-        <section aria-labelledby="subcategories-heading" className="grid gap-10 border-b border-line py-16 sm:py-24 lg:grid-cols-12 lg:py-28">
+        <section aria-labelledby="subcategories-heading" className="border-b border-line py-16 sm:py-24 lg:py-28">
+          <Reveal direction="bottom" distance={40} className="grid gap-10 lg:grid-cols-12">
           <h2 id="subcategories-heading" className="text-2xl font-light text-silver-bright lg:col-span-4">زیرمجموعه‌ها</h2>
           <ul className="divide-y divide-line lg:col-span-6 lg:col-start-7">
             {category.subcategories.map((subcategory) => (
@@ -57,14 +61,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               </li>
             ))}
           </ul>
+          </Reveal>
         </section>
 
         {products.length > 0 ? (
           <section aria-labelledby="category-products" className="pt-16 sm:pt-24 lg:pt-28">
-            <h2 id="category-products" className="text-2xl font-light text-silver-bright">محصولات این دسته</h2>
-            <div className="mt-12 grid gap-16 sm:grid-cols-2 lg:mt-16 lg:gap-12">
+            <Reveal direction="fade">
+              <h2 id="category-products" className="text-2xl font-light text-silver-bright">محصولات این دسته</h2>
+            </Reveal>
+            <RevealGroup className="mt-12 grid gap-16 sm:grid-cols-2 lg:mt-16 lg:gap-12">
               {products.map((product) => <ProductEditorialCard key={product.slug} product={product} />)}
-            </div>
+            </RevealGroup>
           </section>
         ) : null}
       </Container>

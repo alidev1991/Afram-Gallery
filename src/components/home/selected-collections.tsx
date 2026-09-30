@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { SectionIntro } from "@/components/home/section-intro";
+import { RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { catalogCollections } from "@/data/catalog";
 
@@ -24,12 +25,19 @@ export function SelectedCollections() {
           title="مجموعه‌های منتخب"
         />
 
-        <div className="mt-16 grid gap-16 sm:mt-24 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
+        <RevealGroup
+          className="mt-16 grid gap-16 sm:mt-24 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0"
+          stagger={0.1}
+        >
           {catalogCollections.slice(0, 3).map((collection, index) => (
             <article
               key={collection.slug}
               className={`${collectionLayout[index]} ${index === 1 ? "ms-[12%] lg:ms-0" : ""} ${index === 2 ? "me-[12%] lg:me-0" : ""}`}
             >
+              <RevealItem
+                direction={index === 1 ? "left" : index === 2 ? "right" : "bottom"}
+                distance={38}
+              >
               <Link
                 href={`/collections/${collection.slug}`}
                 className="group block"
@@ -61,9 +69,10 @@ export function SelectedCollections() {
                 </h3>
               </div>
               </Link>
+              </RevealItem>
             </article>
           ))}
-        </div>
+        </RevealGroup>
       </Container>
     </section>
   );

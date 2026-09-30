@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { Reveal } from "@/components/motion/reveal";
 import type { CatalogImage } from "@/data/catalog";
 
 type ProductGalleryProps = {
@@ -10,8 +11,13 @@ export function ProductGallery({ images }: ProductGalleryProps) {
   return (
     <div aria-label="گالری تصاویر محصول" className="space-y-8 sm:space-y-12">
       {images.map((image, index) => (
-        <figure
+        <Reveal
           key={`${image.src}-${index}`}
+          direction="bottom"
+          distance={32}
+          delay={Math.min(index * 0.06, 0.18)}
+        >
+        <figure
           className={index === 0 ? "bg-matte" : "bg-matte sm:ms-auto sm:w-4/5"}
         >
           <Image
@@ -28,6 +34,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
             className="h-auto w-full object-contain"
           />
         </figure>
+        </Reveal>
       ))}
     </div>
   );

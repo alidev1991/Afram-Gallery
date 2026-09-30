@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductEditorialCard } from "@/components/catalog/product-editorial-card";
+import { Reveal, RevealGroup } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { getProductsForSubcategory } from "@/data/catalog";
 import {
@@ -51,17 +52,21 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
           <Link href={`/products/category/${category.slug}`} className="transition-colors hover:text-silver-bright">{category.title}</Link>
         </nav>
 
-        <header className="border-b border-line py-16 sm:py-20 lg:grid lg:grid-cols-12 lg:items-end lg:py-28">
+        <Reveal direction="fade">
+          <header className="border-b border-line py-16 sm:py-20 lg:grid lg:grid-cols-12 lg:items-end lg:py-28">
           <p className="arfam-eyebrow text-subtle lg:col-span-3" dir="ltr">Product Subcategory</p>
           <h1 className="mt-6 text-[clamp(2.75rem,7vw,7rem)] font-light leading-[1.2] tracking-[-0.04em] text-silver-bright lg:col-span-7 lg:col-start-6 lg:mt-0">{subcategory.title}</h1>
-        </header>
+          </header>
+        </Reveal>
 
         <section aria-labelledby="subcategory-products" className="pt-16 sm:pt-24 lg:pt-28">
-          <h2 id="subcategory-products" className="text-2xl font-light text-silver-bright">محصولات</h2>
+          <Reveal direction="fade">
+            <h2 id="subcategory-products" className="text-2xl font-light text-silver-bright">محصولات</h2>
+          </Reveal>
           {products.length > 0 ? (
-            <div className="mt-12 grid gap-16 sm:grid-cols-2 lg:mt-16 lg:gap-12">
+            <RevealGroup className="mt-12 grid gap-16 sm:grid-cols-2 lg:mt-16 lg:gap-12">
               {products.map((product) => <ProductEditorialCard key={product.slug} product={product} />)}
-            </div>
+            </RevealGroup>
           ) : (
             <p className="mt-10 border-y border-line py-8 text-sm text-muted">در حال حاضر محصولی در این زیرمجموعه ثبت نشده است.</p>
           )}

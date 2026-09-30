@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Reveal } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 
 export function BrandStory() {
@@ -14,12 +15,12 @@ export function BrandStory() {
       />
       <Container className="relative">
         <div className="grid gap-12 lg:grid-cols-12 lg:items-start">
-          <div className="lg:col-span-3">
+          <Reveal direction="right" distance={32} className="lg:col-span-3">
             <p className="arfam-eyebrow text-subtle" dir="ltr">
               ARFAM Gallery
             </p>
-          </div>
-          <div className="lg:col-span-7 lg:col-start-5">
+          </Reveal>
+          <Reveal direction="left" distance={40} className="lg:col-span-7 lg:col-start-5">
             <h2
               id="brand-story-heading"
               className="text-[clamp(2.15rem,5.2vw,5.5rem)] font-light leading-[1.35] tracking-[-0.03em] text-silver-bright"
@@ -50,7 +51,7 @@ export function BrandStory() {
                 ←
               </span>
             </Link>
-          </div>
+          </Reveal>
         </div>
       </Container>
     </section>

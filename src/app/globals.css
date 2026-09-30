@@ -175,6 +175,12 @@ body:has(.home-hero) .site-header {
   }
 
   *,
+  [data-motion-reveal],
+  [data-motion-item] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   *::before,
   *::after {
     scroll-behavior: auto !important;

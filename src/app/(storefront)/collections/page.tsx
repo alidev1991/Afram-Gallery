@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { Reveal } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { catalogCollections } from "@/data/catalog";
 
@@ -33,14 +34,16 @@ export default function CollectionsPage() {
   return (
     <main id="main-content" className="bg-canvas">
       <Container className="pb-24 pt-16 sm:pb-32 sm:pt-24 lg:pb-44 lg:pt-32">
-        <header className="border-b border-line pb-12 sm:pb-16 lg:grid lg:grid-cols-12 lg:items-end">
+        <Reveal direction="fade">
+          <header className="border-b border-line pb-12 sm:pb-16 lg:grid lg:grid-cols-12 lg:items-end">
           <p className="arfam-eyebrow text-subtle lg:col-span-3" dir="ltr">
             ARFAM Catalogue
           </p>
           <h1 className="mt-6 text-[clamp(3rem,8vw,8rem)] font-light leading-none tracking-[-0.04em] text-silver-bright lg:col-span-7 lg:col-start-6 lg:mt-0">
             مجموعه‌ها
           </h1>
-        </header>
+          </header>
+        </Reveal>
 
         <div>
           {catalogCollections.map((collection, index) => (
@@ -48,6 +51,10 @@ export default function CollectionsPage() {
               key={collection.slug}
               className="border-b border-line py-20 sm:py-28 lg:py-36"
             >
+              <Reveal
+                direction={index % 2 === 0 ? "right" : "left"}
+                distance={44}
+              >
               <Link
                 href={`/collections/${collection.slug}`}
                 className="group grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-x-8"
@@ -78,6 +85,7 @@ export default function CollectionsPage() {
                   </span>
                 </div>
               </Link>
+              </Reveal>
             </article>
           ))}
         </div>

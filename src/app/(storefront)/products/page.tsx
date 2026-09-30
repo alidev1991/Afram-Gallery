@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { Reveal } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { productCategories } from "@/data/site-structure";
 
@@ -13,22 +14,29 @@ export default function ProductsPage() {
   return (
     <main id="main-content" className="bg-canvas">
       <Container className="pb-24 pt-16 sm:pb-32 sm:pt-24 lg:pb-44 lg:pt-32">
-        <header className="border-b border-line pb-12 sm:pb-16 lg:grid lg:grid-cols-12 lg:items-end">
+        <Reveal direction="fade">
+          <header className="border-b border-line pb-12 sm:pb-16 lg:grid lg:grid-cols-12 lg:items-end">
           <p className="arfam-eyebrow text-subtle lg:col-span-3" dir="ltr">
             ARFAM Shop
           </p>
           <h1 className="mt-6 text-[clamp(3rem,8vw,8rem)] font-light leading-none tracking-[-0.04em] text-silver-bright lg:col-span-7 lg:col-start-6 lg:mt-0">
             محصولات
           </h1>
-        </header>
+          </header>
+        </Reveal>
 
         <div>
           {productCategories.map((category, index) => (
             <section
               key={category.slug}
               aria-labelledby={`${category.slug}-heading`}
-              className="grid gap-10 border-b border-line py-16 sm:py-20 lg:grid-cols-12 lg:gap-x-8 lg:py-28"
+              className="border-b border-line py-16 sm:py-20 lg:py-28"
             >
+              <Reveal
+                direction="bottom"
+                distance={40}
+                className="grid gap-10 lg:grid-cols-12 lg:gap-x-8"
+              >
               <p className="arfam-eyebrow text-subtle lg:col-span-2" aria-hidden="true">
                 {String(index + 1).padStart(2, "0")}
               </p>
@@ -52,6 +60,7 @@ export default function ProductsPage() {
                   </li>
                 ))}
               </ul>
+              </Reveal>
             </section>
           ))}
         </div>

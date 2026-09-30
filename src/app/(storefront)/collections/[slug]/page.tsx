@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductEditorialCard } from "@/components/catalog/product-editorial-card";
+import { Reveal, RevealGroup } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import {
   catalogCollections,
@@ -58,7 +59,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
         </nav>
 
         <header className="grid gap-12 py-16 sm:py-20 lg:grid-cols-12 lg:items-center lg:gap-x-8 lg:py-28">
-          <div className="lg:col-span-6">
+          <Reveal direction="right" distance={40} className="lg:col-span-6">
             <Image
               src={collection.coverImage.src}
               alt={collection.coverImage.alt}
@@ -68,8 +69,8 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
               sizes="(max-width: 1023px) calc(100vw - 2.5rem), 48vw"
               className="h-auto w-full object-contain"
             />
-          </div>
-          <div className="lg:col-span-5 lg:col-start-8">
+          </Reveal>
+          <Reveal direction="left" distance={40} className="lg:col-span-5 lg:col-start-8">
             <p className="arfam-eyebrow text-subtle" dir="ltr">
               {collection.eyebrow}
             </p>
@@ -79,11 +80,11 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
             <p className="mt-7 max-w-lg text-sm leading-8 text-muted sm:text-base">
               {collection.description}
             </p>
-          </div>
+          </Reveal>
         </header>
 
         <section aria-labelledby="collection-products" className="border-t border-line pt-16 sm:pt-24">
-          <div className="grid gap-5 lg:grid-cols-12 lg:items-end">
+          <Reveal direction="fade" className="grid gap-5 lg:grid-cols-12 lg:items-end">
             <p className="arfam-eyebrow text-subtle lg:col-span-3" dir="ltr">
               Products
             </p>
@@ -93,10 +94,10 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
             >
               محصولات مجموعه
             </h2>
-          </div>
+          </Reveal>
 
           {products.length > 0 ? (
-            <div className="mt-14 grid gap-20 sm:mt-20 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
+            <RevealGroup className="mt-14 grid gap-20 sm:mt-20 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0">
               {products.map((product, index) => (
                 <ProductEditorialCard
                   key={product.slug}
@@ -110,7 +111,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
                   }
                 />
               ))}
-            </div>
+            </RevealGroup>
           ) : (
             <p className="mt-12 border-y border-line py-8 text-sm text-muted">
               محصولات این کالکشن پس از انتشار در این بخش نمایش داده می‌شوند.

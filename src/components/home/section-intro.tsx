@@ -1,3 +1,5 @@
+import { Reveal } from "@/components/motion/reveal";
+
 type SectionIntroProps = {
   id: string;
   eyebrow: string;
@@ -12,7 +14,8 @@ export function SectionIntro({
   className = "",
 }: SectionIntroProps) {
   return (
-    <div className={`grid gap-6 lg:grid-cols-12 lg:items-end ${className}`}>
+    <Reveal direction="fade" duration={0.9}>
+      <div className={`grid gap-6 lg:grid-cols-12 lg:items-end ${className}`}>
       <p className="arfam-eyebrow text-subtle lg:col-span-3" dir="ltr">
         {eyebrow}
       </p>
@@ -24,6 +27,7 @@ export function SectionIntro({
           {title}
         </h2>
       </div>
-    </div>
+      </div>
+    </Reveal>
   );
 }
