@@ -7,9 +7,18 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "prisma:format": "prisma format",
+    "prisma:validate": "prisma validate",
+    "prisma:generate": "prisma generate",
+    "db:migrate": "cross-env RUST_LOG=info prisma migrate dev",
+    "db:migrate:deploy": "cross-env RUST_LOG=info prisma migrate deploy",
+    "db:migrate:status": "cross-env RUST_LOG=info prisma migrate status"
   },
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "dotenv": "^18.0.4",
     "framer-motion": "^13.4.6",
     "next": "16.3.5",
     "react": "19.3.0",
@@ -17,11 +26,14 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.5",
+    "prisma": "^7.10.0",
     "tailwindcss": "4.3.3",
     "typescript": "^5"
   }

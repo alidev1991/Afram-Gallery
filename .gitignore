@@ -30,6 +30,8 @@ next-env.d.ts
 *.db-journal
 *.db-shm
 *.db-wal
+/data/
+/src/generated/prisma/
 
 # OS and editor files
 .DS_Store

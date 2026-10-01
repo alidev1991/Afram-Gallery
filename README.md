@@ -17,8 +17,8 @@ npm run lint
 npm run typecheck
 ```
 
-## Current scope
+## Database
 
-Phase 2 establishes only the technical foundation. Database, authentication,
-storefront design, cart, checkout, orders, and admin features belong to later
-phases.
+The database foundation uses Prisma with SQLite. See
+[`prisma/README.md`](prisma/README.md) for local setup, migrations, deployment,
+and seed conventions.
