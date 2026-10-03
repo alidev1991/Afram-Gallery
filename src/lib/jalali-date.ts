@@ -8,6 +8,16 @@ const persianCalendarParts = new Intl.DateTimeFormat(
   },
 );
 
+const currentPersianCalendarParts = new Intl.DateTimeFormat(
+  "en-US-u-ca-persian-nu-latn",
+  {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    timeZone: "Asia/Tehran",
+  },
+);
+
 const persianDisplayDate = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
   year: "numeric",
   month: "long",
@@ -30,8 +40,11 @@ export const PERSIAN_MONTHS = [
   "اسفند",
 ] as const;
 
-function getPersianParts(date: Date) {
-  const parts = persianCalendarParts.formatToParts(date);
+function getPersianParts(
+  date: Date,
+  formatter = persianCalendarParts,
+) {
+  const parts = formatter.formatToParts(date);
   const valueOf = (type: Intl.DateTimeFormatPartTypes) =>
     Number(parts.find((part) => part.type === type)?.value);
 
@@ -43,7 +56,11 @@ function getPersianParts(date: Date) {
 }
 
 export function getCurrentPersianYear() {
-  return getPersianParts(new Date()).year;
+  return getCurrentPersianDateParts().year;
+}
+
+export function getCurrentPersianDateParts() {
+  return getPersianParts(new Date(), currentPersianCalendarParts);
 }
 
 export function jalaliToIsoDate(year: number, month: number, day: number) {
@@ -93,6 +110,18 @@ export function getPersianMonthLength(year: number, month: number) {
   }
 
   return 31;
+}
+
+export function jalaliToUtcDate(year: number, month: number, day: number) {
+  const isoDate = jalaliToIsoDate(year, month, day);
+
+  return isoDate ? new Date(`${isoDate}T00:00:00.000Z`) : null;
+}
+
+export function isoDateToJalaliParts(value: string) {
+  const date = new Date(`${value}T12:00:00.000Z`);
+
+  return Number.isNaN(date.getTime()) ? null : getPersianParts(date);
 }
 
 export function formatIsoDateToPersian(value: string) {

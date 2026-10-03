@@ -1,65 +1,65 @@
 "use client";
 
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  DEMO_CUSTOMER_CREDENTIALS,
-  isValidIranianMobile,
-  normalizeIranianMobile,
-} from "@/lib/demo-customer";
-import { useDemoAuth } from "@/providers/demo-auth-provider";
+import { loginSchema } from "@/lib/auth/validation";
 
 const inputClass =
   "mt-2 min-h-12 w-full border border-line bg-canvas px-4 text-sm text-silver-bright outline-none transition-colors placeholder:text-subtle focus:border-silver";
 
-export function LoginForm({ nextPath }: { nextPath: string }) {
+export function LoginForm({
+  nextPath,
+  registrationSucceeded = false,
+}: {
+  nextPath: string;
+  registrationSucceeded?: boolean;
+}) {
   const router = useRouter();
-  const { login } = useDemoAuth();
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [legacyMobile, setLegacyMobile] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setLegacyMobile(null);
 
-    if (!isValidIranianMobile(mobile)) {
-      setError("شماره موبایل معتبر ایران وارد کنید.");
-      return;
-    }
+    const validationResult = loginSchema.safeParse({ mobile, password });
 
-    if (!password) {
-      setError("رمز عبور را وارد کنید.");
+    if (!validationResult.success) {
+      setError("شماره موبایل یا رمز عبور صحیح نیست.");
       return;
     }
 
     setIsSubmitting(true);
-    const result = await login(mobile, password);
-    setIsSubmitting(false);
 
-    if (!result.ok) {
-      if (result.code === "LEGACY_CREDENTIAL_MISSING") {
-        setLegacyMobile(normalizeIranianMobile(mobile));
+    try {
+      const result = await signIn("credentials", {
+        mobile: validationResult.data.mobile,
+        password: validationResult.data.password,
+        redirect: false,
+        redirectTo: nextPath,
+      });
+
+      if (!result.ok || result.error) {
+        setError("شماره موبایل یا رمز عبور صحیح نیست.");
         return;
       }
 
-      setError(result.message);
-      return;
+      router.replace(nextPath);
+      router.refresh();
+    } catch {
+      setError("شماره موبایل یا رمز عبور صحیح نیست.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    router.replace(nextPath);
   }
 
   const registerHref = `/register?next=${encodeURIComponent(nextPath)}`;
-  const recoveryHref = legacyMobile
-    ? `/recover-account?mobile=${encodeURIComponent(legacyMobile)}&next=${encodeURIComponent(nextPath)}`
-    : "";
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -74,7 +74,6 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
           value={mobile}
           onChange={(event) => {
             setMobile(event.target.value);
-            setLegacyMobile(null);
             setError("");
           }}
           className={inputClass}
@@ -100,38 +99,21 @@ export function LoginForm({ nextPath }: { nextPath: string }) {
         />
       </div>
 
-      {error ? <p className="mt-5 text-xs leading-6 text-danger" role="alert">{error}</p> : null}
+      {registrationSucceeded ? (
+        <p className="mt-5 border border-line bg-matte px-4 py-3 text-xs leading-6 text-silver" role="status">
+          ثبت‌نام با موفقیت انجام شد؛ وارد حساب خود شوید.
+        </p>
+      ) : null}
 
-      {legacyMobile ? (
-        <section className="mt-6 border border-line-strong bg-matte p-5" aria-labelledby="legacy-account-title">
-          <h2 id="legacy-account-title" className="text-sm font-medium text-silver-bright">
-            فعال‌سازی مجدد حساب
-          </h2>
-          <p className="mt-3 text-xs leading-7 text-muted">
-            این حساب قبلاً ایجاد شده است. برای فعال‌سازی مجدد حساب، یک رمز عبور جدید تعیین کنید.
-          </p>
-          <Link
-            href={recoveryHref}
-            className="mt-5 inline-flex min-h-11 w-full items-center justify-center border border-silver px-5 py-2.5 text-xs font-medium text-silver-bright transition-colors hover:border-silver-bright hover:bg-gloss focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-silver-bright active:bg-elevated"
-          >
-            تعیین رمز عبور جدید
-          </Link>
-        </section>
+      {error ? (
+        <p className="mt-5 text-xs leading-6 text-danger" role="alert">
+          {error}
+        </p>
       ) : null}
 
       <Button type="submit" className="mt-7 w-full" disabled={isSubmitting}>
         {isSubmitting ? "در حال ورود…" : "ورود"}
       </Button>
-
-      <div className="mt-6 border border-line bg-gloss p-4 text-xs leading-6 text-muted">
-        <p className="text-silver">دسترسی ارائه</p>
-        <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 text-[0.6875rem]">
-          <dt>موبایل</dt>
-          <dd dir="ltr" className="text-start">{DEMO_CUSTOMER_CREDENTIALS.mobile}</dd>
-          <dt>رمز عبور</dt>
-          <dd dir="ltr" className="text-start">{DEMO_CUSTOMER_CREDENTIALS.password}</dd>
-        </dl>
-      </div>
 
       <p className="mt-7 text-center text-xs text-muted">
         حساب ندارید؟{" "}

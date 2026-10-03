@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { CartCheckoutLink } from "@/components/cart/cart-checkout-link";
 import { Container } from "@/components/ui/container";
 import { formatToman } from "@/lib/format-price";
-import { useDemoAuth } from "@/providers/demo-auth-provider";
 import { useCart } from "@/providers/cart-provider";
 
 const actionClass =
@@ -22,7 +22,6 @@ export default function CartPage() {
     setQuantity,
     removeItem,
   } = useCart();
-  const { customer } = useDemoAuth();
 
   return (
     <main id="main-content" className="min-h-[70svh] bg-canvas">
@@ -127,12 +126,7 @@ export default function CartPage() {
                 <strong className="font-normal text-silver-bright">{formatToman(totalToman)}</strong>
               </div>
               <p className="mt-4 text-xs leading-6 text-subtle">هزینه ارسال در مرحله بعد مشخص می‌شود.</p>
-              <Link
-                href={customer ? "/checkout" : "/login?next=/checkout"}
-                className={`${primaryCheckoutClass} mt-7 w-full`}
-              >
-                ادامه فرایند خرید
-              </Link>
+              <CartCheckoutLink className={`${primaryCheckoutClass} mt-7 w-full`} />
             </aside>
           </div>
         )}

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { RegistrationForm } from "@/components/auth/registration-form";
 import { Container } from "@/components/ui/container";
-import { getSafeNextPath } from "@/lib/demo-customer";
+import { getSafeInternalPath } from "@/lib/auth/safe-redirect";
 
 type RegisterPageProps = {
   searchParams: Promise<{ next?: string }>;
@@ -10,7 +10,7 @@ type RegisterPageProps = {
 
 export default async function RegisterPage({ searchParams }: RegisterPageProps) {
   const { next } = await searchParams;
-  const nextPath = getSafeNextPath(next);
+  const nextPath = getSafeInternalPath(next);
 
   return (
     <main id="main-content" className="min-h-[72svh] bg-canvas">

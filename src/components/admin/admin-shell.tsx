@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { logoutAdmin } from "@/app/admin/login/actions";
 import { BrandLogo } from "@/components/brand/brand-logo";
-import { useAdminDemo } from "@/providers/admin-demo-provider";
 
 const navigation = [
   { href: "/admin", label: "داشبورد" },
@@ -16,8 +16,6 @@ const navigation = [
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { logout } = useAdminDemo();
 
   return (
     <div className="min-h-screen bg-canvas lg:grid lg:grid-cols-[16rem_1fr]">
@@ -29,16 +27,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <Link href="/" className="transition-colors hover:text-silver-bright">
               فروشگاه
             </Link>
-            <button
-              type="button"
-              onClick={() => {
-                logout();
-                router.replace("/admin/login");
-              }}
-              className="transition-colors hover:text-silver-bright"
-            >
-              خروج
-            </button>
+            <form action={logoutAdmin}>
+              <button type="submit" className="transition-colors hover:text-silver-bright">
+                خروج
+              </button>
+            </form>
           </div>
         </div>
         <nav aria-label="پیمایش مدیریت" className="overflow-x-auto border-t border-line lg:mt-5">
@@ -56,7 +49,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </ul>
         </nav>
         <div className="hidden px-7 py-8 lg:block">
-          <button type="button" onClick={() => { logout(); router.replace("/admin/login"); }} className="text-xs text-muted underline-offset-4 hover:text-silver-bright hover:underline">خروج از پنل</button>
+          <form action={logoutAdmin}>
+            <button type="submit" className="text-xs text-muted underline-offset-4 hover:text-silver-bright hover:underline">خروج از پنل</button>
+          </form>
           <Link href="/" className="mt-4 block text-xs text-muted underline-offset-4 hover:text-silver-bright hover:underline">مشاهده فروشگاه</Link>
         </div>
       </aside>

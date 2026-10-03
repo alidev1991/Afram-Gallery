@@ -2033,3 +2033,312 @@ Authentication است.
 AI/Codex بتواند پروژه را از صفر بفهمد و بدون از دست دادن تاریخچه،
 محدودیت‌ها، قوانین تجاری، تصمیمات معماری و Roadmap، ادامه توسعه را انجام
 دهد.
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-03
+- **Current Phase:** Phase 11 — Real Authentication
+- **Current Step:** Phase 11 Final QA & Closure
+- **Current Status:** Phase 11 — Real Authentication تکمیل، QA نهایی و توسط کارفرما تأیید شده است.
+- **Last Approved Commit:** Phase 11 — feat(auth): complete real customer and admin authentication
+- **Current Branch:** main
+- **Working Tree Status:** پس از Commit/Push نهایی Phase 11 باید Clean و همگام با origin/main باشد.
+
+### Work Completed in Current Phase
+
+- زیرساخت Auth.js، Credentials Provider، Prisma Client و Session/JWT typing ایجاد شده است.
+- Registration واقعی با Prisma/SQLite و Argon2id پیاده‌سازی شده است.
+- Login و Account مشتری به Session واقعی Auth.js متصل شده‌اند.
+- Validation مشترک Client/Server برای نام فارسی، Mobile، Password/Confirmation و تاریخ شمسی پیاده‌سازی شده است.
+- Real Admin Authentication، First Admin Setup، Role-based Server Authorization و Admin Logout واقعی پیاده‌سازی شده‌اند.
+- Admin Storefront Entry مبتنی بر Session واقعی Auth.js در Footer عمومی اضافه شده است.
+
+### Step 8 Completion Status
+
+- BUG-01 مربوط به ناسازگاری Real Auth با Cart/Checkout رفع و QA شده است.
+- Cart CTA از Session واقعی Auth.js و Checkout از authorization سروری Database-backed استفاده می‌کند.
+- Step 8 توسط کارفرما تأیید شده است.
+
+### Phase 11 Final Closure Completed
+
+- یک Admin Entry مینیمال در Footer عمومی Storefront اضافه شد.
+- Guest و CUSTOMER عبارت «ورود مدیر» با مقصد `/admin/login` را می‌بینند.
+- ADMIN احراز هویت‌شده عبارت «پنل مدیریت» با مقصد `/admin` را می‌بیند.
+- تشخیص نقش فقط از Session واقعی Auth.js انجام می‌شود؛ Demo Auth، localStorage Admin flag یا Credential جدید اضافه نشد.
+- این لینک فقط Navigation convenience است و Authorization نهایی Routeهای Admin همچنان Server-side، Database-backed و متعلق به Step 9B باقی مانده است.
+- Header، Navigation اصلی، Cart، Checkout، Admin layout و Design Lock پروژه تغییر نکردند.
+- Full Customer Journey و Full Admin Journey روی Production Build و SQLite مستقل و خالی موفق بودند.
+- Security Audit، Prisma QA، Lint، Type Check، Production Build و git diff --check بدون Blocker موفق شدند.
+- QA Database، Userهای آزمایشی، Chrome profile، Script و Resultهای موقت حذف شدند.
+
+### Work Currently In Progress
+
+- Phase 11 تکمیل و بسته شده است.
+- هیچ کار Phase 12 آغاز نشده است.
+- مرحله بعد فقط با دستور صریح کارفرما آغاز می‌شود: Phase 12 — Real Product & Catalog.
+
+### Files Created in Current Step
+
+- src/components/admin/admin-footer-entry.tsx
+
+### Files Changed in Current Step
+
+- src/components/layout/site-footer.tsx
+- ARFAM-Gallery-Master-Project-History-FA.md
+
+### Files Removed in Current Step
+
+- هیچ فایل Source در Step 9C حذف نشد.
+
+### Phase 11 Files Included in Final Commit
+
+تمام تغییرات زیر متعلق به Phase 11 هستند و در Commit نهایی واحد این Phase ثبت می‌شوند:
+
+- .env.example
+- package.json
+- package-lock.json
+- ARFAM-Gallery-Master-Project-History-FA.md
+- src/auth.ts
+- src/lib/prisma.ts
+- src/types/next-auth.d.ts
+- src/app/api/auth/[...nextauth]/route.ts
+- src/lib/auth/authorization.ts
+- src/lib/auth/password.ts
+- src/lib/auth/safe-redirect.ts
+- src/lib/auth/validation.ts
+- src/app/(storefront)/account/actions.ts
+- src/app/(storefront)/account/page.tsx
+- src/app/(storefront)/register/actions.ts
+- src/app/(storefront)/register/page.tsx
+- src/app/(storefront)/login/page.tsx
+- src/components/auth/account-indicator.tsx
+- src/components/auth/login-form.tsx
+- src/components/auth/registration-form.tsx
+- src/components/layout/site-header.tsx
+- src/lib/demo-customer.ts
+- src/lib/jalali-date.ts
+- src/providers/storefront-providers.tsx
+- src/app/(storefront)/cart/page.tsx
+- src/components/cart/cart-checkout-link.tsx
+- src/app/(storefront)/checkout/page.tsx
+- src/components/checkout/checkout-content.tsx
+- src/app/admin/login/actions.ts
+- src/components/admin/admin-setup-form.tsx
+- src/app/admin/(panel)/layout.tsx
+- src/app/admin/layout.tsx
+- src/app/admin/login/page.tsx
+- src/components/admin/admin-login-form.tsx
+- src/components/admin/admin-shell.tsx
+- src/components/admin/admin-footer-entry.tsx
+- src/components/layout/site-footer.tsx
+- حذف src/components/admin/admin-guard.tsx
+- حذف src/providers/admin-demo-provider.tsx
+
+### Important Architecture Decisions
+
+- Checkout authorization باید Server-side و مبتنی بر Auth.js + Database User باشد.
+- Cart فقط برای مقصد CTA از Session واقعی استفاده می‌کند؛ Cart data همچنان مستقل و Client-side است.
+- کل Storefront Dynamic نشده و Auth-aware Client scope به CTA سبد محدود است.
+- DemoAuthProvider فعلاً فقط برای Legacy Recovery حفظ می‌شود.
+- Real Admin باید از همان Auth.js Credentials Provider مبتنی بر Mobile + Password استفاده کند؛ سیستم Authentication واقعی جداگانه ساخته نشود.
+- Routeهای `(panel)` باید در Server Layout با `getAuthorizedUser(UserRole.ADMIN)` و Role تازه خوانده‌شده از Database محافظت شوند.
+- `session.user.role` یا State مرورگر برای Authorization مرجع نهایی نیست؛ Database source of truth است.
+- UI و Mock data فعلی Dashboard/Products/Orders/Customers در Step 9B حفظ می‌شوند.
+- Footer مسیر رسمی و Production-valid ورود Admin است: Guest/CUSTOMER → «ورود مدیر» → /admin/login و ADMIN → «پنل مدیریت» → /admin.
+- این Footer Entry و First Admin Setup برای راه‌اندازی اولیه Production تصمیم Locked هستند؛ وجود لینک جایگزین Authorization سروری نیست.
+- Admin Entry فوتر فقط از `useSession()` برای انتخاب Label/Route استفاده می‌کند؛ این نمایش Client-side هیچ نقش امنیتی ندارد.
+- Server layout پنل همچنان Role را از Database بازخوانی می‌کند و مرجع نهایی Authorization است.
+
+### Step 9A Pre-Migration Admin Demo Architecture
+
+- پیش از Step 9B، `AdminDemoProvider` Credential ثابت Source را بررسی و فلگ `arfam.demo.admin-session.v1=active` را در localStorage ذخیره می‌کرد.
+- پیش از Step 9B، `AdminGuard` فقط پس از hydration همان Client state را بررسی و Guest را با `router.replace` به `/admin/login` می‌فرستاد.
+- پیش از Step 9B، `AdminShell` Logout را فقط با حذف فلگ localStorage انجام می‌داد.
+- Credential Demo در Login UI نیز نمایش داده می‌شود؛ این Flow Authentication یا Authorization واقعی محسوب نمی‌شود و با دست‌کاری localStorage قابل دورزدن است.
+- `AdminCustomersTable` هنوز Customerهای Demo/localStorage را با Mock data ترکیب می‌کند؛ این بخش data demo است و در Step 9B، که فقط Auth/Security است، حفظ می‌شود.
+
+### Step 9A Proposed Real Admin Architecture — Implemented in Step 9B
+
+- Admin Login همان Credentials Provider، Validation، Argon2 verification، JWT Session و Auth.js cookie فعلی را استفاده می‌کند.
+- `/admin/(panel)` با Server Component layout و DB-backed role check محافظت می‌شود.
+- Guest به `/admin/login` هدایت می‌شود؛ CUSTOMER از پنل رد و به مسیر امن غیرادمین هدایت می‌شود؛ ADMIN وارد پنل می‌شود.
+- Logout پنل از Auth.js `signOut` استفاده می‌کند.
+- Admin Login UI از username Demo به Mobile + Password واقعی تغییر می‌کند، بدون Redesign غیرضروری.
+- Demo Admin Provider، Client Guard، localStorage session و Credential نمایشی حذف/جایگزین می‌شوند.
+
+### First Admin Bootstrap Options
+
+1. **Promote یک User موجود با Script محلی کنترل‌شده — پیشنهاد اصلی**
+   - Password جدید دریافت یا ذخیره نمی‌شود؛ User قبلاً با Registration واقعی و Argon2 ساخته شده است.
+   - Script فقط در محیط عملیاتی مورد اعتماد اجرا، Mobile را Normalize، نبود Admin را بررسی و پس از تأیید صریح Role را به ADMIN تغییر می‌دهد.
+   - مزیت: کمترین سطح حمله، بدون Credential در Git و بدون Public Admin Registration.
+   - عیب: به دسترسی امن CLI/Database و فرایند عملیاتی مستند نیاز دارد.
+2. **ساخت Admin جدید با CLI تعاملی**
+   - می‌تواند Password را بدون Echo دریافت، Validation/Argon2 را reuse و User را مستقیم با Role=ADMIN بسازد.
+   - مزیت: حساب Admin از Customer جدا است.
+   - عیب: منطق Registration تکراری، مدیریت ورودی حساس و پیچیدگی بیشتر دارد.
+3. **تغییر دستی Role با Prisma Studio/SQL**
+   - مزیت: سریع و بدون کد جدید.
+   - عیب: خطاپذیر، غیرقابل‌تکرار و فاقد Guard/Confirmation استاندارد؛ فقط راه اضطراری، نه روش رسمی.
+4. **Bootstrap از Environment یا Startup**
+   - رد شده است؛ خطر اجرای مجدد، باقی‌ماندن Credential در Environment و coupling با Startup/Deploy دارد.
+
+### Step 9A Bootstrap Recommendation — Superseded by Final Step 9B Decision
+
+- یک Customer واقعی مورد اعتماد ابتدا از Registration موجود ایجاد می‌شود.
+- Script محلی Commit‌شده ولی بدون هیچ Credential ثابت، Mobile را به‌صورت تعاملی می‌گیرد و Normalize می‌کند.
+- Script باید فقط وقتی تعداد ADMIN صفر است اجرا شود، User را دقیقاً پیدا کند، هویت Mask‌شده و تغییر Role را برای Confirmation نمایش دهد و در Transaction به ADMIN Promote کند.
+- پس از Promotion، User Sign out و دوباره Login می‌کند تا JWT تازه صادر شود؛ Server Guard در هر درخواست Role را از Database بازخوانی می‌کند.
+- هر Promotion بعدی خارج از Bootstrap اولیه به Flow مدیریتی/عملیاتی جداگانه و مجوز صریح نیاز دارد.
+
+### Admin Auth Architecture — Current
+
+- Admin و Customer هر دو از یک Auth.js Credentials Provider و JWT Session مشترک استفاده می‌کنند.
+- Admin Login با Mobile + Password واقعی انجام می‌شود.
+- Authorization تمام Routeهای `(panel)` در Server layout انجام می‌شود و Role تازه از Database خوانده می‌شود.
+- Guest به `/admin/login?next=/admin` و CUSTOMER به `/` Redirect می‌شود؛ ADMIN مجاز است.
+- Admin Login page برای ADMIN واردشده به `/admin` Redirect می‌شود.
+- Logout با Auth.js انجام می‌شود و Cart مستقل Customer را حذف نمی‌کند.
+
+### First Admin Setup Architecture — Final Decision
+
+- برخلاف پیشنهاد اولیه Step 9A، تصمیم قطعی Step 9B ایجاد حساب First Admin از خود `/admin/login` است، نه Promote کردن Customer موجود.
+- Setup فقط وقتی Database هیچ ADMIN ندارد نمایش داده می‌شود.
+- فرم نام و نام خانوادگی فارسی، تاریخ تولد شمسی، Mobile، Password و confirmPassword دارد.
+- Validation مشترک Registration، Mobile normalization و Argon2id reuse می‌شوند.
+- Client هیچ Role ارسال نمی‌کند؛ Server همیشه Role را ADMIN تعیین می‌کند.
+- بعد از اولین Admin، Setup هم در UI و هم در Server Action بسته می‌شود.
+
+### Implemented First Admin Server-side Lock
+
+- Admin existence روی Server و Database هم برای Render صفحه و هم دوباره داخل Server Action بررسی می‌شود.
+- ایجاد First Admin در Prisma Transaction انجام می‌شود.
+- به‌دلیل `BEGIN` deferred در SQLite adapter، یک no-op write در ابتدای Transaction قفل نوشتن Database را قبل از بررسی ADMIN می‌گیرد.
+- یک Mutex سراسری همان Node process نیز Double Submitهای هم‌زمان را serialize می‌کند.
+- Client هیچ Role ارسال نمی‌کند؛ create data همیشه `UserRole.ADMIN` ثابت Server-side دارد.
+- QA Double Submit دو درخواست را ارسال کرد و Database فقط یک ADMIN ایجاد کرد.
+
+### Development / Production First Admin Strategy
+
+- Admin ساخته‌شده در Development فقط QA Admin است و پس از QA حذف می‌شود.
+- Development Database و Production Database مستقل هستند.
+- Production ابتدا بدون ADMIN راه‌اندازی می‌شود.
+- Omid در Production از First Admin Setup اطلاعات و Password خودش را وارد می‌کند.
+- پس از ایجاد اولین ADMIN، Setup در Server بسته می‌شود و ورودهای بعدی فقط Mobile + Password هستند.
+- هیچ QA Admin یا Credential آزمایشی Development به Production منتقل نمی‌شود.
+
+### Demo Admin Components Removed / Preserved
+
+- حذف شد: AdminDemoProvider، useAdminDemo، AdminGuard، Admin localStorage session، Credential ثابت، Credential display و Demo logout.
+- هیچ Demo Admin Auth code باقی نمانده است.
+- حفظ شد: Mock data و UI فعلی Dashboard، Products، Orders و Customers؛ این‌ها Authentication نیستند و Backend واقعی آن‌ها مربوط به Phaseهای بعد است.
+- Demo Customer Auth فقط برای Legacy Recovery باقی مانده و از Admin مستقل است.
+
+### Security Findings
+
+- ضعف‌های Credential ثابت، localStorage قابل جعل و Client-only Guard رفع شدند.
+- Schema فعلی برای Real Admin کافی بود و Migration ایجاد نشد.
+- Public Admin Registration دائمی، Public Promote API، Client-selected Role و Browser self-promotion وجود ندارند.
+- passwordHash به Client ارسال نمی‌شود؛ Password/confirmPassword ذخیره یا Log نمی‌شوند.
+- Server Action قبل از create مستقیماً Database را بررسی می‌کند و Role را ثابت تعیین می‌کند.
+
+### Pending Password Recovery Requirement
+
+- Requirement قطعی برای هر دو Role CUSTOMER و ADMIN ثبت است.
+- Flow آینده: Mobile → SMS OTP Verification → New Password.
+- SMS Provider هنوز انتخاب نشده است؛ بنابراین Step 9B هیچ OTP جعلی یا Recovery ناامن اضافه نکرد.
+- Legacy/Demo Recovery هنگام پیاده‌سازی Recovery واقعی باید جایگزین/حذف شود.
+
+### Production Security Pending Items
+
+- Rate Limiting و Lockout policy برای Login/Setup.
+- تصمیم MFA برای Admin.
+- Admin Audit Log.
+- تأیید HTTPS و Secure Cookie در Hosting واقعی.
+- محدودسازی دسترسی و امنیت فایل Production SQLite.
+- Backup و Restore strategy برای Persistent Storage.
+
+### Bugs Found
+
+- **BUG-01 — Real Auth vs Cart/Checkout mismatch** در ممیزی Journey قطعی شد.
+
+### Bugs Fixed
+
+- **BUG-01 — Real Auth vs Cart/Checkout mismatch**
+  - Root Cause: Login/Session/Account/Header از Auth.js واقعی استفاده می‌کردند، اما Cart و Checkout هنوز به DemoAuthProvider/useDemoAuth وابسته بودند.
+  - Fix: Cart CTA به useSession() و Checkout protection به getAuthenticatedUser() در Server منتقل شد.
+  - QA Status: رفع و در Dev Browser Journey، Refresh، Logout و Direct URL تأیید شد.
+
+### Known / Intermittent Issues
+
+- **Main Navigation Freeze**
+  - در Manual Usage چند بار مشاهده شده و حداقل یک رخداد با VeePN خاموش بوده است.
+  - Automated Stress Tests تاکنون آن را Reproduce نکرده‌اند و Root Cause قطعی نیست.
+  - بدون Evidence هیچ Navigation workaround اضافه نشود.
+
+### QA Completed / Still Required
+
+- First Admin Setup در Database بدون ADMIN نمایش داده شد.
+- Double Submit دو درخواست واقعی ارسال کرد؛ Database فقط یک ADMIN ساخت و Setup بسته شد.
+- Admin QA: Role=ADMIN، Mobile normalized، Birth Date موجود و Password به‌صورت Argon2id hash ذخیره شد؛ Plain Password و confirmPassword ذخیره نشدند.
+- ورود Admin، تمام Routeهای Admin، Refresh، Back/Forward، 20 Navigation سریع و Browser Restart موفق بودند.
+- ADMIN بازکردن `/admin/login` را به `/admin` Redirect کرد.
+- Access Matrix روی `/admin`، Products، Orders و Customers موفق بود: Guest → Admin Login، CUSTOMER → `/`، ADMIN → Allowed.
+- Logout واقعی Admin موفق بود و Direct `/admin` پس از Logout محافظت شد.
+- Responsive QA پنل در 390px و 500px بدون Horizontal Overflow موفق بود.
+- Customer regression: Register، Login، Account، Product، Cart، Checkout و Logout موفق بود؛ Cart در Logout حفظ شد.
+- Console/Runtime/Hydration/Network failure مشاهده نشد؛ فقط Warningهای قدیمی Hero quality و scroll behavior دیده شدند.
+- Navigation Freeze در QA بازتولید نشد؛ Admin rapid navigation تعداد 20 از 20 موفق بود.
+- Step 9C Browser QA: Guest و CUSTOMER در Footer «ورود مدیر» → `/admin/login` و ADMIN «پنل مدیریت» → `/admin` را دریافت کردند.
+- Phase 11 Final QA روی Database مستقل با صفر ADMIN آغاز شد؛ First Admin Setup، ایجاد و Login مدیر، Routeهای Admin، Refresh، Logout و بسته‌شدن Setup پس از اولین ADMIN موفق بودند.
+- DB-backed role re-check با Demote موقت ADMIN در QA مستقل تأیید شد: JWT قدیمی مجوز پنل نداد و Server layout دسترسی را رد کرد.
+- Customer Final Journey موفق بود: Register → Login → Account → Product → Add to Cart → Cart → Checkout → Logout.
+- Validation نام فارسی و confirmPassword ثبت‌نام نامعتبر را متوقف کردند؛ Mobile فارسی Normalize شد، تاریخ Jalali به Date استاندارد تبدیل شد و Passwordها Argon2id بودند.
+- Safe redirect خارجی به مسیر امن Account بازگشت؛ Guest برای Account/Checkout به Login و CUSTOMER برای Admin به Storefront Redirect شد.
+- Cart بعد از Refresh و Logout حفظ شد؛ Session بعد از Refresh معتبر ماند.
+- Navigation Smoke/Stress نهایی 30 از 30 موفق بود؛ Known intermittent issue بازتولید نشد و همچنان Known/Intermittent باقی می‌ماند.
+- Customer بازکردن مستقیم `/admin` را به `/` Redirect کرد و Admin shell Render نشد؛ Security boundary سروری Step 9B سالم ماند.
+- Refresh برای CUSTOMER و ADMIN، Customer Logout و Admin Logout موفق بودند؛ بعد از Admin Logout لینک Footer دوباره «ورود مدیر» شد.
+- Desktop 1440px و Mobile 500px/390px بدون Horizontal Overflow و با Footer خوانا Visual QA شدند.
+- Regression Step 9C: Header بدون تغییر، Cart route خوانا، Checkout برای Customer واقعی قابل دسترسی و Customer/Admin session behavior سالم بود.
+- Prisma Validate: موفق.
+- Prisma Generate: موفق؛ Prisma Client 7.10.0.
+- Migration Status: موفق؛ یک Migration و Database به‌روز است.
+- Lint: موفق.
+- Type Check: موفق.
+- Production Build: موفق؛ تمام Admin routes به‌صورت Dynamic Server Routes ساخته شدند.
+- تمام Admin/Customerهای QA در Database مستقل حذف شدند و Development Database اصلی در Final QA تغییر نکرد.
+- تمام Scriptها، Resultها، Screenshot و Chrome profile موقت حذف شدند.
+- Still Required: فقط دستور صریح کارفرما برای آغاز Phase 12 — Real Product & Catalog.
+### Pending Decisions
+
+- تأیید کارفرما برای Step 9C.
+- انتخاب SMS Provider برای Password Recovery آینده CUSTOMER و ADMIN.
+- تصمیم Production درباره Rate Limiting، MFA و Admin Audit Log در Phase مربوط.
+
+### Next Phase
+
+- Phase 12 — Real Product & Catalog.
+- Phase 12 هنوز آغاز نشده و هیچ کد یا Migration مربوط به آن ایجاد نشده است.
+
+### Exact NEXT ACTION
+
+- پس از Commit/Push موفق Phase 11 متوقف شو و برای دستور صریح کارفرما جهت آغاز Phase 12 — Real Product & Catalog منتظر بمان.
+
+### DO NOT CHANGE / Locked Decisions
+
+- Motion، Navigation، Signature Background، UI تأییدشده، Jalali behavior، Argon2، Prisma Schema/Migration، Payment و Order architecture تغییر نکنند.
+- Real Customer/Admin Auth، Server-side authorization، First Admin Setup و Footer Admin Entry تصمیم‌های تأییدشده و Locked هستند و بدون Phase/Approval صریح Refactor نشوند.
+- هیچ workaround مبتنی بر window.location، forced reload، timeout، Router یا Motion اضافه نشود.
+
+### How to Resume From Here
+
+1. تأیید کن main با origin/main همگام و Working Tree پس از Commit نهایی Phase 11 Clean است.
+2. Phase 11 را بسته و تأییدشده در نظر بگیر؛ تغییرات Auth را بدون Scope و Approval جدید بازطراحی نکن.
+3. فقط با دستور صریح کارفرما Phase 12 — Real Product & Catalog را آغاز کن.
+4. First Admin Setup را بدون طراحی جایگزین امن حذف نکن؛ Production ابتدا بدون ADMIN است و Omid حساب واقعی خودش را می‌سازد.
+5. Footer Admin Entry مسیر رسمی ورود Production است و Authorization همچنان باید Server-side بماند.
+6. Admin Mock data را تا Phase Backend مربوط تغییر نده.
+7. Pending Password Recovery برای CUSTOMER و ADMIN و Production Security items را حفظ کن.
+8. Known intermittent Navigation Freeze را بدون Root Cause قطعی حذف یا با workaround حدسی تغییر نده.

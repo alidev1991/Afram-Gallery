@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AdminFooterEntry } from "@/components/admin/admin-footer-entry";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { Container } from "@/components/ui/container";
 import { footerNavigation } from "@/config/navigation";
@@ -34,7 +35,10 @@ export function SiteFooter() {
 
         <div className="flex flex-col gap-3 pt-7 text-[0.6875rem] text-subtle sm:flex-row sm:items-center sm:justify-between">
           <p className="arfam-eyebrow">Luxury Digital Gallery</p>
-          <p dir="ltr">© {new Date().getFullYear()} ARFAM Gallery</p>
+          <div className="flex items-center justify-between gap-5 sm:justify-end">
+            <AdminFooterEntry />
+            <p dir="ltr">© {new Date().getFullYear()} ARFAM Gallery</p>
+          </div>
         </div>
       </Container>
     </footer>

@@ -1,3 +1,17 @@
+import {
+  isValidIranianMobile,
+  isValidPassword,
+  normalizeIranianMobile,
+  toEnglishDigits,
+} from "@/lib/auth/validation";
+
+export {
+  isValidIranianMobile,
+  isValidPassword,
+  normalizeIranianMobile,
+  toEnglishDigits,
+};
+
 export type DemoCustomer = {
   firstName: string;
   lastName: string;
@@ -27,43 +41,8 @@ export const DEMO_CUSTOMER: DemoCustomer = {
 
 export const DEMO_PASSWORD_ITERATIONS = 210_000;
 
-const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
-const arabicDigits = "٠١٢٣٤٥٦٧٨٩";
-
-export function toEnglishDigits(value: string) {
-  return value
-    .replace(/[۰-۹]/g, (digit) => String(persianDigits.indexOf(digit)))
-    .replace(/[٠-٩]/g, (digit) => String(arabicDigits.indexOf(digit)));
-}
-
-export function normalizeIranianMobile(value: string) {
-  const normalized = toEnglishDigits(value).replace(/[\s()-]/g, "");
-
-  if (normalized.startsWith("+98")) {
-    return `0${normalized.slice(3)}`;
-  }
-
-  if (normalized.startsWith("0098")) {
-    return `0${normalized.slice(4)}`;
-  }
-
-  if (normalized.startsWith("98") && normalized.length === 12) {
-    return `0${normalized.slice(2)}`;
-  }
-
-  return normalized;
-}
-
-export function isValidIranianMobile(value: string) {
-  return /^09\d{9}$/.test(normalizeIranianMobile(value));
-}
-
 export function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-}
-
-export function isValidPassword(value: string) {
-  return value.length >= 8 && /[A-Za-z]/.test(value) && /\d/.test(value);
 }
 
 export function validateRegistration(values: RegistrationValues) {

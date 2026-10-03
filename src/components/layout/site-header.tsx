@@ -1,8 +1,8 @@
 import Link from "next/link";
 
+import { AccountIndicator } from "@/components/auth/account-indicator";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { CartIndicator } from "@/components/cart/cart-indicator";
-import { AccountIcon } from "@/components/icons/interface-icons";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { Container } from "@/components/ui/container";
 import { primaryNavigation } from "@/config/navigation";
@@ -41,9 +41,7 @@ export function SiteHeader() {
         />
 
         <div className="flex items-center justify-self-end">
-          <Link href="/account" aria-label="حساب کاربری" className={headerActionClass}>
-            <AccountIcon className="size-5" />
-          </Link>
+          <AccountIndicator className={headerActionClass} />
           <CartIndicator className={headerActionClass} />
         </div>
       </Container>
