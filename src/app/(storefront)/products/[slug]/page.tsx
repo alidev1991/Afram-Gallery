@@ -3,17 +3,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
+import { ProductConfigurator } from "@/components/catalog/product-configurator";
 import { ProductGallery } from "@/components/catalog/product-gallery";
 import { Reveal } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { catalogProducts } from "@/data/catalog";
 import { getProductCategory } from "@/data/site-structure";
-import { formatToman } from "@/lib/format-price";
 import { resolveHybridStorefrontProductBySlug } from "@/lib/catalog/hybrid-storefront";
+import { presentationQueryParameter } from "@/lib/catalog/product-configurator";
+import { formatToman } from "@/lib/format-price";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+function firstSearchParameter(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 export function generateStaticParams() {
   return catalogProducts.map((product) => ({ slug: product.slug }));
@@ -43,7 +50,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: ProductPageProps) {
   const { slug } = await params;
   const resolution = await resolveHybridStorefrontProductBySlug(slug);
 
@@ -51,10 +61,41 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // Public Database products remain behind the Product Configurator gate.
-  // The current real product is unpublished, so this guard cannot affect public UI.
   if (resolution.source === "database") {
-    notFound();
+    const resolvedSearchParams = searchParams ? await searchParams : {};
+    const initialPresentationSlug = firstSearchParameter(
+      resolvedSearchParams[presentationQueryParameter],
+    );
+
+    return (
+      <main id="main-content" className="bg-canvas">
+        <Container className="pb-24 pt-10 sm:pb-32 sm:pt-16 lg:pb-44 lg:pt-20">
+          <nav
+            aria-label="مسیر صفحه"
+            className="flex flex-wrap gap-3 border-b border-line pb-6 text-xs text-muted"
+          >
+            <Link
+              href="/products"
+              className="transition-colors hover:text-silver-bright"
+            >
+              محصولات
+            </Link>
+            <span aria-hidden="true">/</span>
+            <Link
+              href={`/products/category/${resolution.product.category.slug}`}
+              className="transition-colors hover:text-silver-bright"
+            >
+              {resolution.product.category.name}
+            </Link>
+          </nav>
+
+          <ProductConfigurator
+            product={resolution.product}
+            initialPresentationSlug={initialPresentationSlug}
+          />
+        </Container>
+      </main>
+    );
   }
 
   const product = resolution.product;
@@ -63,8 +104,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <main id="main-content" className="bg-canvas">
       <Container className="pb-24 pt-10 sm:pb-32 sm:pt-16 lg:pb-44 lg:pt-20">
-        <nav aria-label="مسیر صفحه" className="flex flex-wrap gap-3 border-b border-line pb-6 text-xs text-muted">
-          <Link href="/products" className="transition-colors hover:text-silver-bright">
+        <nav
+          aria-label="مسیر صفحه"
+          className="flex flex-wrap gap-3 border-b border-line pb-6 text-xs text-muted"
+        >
+          <Link
+            href="/products"
+            className="transition-colors hover:text-silver-bright"
+          >
             محصولات
           </Link>
           {category ? (
@@ -90,36 +137,45 @@ export default async function ProductPage({ params }: ProductPageProps) {
             distance={40}
             className="lg:sticky lg:top-[calc(var(--arfam-header-height)+2.5rem)] lg:col-span-4 lg:col-start-9"
           >
-          <aside>
-            <p className="arfam-eyebrow text-subtle" dir="ltr">
-              {product.category}
-            </p>
-            <h1 className="mt-5 text-[clamp(2.5rem,5vw,5.5rem)] font-light leading-[1.15] tracking-[-0.035em] text-silver-bright">
-              {product.name}
-            </h1>
-            <p className="mt-7 text-base text-silver">
-              {formatToman(product.priceToman)}
-            </p>
-            <p className="mt-8 border-t border-line pt-7 text-sm leading-8 text-muted">
-              {product.description}
-            </p>
+            <aside>
+              <p className="arfam-eyebrow text-subtle" dir="ltr">
+                {product.category}
+              </p>
+              <h1 className="mt-5 text-[clamp(2.5rem,5vw,5.5rem)] font-light leading-[1.15] tracking-[-0.035em] text-silver-bright">
+                {product.name}
+              </h1>
+              <p className="mt-7 text-base text-silver">
+                {formatToman(product.priceToman)}
+              </p>
+              <p className="mt-8 border-t border-line pt-7 text-sm leading-8 text-muted">
+                {product.description}
+              </p>
 
-            <AddToCartButton product={product} />
+              <AddToCartButton product={product} />
 
-            <section aria-labelledby="product-specifications" className="mt-12 border-t border-line pt-8">
-              <h2 id="product-specifications" className="text-sm font-medium text-silver-bright">
-                مشخصات
-              </h2>
-              <dl className="mt-5 divide-y divide-line">
-                {product.specifications.map((item) => (
-                  <div key={item.label} className="flex justify-between gap-6 py-4 text-xs">
-                    <dt className="text-muted">{item.label}</dt>
-                    <dd className="text-silver">{item.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          </aside>
+              <section
+                aria-labelledby="product-specifications"
+                className="mt-12 border-t border-line pt-8"
+              >
+                <h2
+                  id="product-specifications"
+                  className="text-sm font-medium text-silver-bright"
+                >
+                  مشخصات
+                </h2>
+                <dl className="mt-5 divide-y divide-line">
+                  {product.specifications.map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex justify-between gap-6 py-4 text-xs"
+                    >
+                      <dt className="text-muted">{item.label}</dt>
+                      <dd className="text-silver">{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            </aside>
           </Reveal>
         </div>
       </Container>

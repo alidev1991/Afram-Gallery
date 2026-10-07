@@ -3649,7 +3649,7 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 
 ------------------------------------------------------------------------
 
-## CURRENT PROJECT STATE / HANDOFF
+## HANDOFF ARCHIVE — AFTER STEP 12E-3
 
 - **Last Updated:** 2026-10-08
 - **Current Phase:** Phase 12 — Real Product & Catalog
@@ -3691,3 +3691,126 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 2. Lint، Type Check، Production Build، Direct Resolver QA و HTTP Route QA ثبت‌شده را مبنا قرار بده.
 3. تأیید User را برای Step 12E-3 دریافت کن.
 4. Product Configurator را فقط با دستور صریح مرحله بعد آغاز کن.
+
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12E-4 PRODUCT CONFIGURATOR
+
+### Status
+
+- تاریخ اجرا: 2026-10-08.
+- وضعیت: پیاده‌سازی و QA تکمیل شده و در انتظار بررسی و تأیید است.
+- Scope فقط Configurator محصول واقعی ساعت دیواری مربع و مسیر QA امن Development است.
+- Product همچنان `isPublished = false` و slug آن همچنان `internal-square-wall-clock` است.
+- Homepage، Collections، Listing عمومی، سایر Productها، Cart، Checkout، Admin، Schema، Migration و Database record تغییر نکردند.
+
+### Configurator Architecture
+
+- Server Component صفحه Product همچنان Product واقعی را فقط از Public Hybrid Resolver دریافت می‌کند؛ بنابراین Publish rules دور زده نمی‌شوند.
+- DTO Serializable محصول واقعی فقط به Client Component محدود `ProductConfigurator` منتقل می‌شود و Prisma/Repository وارد Client bundle نمی‌شوند.
+- منطق Variant matrix، availability، Presentation matching، image fallback و URL construction در Helper مستقل `src/lib/catalog/product-configurator.ts` متمرکز است.
+- انتخاب‌ها مستقیماً با Option/Option Value و Variantهای واقعی Database resolve می‌شوند؛ هیچ Variant، قیمت یا ترکیب ساختگی ایجاد نمی‌شود.
+- URL convention برای ورود از Presentation برابر `?presentation=<presentation-slug>` است.
+- سه Presentation موجود با `internal-dark-gold`، `internal-dark-silver` و `internal-dark-smoke` فینیش طلایی، سیلور و دودی را به‌درستی preselect می‌کنند.
+- مسیر `/dev-qa/catalog/[slug]` فقط در Development قابل استفاده است؛ در Production پیش از Internal Query، `notFound()` اجرا می‌شود و Internal Repository نیز Guard مستقل Production دارد.
+- Route QA فقط slug ساعت مربع فعلی را می‌پذیرد و `robots: noindex, nofollow` دارد.
+
+### Variant, Price and Image Behavior
+
+- سه Size واقعی: 65×65، 80×80 و 100×100 سانتی‌متر.
+- سه Finish واقعی: طلایی، سیلور و دودی.
+- هر 9 ترکیب فقط به Variant واقعی متناظر متصل می‌شود.
+- قیمت‌ها مستقیماً از `ProductVariant.priceToman` خوانده می‌شوند:
+  - 65×65: 9,800,000 تومان.
+  - 80×80: 10,800,000 تومان.
+  - 100×100: 11,800,000 تومان.
+- Fallback تصاویر به‌ترتیب Variant → Presentation → Product اجرا می‌شود و تصویر ساختگی وجود ندارد.
+- هر فینیش Product Shot و Lifestyle Shot رسمی خودش را نمایش می‌دهد.
+- Product-level `SIZE_GUIDE` در تمام فینیش‌ها به Gallery اضافه می‌شود.
+- Add to Cart برای Product واقعی عمداً disabled است و Cart قدیمی Mock هیچ تغییری نکرده است.
+
+### Files Changed
+
+- `src/app/(storefront)/products/[slug]/page.tsx` — اتصال شاخه Public Database Product به Configurator و دریافت Presentation از URL؛ شاخه Mock بدون تغییر رفتاری.
+- `src/app/(storefront)/dev-qa/catalog/[slug]/page.tsx` — Route داخلی QA با Development/slug guard و Production 404.
+- `src/components/catalog/product-configurator.tsx` — UI انتخاب Size/Finish، قیمت Variant، Gallery و Add-to-Cart disabled.
+- `src/lib/catalog/product-configurator.ts` — Resolverهای selection، availability، Variant، Presentation، تصاویر و URL.
+- `ARFAM-Gallery-Master-Project-History-FA.md` — ثبت Step 12E-4 و Handoff.
+
+### QA Results
+
+- Matrix کامل 9 ترکیب Size × Finish در مرورگر واقعی Headless Chrome: PASS.
+- 9 Variant ID مجزا و صحیح resolve شدند.
+- قیمت هر سه Size در هر سه Finish صحیح بود.
+- URL preselection هر سه Presentation: PASS.
+- تغییر Finish در همان Browser Session و جایگزینی هم‌زمان Variant، Product Shot، Lifestyle Shot و حفظ SIZE_GUIDE: PASS.
+- Product Shot و Lifestyle Shot هر Finish: PASS.
+- `SIZE_GUIDE` در هر 9 حالت: PASS.
+- Add to Cart محصول واقعی در همه حالت‌ها disabled است.
+- Development QA route برای slug ساعت: 200.
+- Public `/products/internal-square-wall-clock`: 404.
+- Production QA route: 404؛ هیچ Configurator یا Asset محصول واقعی Render نشد.
+- Desktop 1440×900، Mobile 500×900 و Mobile 390×844: بدون Horizontal Overflow.
+- Touch target تمام Optionها حداقل 45px ارتفاع دارد.
+- تصاویر در Mobile با `object-contain` و بدون Crop/Distortion نمایش داده شدند.
+- Homepage، Collections، Collection Detail، چهار Mock PDP و Subcategoryهای Mock در Production: 200.
+- Lint: PASS.
+- Type Check: PASS.
+- Production Build: PASS؛ 67 Route.
+- فایل‌های موقت QA و دو فایل خودکار ایجادشده توسط Dev Server در Working Tree باقی نماندند.
+- Schema/Migration و Database تغییر نکردند.
+
+### Pending Decisions Preserved
+
+- Publish state و slug رسمی Product.
+- Listing Price Rule و اتصال Presentation Cardهای واقعی به Listing عمومی.
+- Variant-aware Cart و migration داده Cart موجود.
+- SKU، وضعیت و قیمت 90×90، Inventory/Made-to-order و Color Option رسمی بدنه.
+- فعال‌سازی Add to Cart فقط پس از Variant-aware شدن Cart.
+- حذف یا حفظ Route QA در زمان نزدیک‌شدن به Deployment نهایی.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-08
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12E-4 — Product Configurator
+- **Current Status:** Configurator واقعی Size/Finish، قیمت Variant، Gallery وابسته به Presentation، SIZE_GUIDE و URL preselection پیاده‌سازی و QA شده‌اند؛ Product همچنان unpublished و Add to Cart آن disabled است. در انتظار بررسی و تأیید Step 12E-4.
+- **Last Approved Commit:** c4b438dec6a62dede4a452847a63a630f00df93b — feat(catalog): add hybrid storefront integration
+- **Current Branch:** main
+- **Working Tree Status:** فقط پنج فایل مربوط به Step 12E-4 Uncommitted هستند؛ Commit/Push انجام نشده است.
+
+### Files Changed
+
+- `src/app/(storefront)/products/[slug]/page.tsx`
+- `src/app/(storefront)/dev-qa/catalog/[slug]/page.tsx`
+- `src/components/catalog/product-configurator.tsx`
+- `src/lib/catalog/product-configurator.ts`
+- `ARFAM-Gallery-Master-Project-History-FA.md`
+
+### Runtime State
+
+- Product واقعی در Public Storefront قابل مشاهده نیست، چون Public Repository همچنان `isPublished = true` را enforce می‌کند.
+- Development QA route فقط ساعت مربع را می‌خواند و Production 404 است.
+- 9 Variant واقعی، سه Price، سه Presentation و هفت Image بدون تغییر Database مصرف می‌شوند.
+- Cart فقط برای Mock Productهای قبلی فعال است؛ Product واقعی نمی‌تواند Variant اشتباه به Cart اضافه کند.
+
+### Exact NEXT ACTION
+
+- بررسی و تأیید Step 12E-4 قبل از Step 12E-5.
+- تا پیش از تأیید صریح، Product Publish نشود، Add to Cart واقعی فعال نشود و Step 12E-5 آغاز نشود.
+
+### DO NOT CHANGE
+
+- Product Publish state و slug موقت `internal-square-wall-clock`.
+- Product/Variant/Option/Price/SKU/Image data و Schema/Migration.
+- Homepage، Collections، سایر Productها، Cart، Checkout، Admin و Auth.
+- Luxury UI، Header، Footer، Typography، Motion، Logo، Signature Background و Responsive behavior.
+
+### How to Resume
+
+1. `git status` و Diff پنج فایل Step 12E-4 را بررسی کن.
+2. Matrix QA، Visual QA، Lint، Type Check، Build و Production route checks ثبت‌شده را مبنا قرار بده.
+3. تأیید User را برای Step 12E-4 دریافت کن.
+4. Step 12E-5 را فقط با دستور صریح جداگانه شروع کن.
