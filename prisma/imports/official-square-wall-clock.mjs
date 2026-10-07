@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -21,7 +22,7 @@ const databasePath = path.isAbsolute(databaseLocation)
 const db = new Database(databasePath, { fileMustExist: true });
 db.pragma("foreign_keys = ON");
 
-const requiredMigration = "20261007164151_allow_null_catalog_sku";
+const requiredMigration = "20261007190000_add_product_image_size_guide_type";
 const appliedMigration = db
   .prepare(
     `SELECT migration_name FROM _prisma_migrations
@@ -57,6 +58,71 @@ const finishes = [
   { id: "value_square_finish_smoke", label: "دودی", slug: "smoke", key: "smoke", presentationTitle: "تیره + دودی" },
 ];
 
+const productImages = [
+  {
+    id: "image_square_gold_product",
+    presentationSlug: "internal-dark-gold",
+    url: "/media/products/square-wall-clock/square-wall-clock-gold-product.png",
+    imageType: "PRODUCT",
+    altText: "ساعت دیواری مربع با فینیش طلایی",
+    isPrimary: true,
+    position: 0,
+  },
+  {
+    id: "image_square_gold_lifestyle",
+    presentationSlug: "internal-dark-gold",
+    url: "/media/products/square-wall-clock/square-wall-clock-gold-lifestyle.png",
+    imageType: "LIFESTYLE",
+    altText: "ساعت دیواری مربع با فینیش طلایی در فضای داخلی",
+    isPrimary: false,
+    position: 1,
+  },
+  {
+    id: "image_square_silver_product",
+    presentationSlug: "internal-dark-silver",
+    url: "/media/products/square-wall-clock/square-wall-clock-silver-product.png",
+    imageType: "PRODUCT",
+    altText: "ساعت دیواری مربع با فینیش سیلور",
+    isPrimary: true,
+    position: 0,
+  },
+  {
+    id: "image_square_silver_lifestyle",
+    presentationSlug: "internal-dark-silver",
+    url: "/media/products/square-wall-clock/square-wall-clock-silver-lifestyle.png",
+    imageType: "LIFESTYLE",
+    altText: "ساعت دیواری مربع با فینیش سیلور در فضای داخلی",
+    isPrimary: false,
+    position: 1,
+  },
+  {
+    id: "image_square_smoke_product",
+    presentationSlug: "internal-dark-smoke",
+    url: "/media/products/square-wall-clock/square-wall-clock-smoke-product.png",
+    imageType: "PRODUCT",
+    altText: "ساعت دیواری مربع با فینیش دودی",
+    isPrimary: true,
+    position: 0,
+  },
+  {
+    id: "image_square_smoke_lifestyle",
+    presentationSlug: "internal-dark-smoke",
+    url: "/media/products/square-wall-clock/square-wall-clock-smoke-lifestyle.png",
+    imageType: "LIFESTYLE",
+    altText: "ساعت دیواری مربع با فینیش دودی در فضای داخلی",
+    isPrimary: false,
+    position: 1,
+  },
+  {
+    id: "image_square_size_guide",
+    presentationSlug: null,
+    url: "/media/products/square-wall-clock/square-wall-clock-size-guide.png",
+    imageType: "SIZE_GUIDE",
+    altText: "راهنمای ابعاد ساعت دیواری مربع در سایزهای ۶۵، ۸۰ و ۱۰۰ سانتی‌متر",
+    isPrimary: false,
+    position: 2,
+  },
+];
 const specifications = [
   ["خانواده", "ساعت دیواری"],
   ["فرم", "مربع"],
@@ -245,8 +311,84 @@ const importCatalog = db.transaction(() => {
   });
 });
 
+const importImages = db.transaction(() => {
+  const product = db
+    .prepare(`SELECT id FROM Product WHERE slug = ?`)
+    .get("internal-square-wall-clock");
+
+  if (!product) {
+    throw new Error("Square wall clock product must exist before importing images.");
+  }
+
+  const getPresentation = db.prepare(
+    `SELECT id FROM ProductPresentation WHERE productId = ? AND slug = ?`,
+  );
+  const getConflictingImage = db.prepare(
+    `SELECT id FROM ProductImage WHERE url = ? AND id <> ?`,
+  );
+  const imageStatement = db.prepare(
+    `INSERT INTO ProductImage (
+       id, productId, variantId, presentationId, url, storageKey, imageType,
+       altText, isPrimary, position, createdAt, updatedAt
+     ) VALUES (
+       @id, @productId, NULL, @presentationId, @url, NULL, @imageType,
+       @altText, @isPrimary, @position, @now, @now
+     )
+     ON CONFLICT(id) DO UPDATE SET
+       productId = excluded.productId,
+       variantId = NULL,
+       presentationId = excluded.presentationId,
+       url = excluded.url,
+       storageKey = NULL,
+       imageType = excluded.imageType,
+       altText = excluded.altText,
+       isPrimary = excluded.isPrimary,
+       position = excluded.position,
+       updatedAt = excluded.updatedAt
+     WHERE ProductImage.productId IS NOT excluded.productId
+        OR ProductImage.variantId IS NOT excluded.variantId
+        OR ProductImage.presentationId IS NOT excluded.presentationId
+        OR ProductImage.url IS NOT excluded.url
+        OR ProductImage.storageKey IS NOT excluded.storageKey
+        OR ProductImage.imageType IS NOT excluded.imageType
+        OR ProductImage.altText IS NOT excluded.altText
+        OR ProductImage.isPrimary IS NOT excluded.isPrimary
+        OR ProductImage.position IS NOT excluded.position`,
+  );
+
+  for (const image of productImages) {
+    const assetPath = path.join(projectRoot, "public", ...image.url.split("/").filter(Boolean));
+    if (!existsSync(assetPath)) {
+      throw new Error(`Product image asset does not exist: ${image.url}`);
+    }
+
+    const presentation = image.presentationSlug
+      ? getPresentation.get(product.id, image.presentationSlug)
+      : null;
+    if (image.presentationSlug && !presentation) {
+      throw new Error(`Product presentation does not exist: ${image.presentationSlug}`);
+    }
+
+    const conflictingImage = getConflictingImage.get(image.url, image.id);
+    if (conflictingImage) {
+      throw new Error(`Product image URL is already assigned to another record: ${image.url}`);
+    }
+
+    imageStatement.run({
+      ...image,
+      productId: product.id,
+      presentationId: presentation?.id ?? null,
+      isPrimary: image.isPrimary ? 1 : 0,
+      now,
+    });
+  }
+});
 try {
-  importCatalog();
+  const imagesOnly = process.argv.includes("--images-only");
+  if (!imagesOnly) {
+    importCatalog();
+  }
+  importImages();
   const product = db
     .prepare(`SELECT id, name, slug, sku, isPublished FROM Product WHERE slug = ?`)
     .get("internal-square-wall-clock");
@@ -262,7 +404,13 @@ try {
          (SELECT COUNT(*) FROM ProductVariant WHERE productId = @productId AND sku IS NOT NULL) AS variantsWithSku`,
     )
     .get({ productId: product.id });
-  console.log(JSON.stringify({ product, counts }, null, 2));
+  const imageRecords = db
+    .prepare(
+      `SELECT id, variantId, presentationId, url, imageType, altText, isPrimary, position
+       FROM ProductImage WHERE productId = ? ORDER BY position, id`,
+    )
+    .all(product.id);
+  console.log(JSON.stringify({ product, counts, images: imageRecords }, null, 2));
 } finally {
   db.close();
 }

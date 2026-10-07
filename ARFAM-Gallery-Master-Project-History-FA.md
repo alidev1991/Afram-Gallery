@@ -3292,7 +3292,7 @@ AI/Codex بتواند پروژه را از صفر بفهمد و بدون از د
 
 ------------------------------------------------------------------------
 
-## CURRENT PROJECT STATE / HANDOFF
+## HANDOFF ARCHIVE — AFTER STEP 12D-1
 
 - **Last Updated:** 2026-10-07
 - **Current Phase:** Phase 12 — Real Product & Catalog
@@ -3346,3 +3346,129 @@ AI/Codex بتواند پروژه را از صفر بفهمد و بدون از د
 3. در صورت نیاز `npm run catalog:import:square-clock` را idempotent اجرا کن.
 4. تأیید Commit/Push صادر شده است؛ پس از Push وضعیت clean و sync را گزارش کن.
 5. Step 12D-2 را فقط با Assetها و دستور صریح آغاز کن.
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12D-2 REAL PRODUCT IMAGE IMPORT
+
+### Status
+
+- تاریخ اجرا: 2026-10-07.
+- وضعیت: پیاده‌سازی و QA تکمیل شده و در انتظار تأیید Commit/Push است.
+- Scope فقط افزودن نوع معنایی `SIZE_GUIDE`، Migration ثبت‌کننده آن، Assetهای واقعی ساعت مربع، Import idempotent تصاویر و مستندات است.
+- Storefront، Cart، Checkout، Admin، Auth و داده‌های Product/Variant/Option/Price/SKU تغییر نکردند.
+
+### ProductImageType and Migration
+
+- تصویر راهنمای ابعاد نباید به‌اشتباه `DETAIL` ثبت می‌شد؛ بنابراین با تأیید User مقدار `SIZE_GUIDE` به enum موجود `ProductImageType` افزوده شد.
+- Migration جدید: `20261007190000_add_product_image_size_guide_type`.
+- SQLite enumهای Prisma را به‌صورت `TEXT` ذخیره می‌کند و ستون `ProductImage.imageType` هیچ `CHECK` constraint محدودکننده‌ای ندارد؛ در نتیجه Migration عمداً additive/no-op است و بدون بازسازی جدول یا تغییر داده، قرارداد Schema را ثبت می‌کند.
+- Migration روی دیتابیس خالی، کپی Development DB و سپس Development DB اجرا شد؛ هر چهار Migration applied و Schema up to date است.
+
+### Official Assets
+
+تمام فایل‌ها بدون Crop، تبدیل، ویرایش Background یا تولید تصویر جدید، به‌صورت exact binary copy در مسیر زیر قرار گرفتند:
+
+- `public/media/products/square-wall-clock/square-wall-clock-gold-product.png`
+- `public/media/products/square-wall-clock/square-wall-clock-gold-lifestyle.png`
+- `public/media/products/square-wall-clock/square-wall-clock-silver-product.png`
+- `public/media/products/square-wall-clock/square-wall-clock-silver-lifestyle.png`
+- `public/media/products/square-wall-clock/square-wall-clock-smoke-product.png`
+- `public/media/products/square-wall-clock/square-wall-clock-smoke-lifestyle.png`
+- `public/media/products/square-wall-clock/square-wall-clock-size-guide.png`
+
+SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد و محتوای Assetها تغییر نکرد.
+
+### ProductImage Mapping
+
+- Presentation `internal-dark-gold`: تصویر Product طلایی با `PRODUCT`، primary و position 0؛ تصویر فضای داخلی طلایی با `LIFESTYLE`، non-primary و position 1.
+- Presentation `internal-dark-silver`: تصویر Product سیلور با `PRODUCT`، primary و position 0؛ تصویر فضای داخلی سیلور با `LIFESTYLE`، non-primary و position 1.
+- Presentation `internal-dark-smoke`: تصویر Product دودی با `PRODUCT`، primary و position 0؛ تصویر فضای داخلی دودی با `LIFESTYLE`، non-primary و position 1.
+- راهنمای ابعاد با `SIZE_GUIDE` در سطح Product، بدون `variantId` و `presentationId`، non-primary و position 2 ثبت شد.
+- راهنمای ابعاد فقط سایزهای رسمی 65×65، 80×80 و 100×100 سانتی‌متر را نمایش می‌دهد؛ هیچ 90×90 اضافه نشد.
+- Alt Textها کوتاه، فارسی و factual هستند و هیچ نام مدل، رنگ بدنه یا ادعای تأییدنشده‌ای به آن‌ها اضافه نشد.
+
+### Idempotent Import
+
+- Import موجود `prisma/imports/official-square-wall-clock.mjs` برای ثبت تصاویر توسعه یافت.
+- اجرای `--images-only` فقط تصاویر را ثبت می‌کند تا Product، Variant، Option، Presentation، Specification، Price، SKU و timestampهای آن‌ها تغییر نکنند.
+- شناسه‌های پایدار، upsert مشروط و کنترل URL متعارض از ایجاد Duplicate جلوگیری می‌کنند.
+- Import دو بار متوالی اجرا شد؛ تعداد تصاویر در هر دو اجرا 7 باقی ماند و Hash کامل ProductImageها در اجرای دوم تغییر نکرد.
+- Hash تمام داده‌های Catalog غیرتصویری قبل و بعد از هر دو اجرا یکسان باقی ماند.
+
+### QA Results
+
+- Prisma format: PASS.
+- Prisma validate: PASS.
+- Prisma generate با Prisma Client 7.10.0: PASS.
+- Empty DB migration test: PASS؛ integrity برابر `ok` و foreign key error صفر.
+- Development DB copy migration test: PASS؛ integrity برابر `ok` و foreign key error صفر.
+- Development migration status: PASS؛ 4 Migration و Database schema up to date.
+- ProductImage count: 7؛ شامل 3 `PRODUCT`، 3 `LIFESTYLE` و 1 `SIZE_GUIDE`.
+- Primary count: 3؛ دقیقاً Product Shot هر Presentation.
+- Variant-level image count: صفر؛ Size Guide نیز Presentation/Variant ندارد.
+- Missing URL/Alt Text: صفر.
+- Duplicate ID/URL: صفر.
+- Asset existence: هر 7 URL معتبر و فایل متناظر موجود است.
+- SQLite integrity: `ok`؛ foreign key error صفر.
+- Product SKU و هر 9 Variant SKU: `null`.
+- قیمت‌ها بدون تغییر: سه Variant با 9,800,000، سه Variant با 10,800,000 و سه Variant با 11,800,000 تومان.
+- 90×90 و Color Option: ایجاد نشده‌اند.
+
+### Pending Decisions
+
+- Production Image Storage Provider و چرخه URL/CDN.
+- نام رسمی مدل، Product slug نهایی و SKU convention.
+- نام‌ها، کدها و Swatchهای رسمی رنگ بدنه.
+- وضعیت و قیمت 90×90.
+- Inventory/Made-to-order و رفتار Out-of-stock/Preorder.
+- اطلاعات و تصاویر ساعت گرد.
+- اتصال Runtime Storefront/Cart/Admin به Catalog Database.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-07
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12D-2 — Real Square Wall Clock Image Import
+- **Current Status:** افزودن `SIZE_GUIDE`، Migration، هفت Asset رسمی، Import idempotent و QA تکمیل شده‌اند؛ در انتظار تأیید Commit/Push. اتصال Storefront به Database هنوز شروع نشده است.
+- **Last Approved Commit:** d62d2b8d5a6a546d60c49183283992882f6b23e2 — feat(catalog): import first real ARFAM product
+- **Current Branch:** main
+- **Working Tree Status:** فقط تغییرات Uncommitted مربوط به Step 12D-2 وجود دارد؛ Commit/Push انجام نشده است.
+
+### Files Changed
+
+- `prisma/schema.prisma`
+- `prisma/migrations/20261007190000_add_product_image_size_guide_type/migration.sql`
+- `prisma/imports/official-square-wall-clock.mjs`
+- `public/media/products/square-wall-clock/` — هفت Asset تأییدشده
+- `ARFAM-Gallery-Master-Project-History-FA.md`
+
+### Database State
+
+- ProductImage: 7؛ سه Product Shot، سه Lifestyle Shot و یک Size Guide.
+- سه Product Shot primary و متصل به Presentation متناظر هستند.
+- سه Lifestyle Shot non-primary و متصل به Presentation متناظر هستند.
+- Size Guide فقط Product-level، non-primary و بدون Variant/Presentation است.
+- داده‌های Step 12D-1 بدون تغییر باقی مانده‌اند: 1 Product، 2 Option، 6 Option Value، 9 Variant، 3 Presentation و 22 Specification.
+- Product SKU و تمام Variant SKUها `null` هستند و Product همچنان unpublished است.
+
+### Exact NEXT ACTION
+
+- User باید نتیجه Step 12D-2، Mapping تصاویر و QA را بررسی و تأیید کند.
+- پس از تأیید صریح، فقط همین تغییرات Step 12D-2 Commit/Push شوند.
+- اتصال Storefront به Catalog Database فقط در Step مستقل بعدی و پس از Commit/Push تأییدشده آغاز شود.
+
+### DO NOT CHANGE
+
+- Storefront، Cart، Checkout، Admin CRUD، Auth، Luxury UI، Logo، Motion و Signature Background.
+- Assetهای رسمی، Background و Composition آن‌ها.
+- Product/Variant/Option/Price/SKU و متن رسمی Product.
+- برای رنگ بدنه، 90×90، ساعت گرد، Inventory یا Storage Provider داده و Rule اختراع نشود.
+
+### How to Resume
+
+1. `git status` و Diff مسیرهای Step 12D-2 را بررسی کن.
+2. Migration status و رکوردهای 7 تصویر را دوباره تأیید کن.
+3. در صورت تأیید User، تغییرات Step 12D-2 را Commit و Push کن.
+4. تا پیش از دستور مستقل، Storefront را به Database متصل نکن و مرحله بعد را شروع نکن.

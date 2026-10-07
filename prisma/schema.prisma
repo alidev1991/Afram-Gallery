@@ -49,6 +49,7 @@ enum ProductImageType {
   PRODUCT
   LIFESTYLE
   DETAIL
+  SIZE_GUIDE
 }
 
 model User {

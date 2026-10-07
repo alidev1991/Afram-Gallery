@@ -1,0 +1,3 @@
+-- SQLite stores Prisma enum values as TEXT, and ProductImage.imageType has no
+-- database-level CHECK constraint. Adding SIZE_GUIDE therefore requires no DDL;
+-- this migration records the additive Prisma schema contract change safely.
