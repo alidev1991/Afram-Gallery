@@ -132,7 +132,6 @@ CREATE TABLE "Order" (
     "shippingAddressTitle" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "deletedAt" DATETIME,
     CONSTRAINT "Order_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -315,9 +314,6 @@ CREATE INDEX "Order_status_createdAt_idx" ON "Order"("status", "createdAt");
 
 -- CreateIndex
 CREATE INDEX "Order_paymentStatus_createdAt_idx" ON "Order"("paymentStatus", "createdAt");
-
--- CreateIndex
-CREATE INDEX "Order_deletedAt_createdAt_idx" ON "Order"("deletedAt", "createdAt");
 
 -- CreateIndex
 CREATE INDEX "OrderItem_orderId_idx" ON "OrderItem"("orderId");

@@ -45,6 +45,12 @@ enum ArticleStatus {
   ARCHIVED
 }
 
+enum ProductImageType {
+  PRODUCT
+  LIFESTYLE
+  DETAIL
+}
+
 model User {
   id           String   @id @default(cuid())
   firstName    String
@@ -132,28 +138,34 @@ model Collection {
 }
 
 model Product {
-  id            String    @id @default(cuid())
-  categoryId    String
-  subcategoryId String?
-  name          String
-  slug          String    @unique
-  description   String?
-  model         String?
-  sku           String    @unique
-  priceToman    Int
-  stock         Int       @default(0)
-  isActive      Boolean   @default(true)
-  isPublished   Boolean   @default(false)
-  isVipOnly     Boolean   @default(false)
-  publishedAt   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  categoryId       String
+  subcategoryId    String?
+  name             String
+  slug             String    @unique
+  description      String?
+  shortDescription String?
+  longDescription  String?
+  model            String?
+  sku              String    @unique
+  priceToman       Int
+  stock            Int       @default(0)
+  isActive         Boolean   @default(true)
+  isPublished      Boolean   @default(false)
+  isVipOnly        Boolean   @default(false)
+  publishedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  category    Category            @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  subcategory Subcategory?        @relation(fields: [subcategoryId], references: [id], onDelete: Restrict)
-  collections ProductCollection[]
-  images      ProductImage[]
-  orderItems  OrderItem[]
+  category       Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  subcategory    Subcategory?           @relation(fields: [subcategoryId], references: [id], onDelete: Restrict)
+  collections    ProductCollection[]
+  images         ProductImage[]
+  orderItems     OrderItem[]
+  variants       ProductVariant[]
+  options        ProductOption[]
+  presentations  ProductPresentation[]
+  specifications ProductSpecification[]
 
   @@index([categoryId, isActive, isPublished])
   @@index([subcategoryId, isActive, isPublished])
@@ -175,18 +187,146 @@ model ProductCollection {
 }
 
 model ProductImage {
+  id             String           @id @default(cuid())
+  productId      String
+  variantId      String?
+  presentationId String?
+  url            String?
+  storageKey     String?
+  imageType      ProductImageType @default(PRODUCT)
+  altText        String?
+  isPrimary      Boolean          @default(false)
+  position       Int              @default(0)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  product      Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant      ProductVariant?      @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  presentation ProductPresentation? @relation(fields: [presentationId], references: [id], onDelete: SetNull)
+
+  @@index([productId, position])
+  @@index([variantId, position])
+  @@index([presentationId, position])
+  @@index([productId, imageType, isPrimary])
+}
+
+model ProductVariant {
+  id              String   @id @default(cuid())
+  productId       String
+  sku             String   @unique
+  priceToman      Int
+  combinationKey  String
+  position        Int      @default(0)
+  isActive        Boolean  @default(true)
+  isPurchasable   Boolean  @default(true)
+  inventoryPolicy String?
+  stockQuantity   Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  product      Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  optionValues VariantOptionValue[]
+  images       ProductImage[]
+  orderItems   OrderItem[]
+
+  @@unique([productId, combinationKey])
+  @@index([productId, isActive, isPurchasable, position])
+}
+
+model ProductOption {
+  id          String   @id @default(cuid())
+  productId   String
+  name        String
+  slug        String
+  displayType String?
+  position    Int      @default(0)
+  isRequired  Boolean  @default(true)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  values  ProductOptionValue[]
+
+  @@unique([productId, slug])
+  @@index([productId, isActive, position])
+}
+
+model ProductOptionValue {
+  id          String   @id @default(cuid())
+  optionId    String
+  label       String
+  slug        String
+  swatchValue String?
+  position    Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  option        ProductOption             @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  variants      VariantOptionValue[]
+  presentations PresentationOptionValue[]
+
+  @@unique([optionId, slug])
+  @@index([optionId, isActive, position])
+}
+
+model VariantOptionValue {
+  variantId     String
+  optionValueId String
+  createdAt     DateTime @default(now())
+
+  variant     ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  optionValue ProductOptionValue @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, optionValueId])
+  @@index([optionValueId])
+}
+
+model ProductPresentation {
+  id            String   @id @default(cuid())
+  productId     String
+  slug          String
+  title         String?
+  position      Int      @default(0)
+  isActive      Boolean  @default(true)
+  showInListing Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  product      Product                   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  optionValues PresentationOptionValue[]
+  images       ProductImage[]
+
+  @@unique([productId, slug])
+  @@index([productId, isActive, showInListing, position])
+}
+
+model PresentationOptionValue {
+  presentationId String
+  optionValueId  String
+  createdAt      DateTime @default(now())
+
+  presentation ProductPresentation @relation(fields: [presentationId], references: [id], onDelete: Cascade)
+  optionValue  ProductOptionValue  @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+
+  @@id([presentationId, optionValueId])
+  @@index([optionValueId])
+}
+
+model ProductSpecification {
   id        String   @id @default(cuid())
   productId String
-  url       String
-  altText   String?
+  group     String?
+  label     String
+  value     String
   position  Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([productId, position])
-  @@index([productId])
+  @@index([productId, position])
 }
 
 model Order {
@@ -225,22 +365,41 @@ model Order {
 }
 
 model OrderItem {
-  id             String  @id @default(cuid())
-  orderId        String
-  productId      String?
-  productName    String
-  modelSnapshot  String?
-  skuSnapshot    String?
-  imageUrl       String?
-  unitPriceToman Int
-  quantity       Int
-  lineTotalToman Int
+  id                 String  @id @default(cuid())
+  orderId            String
+  productId          String?
+  variantId          String?
+  productName        String
+  modelSnapshot      String?
+  skuSnapshot        String?
+  variantSkuSnapshot String?
+  imageUrl           String?
+  unitPriceToman     Int
+  quantity           Int
+  lineTotalToman     Int
 
-  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  order           Order                     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product         Product?                  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant         ProductVariant?           @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  optionSnapshots OrderItemOptionSnapshot[]
 
   @@index([orderId])
   @@index([productId])
+  @@index([variantId])
+}
+
+model OrderItemOptionSnapshot {
+  id                 String  @id @default(cuid())
+  orderItemId        String
+  optionName         String
+  optionValue        String
+  optionSlugSnapshot String?
+  valueSlugSnapshot  String?
+  position           Int     @default(0)
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  @@index([orderItemId, position])
 }
 
 model Payment {

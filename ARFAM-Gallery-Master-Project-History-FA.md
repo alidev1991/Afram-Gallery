@@ -2035,7 +2035,7 @@ AI/Codex بتواند پروژه را از صفر بفهمد و بدون از د
 دهد.
 ------------------------------------------------------------------------
 
-## CURRENT PROJECT STATE / HANDOFF
+## PHASE 11 FINAL HANDOFF (ARCHIVED)
 
 - **Last Updated:** 2026-10-03
 - **Current Phase:** Phase 11 — Real Authentication
@@ -2342,3 +2342,845 @@ AI/Codex بتواند پروژه را از صفر بفهمد و بدون از د
 6. Admin Mock data را تا Phase Backend مربوط تغییر نده.
 7. Pending Password Recovery برای CUSTOMER و ADMIN و Production Security items را حفظ کن.
 8. Known intermittent Navigation Freeze را بدون Root Cause قطعی حذف یا با workaround حدسی تغییر نده.
+------------------------------------------------------------------------
+
+## PHASE 12 — REAL PRODUCT & CATALOG
+
+### Step 12A — Audit & Architecture
+
+- تاریخ Audit: 2026-10-06
+- وضعیت: تکمیل شده، در انتظار تأیید معماری و اجازه صریح برای Step 12B.
+- این Step فقط Audit و طراحی معماری است.
+- Prisma Schema، Migration، UI، Runtime code و Assetها در این Step تغییر نکردند.
+- تمام پیشنهادهای این بخش وضعیت NOT YET IMPLEMENTED دارند.
+
+### اطلاعات تجاری تأییدشده ساعت دیواری ARFAM
+
+- خانواده محصول: ساعت دیواری.
+- فرم‌های فعلی: مربع و گرد.
+- فعلاً فقط تصاویر نمونه ساعت مربع دریافت شده‌اند؛ در Repository فعلی Asset رسمی ساعت Track نشده است.
+- ممکن است برای هر فرم چند مدل/طراحی مستقل ایجاد شود.
+- مربع یا گرد الزاماً Product Model مستقل محسوب نمی‌شود.
+- بدنه فلزی است و قابلیت سفارش در طیف رنگی مختلف دارد.
+- فریم و اعداد از استیل 304 با ضخامت 1 میلی‌متر هستند.
+- فینیش‌های فعلی استیل: طلایی، سیلور و دودی.
+- مشتری باید بتواند ترکیب رنگ بدنه و فینیش استیل را انتخاب کند.
+- تفاوت قیمت تأییدشده‌ای برای رنگ بدنه یا فینیش وجود ندارد.
+- موتور آرامگرد میتسو ژاپن، بی‌صدا، نصب دیواری، ضمانت مادام‌العمر موتور و رنگ بدنه، بسته‌بندی مقاوم 8 لایه، ارسال سراسر کشور و تولید ایران جزو اطلاعات واقعی اعلام‌شده هستند.
+- متن رسمی درباره محصول توسط Omid ارائه شده و باید بعداً به‌صورت داده Admin-driven ثبت شود، نه داخل React Component.
+
+### قیمت‌های تأییدشده — Integer Toman
+
+#### مربع
+
+- 65×65 cm: 9,800,000 تومان.
+- 80×80 cm: 10,800,000 تومان.
+- 100×100 cm: 11,800,000 تومان.
+- 90×90 cm در جدول مشخصات اولیه ذکر شده اما قیمت رسمی ندارد؛ فعلاً نباید Variant قابل‌خرید یا قیمت برای آن ساخته شود و نیازمند تأیید Omid است.
+
+#### گرد
+
+- قطر 65 cm: 9,800,000 تومان.
+- قطر 80 cm: 10,500,000 تومان.
+- قطر 90 cm: 10,800,000 تومان.
+- قطر 110 cm: 12,800,000 تومان.
+
+### نیاز Listing تأییدشده
+
+- نمونه‌های تصویری ترکیب رنگ/فینیش باید بتوانند به‌صورت کارت‌های مستقل در Listing دیده شوند.
+- همه کارت‌ها باید به Product/مدل اصلی خود متصل باشند و Product تکراری مستقل ایجاد نکنند.
+- کلیک روی کارت باید Product Detail همان Product را با ترکیب تصویری مربوط از قبل انتخاب‌شده باز کند.
+- افزودن Presentation یا تصویر جدید در آینده نباید به تغییر کد نیاز داشته باشد.
+- سه Presentation فعلی مربع: بدنه تیره + طلایی، بدنه تیره + سیلور و بدنه تیره + دودی.
+- تصویر ممکن است Product Shot، Lifestyle Shot یا Detail Shot باشد.
+- بک‌گراند تصاویر رسمی فعلاً بدون تغییر استفاده می‌شود و هیچ تصویر جعلی تولید نمی‌شود.
+
+### Audit وضعیت فعلی Catalog
+
+- Prisma Category، Subcategory، Collection، ProductCollection و ProductImage پایه‌های قابل استفاده‌ای دارند.
+- Product فعلی فقط یک sku، priceToman و stock دارد و برای چند Variant کافی نیست.
+- Product.model فقط String اختیاری است و مفهوم مدل/طراحی را ساختاری نمی‌کند.
+- ProductImage فقط به Product متصل است و Image Type، Primary flag، Variant، Presentation و Alt/Sort scope پیشرفته ندارد.
+- Collection و ProductCollection برای عضویت چندبه‌چند مناسب‌اند و قابل حفظ هستند.
+- Category/Subcategory روابط مناسب دارند؛ Application Layer باید تعلق Subcategory به Category را کنترل کند.
+- OrderItem Snapshot فعلی نام، model، SKU، تصویر و قیمت را نگه می‌دارد اما Variant identity و Option snapshot ندارد.
+- Public Catalog از src/data/catalog.ts و src/data/site-structure.ts خوانده می‌شود و Database-backed نیست.
+- Product/Category/Subcategory/Collection routes با Mock Data و generateStaticParams ساخته می‌شوند.
+- Product Detail فقط یک قیمت، یک Add to Cart ساده، Gallery ثابت و مشخصات hardcoded در Mock Data دارد.
+- Admin Products فقط نمایشی و مبتنی بر src/data/admin-demo.ts است و CRUD واقعی ندارد.
+- تصاویر فعلی فقط Assetهای Track‌شده public هستند و Admin upload/storage architecture وجود ندارد.
+- Cart کل CatalogProduct را به یک CartItem ساده تبدیل می‌کند و هویت آن فقط productSlug است.
+- Cart فعلی Variant ID، SKU، Option selection، availability و تصویر Presentation را ذخیره نمی‌کند.
+- Checkout قیمت Client-side Cart را نمایش می‌دهد و هنوز Order واقعی ایجاد نمی‌کند.
+
+### معماری پیشنهادی — NOT YET IMPLEMENTED
+
+#### Product / Model
+
+- Product نماینده مدل یا طراحی تجاری قابل معرفی است؛ نمونه: ساعت دیواری مدل A.
+- در شروع ProductModel table جدا پیشنهاد نمی‌شود؛ خود Product همان Model تجاری است.
+- مدل B یک Product جدا خواهد بود.
+- اگر یک طراحی در فرم مربع و گرد ارائه شود، هر دو فرم می‌توانند Optionهای همان Product باشند.
+- اگر از نظر تولید/هویت دو طراحی مستقل باشند، می‌توانند Productهای جدا باشند؛ این تصمیم Product-by-Product است.
+
+#### Taxonomy و فرم مربع/گرد
+
+- پیشنهاد معماری: Category = ساعت، Subcategory = ساعت دیواری، و فرم مربع/گرد = Product Option.
+- دلیل: فرم یک انتخاب قابل تغییر و مؤثر بر سایز/قیمت است و نباید Product یا taxonomy را تکراری کند.
+- Routeهای فعلی square-wall-clocks و round-wall-clocks می‌توانند بعداً به Landing/Filtered View تبدیل شوند.
+- تغییر taxonomy فعلی تصمیم تجاری قطعی نیست و قبل از Step 12B به تأیید Omid نیاز دارد.
+- تا زمان تأیید، ساختار فعلی سایت نباید تغییر کند.
+
+#### ProductVariant
+
+- ProductVariant نماینده ترکیب معتبر و قابل سفارش است.
+- SKU، قیمت نهایی، وضعیت خرید و Inventory باید در Variant قرار بگیرند.
+- فقط ترکیب‌های معتبر Variant می‌شوند؛ وجود Option Value به‌تنهایی به معنی معتبر بودن تمام Cartesian combinations نیست.
+- قیمت Variant منبع قطعی قیمت است؛ price delta روی رنگ/فینیش تا زمانی که Business Rule تأیید نشده پیشنهاد نمی‌شود.
+- Option غیرمؤثر بر قیمت نیز می‌تواند Variant-defining باشد چون باید در SKU/Order قابل تشخیص و Snapshot باشد.
+- Variant مربوط به 90×90 مربع تا زمان قیمت رسمی باید ساخته نشود یا به‌صورت غیرقابل‌خرید و بدون قیمت نگه‌داری شود؛ انتخاب بین این دو نیازمند تصمیم Step 12B است.
+
+#### Options
+
+- ProductOption تعریف انتخاب عمومی Product است؛ نمونه: فرم، سایز، رنگ بدنه، فینیش.
+- ProductOptionValue مقادیر Admin-driven هر Option را نگه می‌دارد.
+- VariantOptionValue هر Variant را به یک Value از Optionهای لازم متصل می‌کند.
+- Rule مشترک Application باید تضمین کند هر Variant برای هر Option لازم دقیقاً یک Value دارد.
+- فیلدهای خاص clockColor، clockFinish یا clockDiameter نباید ساخته شوند.
+
+#### ProductPresentation
+
+- ProductPresentation نماینده یک نمونه بصری/مرچندایزینگ است، نه یک Product یا SKU مستقل.
+- Presentation می‌تواند یک زیرمجموعه از Option Valueها را انتخاب کند؛ نمونه بدنه تیره + فینیش طلایی بدون وابستگی به سایز.
+- Presentation دارای slug، عنوان اختیاری، ترتیب، وضعیت نمایش و قابلیت نمایش در Listing است.
+- PresentationOptionValue مقادیر تصویری ازپیش‌انتخاب‌شده را نگه می‌دارد.
+- Listing card به Product اصلی با presentation query/preset لینک می‌شود.
+- Product Detail با آن Presentation باز می‌شود، Optionهای مربوط را preselect می‌کند و انتخاب سایز را به مشتری می‌سپارد.
+
+### تغییرات پیشنهادی Prisma — NOT YET IMPLEMENTED
+
+- حفظ Category، Subcategory، Collection و ProductCollection با اصلاح queryهای Database-backed.
+- Product: حفظ identity، slug، publish/VIP و توضیحات؛ تفکیک shortDescription و longDescription در صورت تأیید UI/Admin.
+- انتقال sku، priceToman و stock از Product به ProductVariant پس از Migration مرحله‌ای.
+- افزودن ProductVariant با productId، sku unique، priceToman، sortOrder، isActive، isPurchasable و سیاست Inventory پس از تصمیم تجاری.
+- افزودن ProductOption.
+- افزودن ProductOptionValue.
+- افزودن VariantOptionValue.
+- افزودن ProductPresentation.
+- افزودن PresentationOptionValue.
+- توسعه ProductImage با imageType، isPrimary، sortOrder، altText و ارتباط اختیاری با Variant یا Presentation.
+- افزودن ProductSpecification به‌صورت key/value مرتب‌شونده و در صورت نیاز group، برای مشخصات متفاوت دسته‌ها.
+- افزودن relation اختیاری variantId به OrderItem با onDelete: SetNull.
+- افزودن Snapshot انتخاب‌ها به OrderItem؛ پیشنهاد ترجیحی جدول OrderItemOptionSnapshot برای label/valueهای immutable و قابل گزارش است.
+- شکل دقیق Inventory policy و availability enum هنوز تصمیم تجاری Pending است.
+- هیچ‌یک از این تغییرات در Step 12A اعمال نشده‌اند.
+
+### ارتباط مدل‌های پیشنهادی — متنی
+
+- Category 1 → N Subcategory.
+- Category 1 → N Product و Subcategory 1 → N Product.
+- Product N ↔ N Collection از طریق ProductCollection.
+- Product 1 → N ProductVariant.
+- Product 1 → N ProductOption.
+- ProductOption 1 → N ProductOptionValue.
+- ProductVariant N ↔ N ProductOptionValue از طریق VariantOptionValue.
+- Product 1 → N ProductPresentation.
+- ProductPresentation N ↔ N ProductOptionValue از طریق PresentationOptionValue.
+- Product 1 → N ProductImage.
+- ProductImage می‌تواند scope اختیاری ProductVariant یا ProductPresentation داشته باشد.
+- Product 1 → N ProductSpecification.
+- OrderItem به Product و ProductVariant به‌صورت nullable reference دارد و Snapshotهای immutable را مستقل نگه می‌دارد.
+
+### روش قیمت‌گذاری پیشنهادی — NOT YET IMPLEMENTED
+
+- مبلغ نهایی روی ProductVariant و به‌صورت Integer Toman ذخیره شود.
+- Listing قیمت را از Variantهای active/purchasable محاسبه کند.
+- اگر همه Variantها قیمت یکسان دارند یک قیمت نمایش داده شود؛ در غیر این صورت «از ...» یا بازه قیمت، بعد از تأیید Copy/UI.
+- رنگ و فینیش در داده Variant ثبت می‌شوند اما تا زمان Rule رسمی قیمت را تغییر نمی‌دهند.
+- 90×90 مربع فعلاً قیمت و امکان خرید قطعی ندارد.
+- Checkout و Order creation آینده باید قیمت و availability را Server-side از Variant بازخوانی کنند و به Cart client اعتماد نکنند.
+
+### معماری تصاویر پیشنهادی — NOT YET IMPLEMENTED
+
+- Image Type عمومی: PRODUCT، LIFESTYLE و DETAIL.
+- Product-level images برای Gallery و fallback اصلی.
+- Presentation-level images برای نمونه‌های Listing و preselected visual combinations.
+- Variant-level images فقط وقتی عکس دقیق همان ترکیب/سایز وجود دارد.
+- Primary Image باید در scope مربوط مشخص شود و Sort Order/Alt Text Admin-driven باشد.
+- اگر ترکیب انتخاب‌شده عکس اختصاصی دارد، Gallery به تصاویر دقیق Variant/Presentation سوییچ می‌کند.
+- اگر ترکیب معتبر عکس اختصاصی ندارد، Gallery تصویر Product-level یا نزدیک‌ترین Presentation معتبر را بدون جعل تصویر حفظ می‌کند و UI باید به‌صورت ظریف روشن کند که تصویر نمایشی است.
+- نبود عکس نباید Variant معتبر را غیرقابل‌خرید کند، مگر Business Rule جداگانه تعیین شود.
+- محل ذخیره تصاویر Admin-uploaded هنوز مشخص نیست؛ Object Storage/CDN یا Persistent Media Storage باید پیش از Phase 13 انتخاب شود.
+
+### رفتار پیشنهادی Product Detail — NOT YET IMPLEMENTED
+
+- Presentation query ابتدا Optionهای تصویری مربوط را انتخاب می‌کند.
+- انتخاب‌های مشتری فقط وقتی Add to Cart را فعال می‌کنند که دقیقاً به یک Variant active/purchasable برسند.
+- تغییر Option قیمت، SKU، availability و تصویر را از Variant/Presentation data به‌روزرسانی می‌کند.
+- توضیحات بلند و مشخصات از Database خوانده می‌شوند.
+- Layout لوکس، Image-led و Editorial فعلی حفظ می‌شود و Option UI نباید به Marketplace-style matrix تبدیل شود.
+
+### اثر روی Cart / Order / Invoice / Reports — NOT YET IMPLEMENTED
+
+- Cart identity باید از productSlug به variantId یا productId+variantId تغییر کند.
+- Cart باید selected option labels/values، SKU، unit price و presentation image را برای UX نگه دارد.
+- Server هنگام Checkout باید Variant، price، purchasability و inventory را دوباره Validate کند.
+- OrderItem باید Product/Variant/SKU/Name/Image/Price و Option selectionهای immutable را Snapshot کند.
+- حذف یا تغییر Product/Variant نباید تاریخچه Order/Invoice را از بین ببرد.
+- Invoice از Snapshotهای Order استفاده می‌کند و به Catalog زنده وابسته نمی‌شود.
+- Collections عمدتاً Product-level باقی می‌مانند؛ Collection-level Presentation merchandising فقط در صورت نیاز آینده اضافه شود.
+- isVipOnly فعلاً Product-level مناسب است؛ VIP در سطح Variant فقط با Business Rule جدید.
+- Reports باید بتوانند فروش را بر اساس Product، Variant، Option Value و SKU تجمیع کنند.
+- Inventory ترجیحاً Variant-level است؛ نوع tracked stock در برابر made-to-order هنوز Pending است.
+
+### ریسک Migration و Strategy پیشنهادی
+
+- SQLite برای حذف/تغییر ستون معمولاً table rebuild انجام می‌دهد؛ Migration یک‌مرحله‌ای برای Product پرریسک است.
+- Strategy امن: ابتدا مدل‌ها و relationهای جدید Additive ایجاد شوند.
+- اگر Product واقعی در Database وجود داشت، برای هر Product یک Default Variant از sku/priceToman/stock فعلی Backfill شود.
+- Storefront/Cart ابتدا به read path جدید منتقل شوند.
+- پس از QA و Snapshot migration، ستون‌های قدیمی Product در Migration جدا حذف شوند.
+- OrderItemهای تاریخی نباید بازنویسی یا حذف شوند.
+- در Development Database فعلی count جدول‌های Category، Subcategory، Collection، Product، ProductImage، ProductCollection و OrderItem همگی صفر است.
+- قبل از Migration باید count واقعی Production/Development دوباره بررسی شود و خالی بودن Production فرض نشود.
+- Migration باید روی DB خالی و Copy واقعی Database تست شود.
+
+### ترتیب پیشنهادی ادامه Phase 12
+
+1. Step 12B: تصمیم‌گیری Business/Architecture درباره taxonomy فرم، مدل نخست، SKU، Inventory policy، Availability و image storage.
+2. Step 12C: طراحی نهایی Schema و Migration plan؛ سپس فقط با تأیید، Schema/Migration.
+3. Step 12D: Database query/repository layer و import/seed idempotent داده رسمی ساعت.
+4. Step 12E: اتصال Listing، Collection و Product Detail به Database و Variant/Presentation behavior.
+5. Step 12F: ارتقای Cart به Variant-aware و آماده‌سازی Snapshotهای Order بدون شروع Payment.
+6. Step 12G: QA کامل Desktop/Mobile، Migration، Catalog integrity و History handoff.
+7. Admin CRUD واقعی در Phase 13 ساخته می‌شود؛ Phase 12 فقط foundation لازم را آماده می‌کند.
+
+### Pending Decisions از Omid / Developer
+
+- نام رسمی مدل نخست ساعت مربع و slug/code آن چیست؟
+- آیا یک مدل طراحی می‌تواند هم مربع و هم گرد باشد یا هر فرم مدل تجاری جدا دارد؟
+- آیا taxonomy عمومی از «ساعت دیواری مربع/گرد» به «ساعت دیواری + فیلتر فرم» تغییر کند؟
+- وضعیت دقیق 90×90 مربع چیست: حذف موقت، نمایش Inquiry-only یا انتشار بعد از دریافت قیمت؟
+- فهرست رسمی رنگ‌های بدنه، نام فارسی/لاتین و در صورت نیاز swatch value چیست؟
+- آیا هر ترکیب رنگ/فینیش قابل سفارش است یا فقط ترکیب‌های مشخص؟
+- SKU convention رسمی چیست و SKU برای Variant چگونه ساخته/مدیریت می‌شود؟
+- Inventory مدل tracked stock است یا made-to-order؛ آیا stock برای همه محصولات معنی دارد؟
+- آیا Variant بدون موجودی قابلیت سفارش/پیش‌سفارش دارد؟
+- Copy دقیق نمایش قیمت‌های متفاوت در Listing چیست: «از»، بازه، یا Default Variant؟
+- سه تصویر مربع دقیقاً به کدام Option Valueها تعلق دارند و کدام Primary است؟
+- محل نهایی ذخیره/upload تصاویر Admin چیست؟
+- متن رسمی «درباره محصول» و Alt Textهای تأییدشده چه هستند؟
+- آیا Collection membership فقط Product-level است یا Presentation خاص هم ممکن است عضو Collection شود؟
+
+------------------------------------------------------------------------
+
+## PHASE 12 STEP 12A HANDOFF (ARCHIVED)
+
+- **Last Updated:** 2026-10-06
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12A — Audit & Architecture
+- **Current Status:** Audit و Architecture Proposal تکمیل شده و در انتظار تأیید است. تمام پیشنهادها NOT YET IMPLEMENTED هستند.
+- **Last Approved Commit:** c907bb652cd8096b4cd303673c6f32b5c73aafc4 — feat(auth): complete real customer and admin authentication
+- **Current Branch:** main
+- **Working Tree Status:** فقط ARFAM-Gallery-Master-Project-History-FA.md به‌علت ثبت Step 12A تغییر Uncommitted دارد.
+
+### Work Completed
+
+- Prisma Schema فعلی و تمام مدل‌های Catalog/Order audit شدند.
+- Mock Catalog، Site Structure، Product/Category/Subcategory/Collection routes و Product Detail بررسی شدند.
+- Admin Products، image assets، Cart و Checkout dependencies بررسی شدند.
+- داده‌های واقعی ساعت، قیمت‌ها، مشخصات، Presentation requirement و مورد 90×90 ثبت شدند.
+- معماری عمومی Product/Variant/Option/Presentation/Image/Specification پیشنهاد شد.
+- Migration risk و ترتیب امن Phase 12 ثبت شد.
+- هیچ Implementation انجام نشد.
+
+### Work in Progress
+
+- هیچ کار اجرایی در حال انجام نیست.
+- Step 12B شروع نشده است.
+- معماری و Pending Decisions منتظر تأیید Omid/Developer هستند.
+
+### Files Changed in Step 12A
+
+- ARFAM-Gallery-Master-Project-History-FA.md
+
+### Uncommitted Changes
+
+- ARFAM-Gallery-Master-Project-History-FA.md — ثبت Audit، Architecture Proposal و Handoff فاز 12.
+- هیچ Schema، Migration، Source code یا Asset تغییر نکرده است.
+
+### Architecture Proposal — NOT YET IMPLEMENTED
+
+- Product = مدل/طراحی تجاری.
+- ProductVariant = ترکیب معتبر و قابل سفارش با SKU/Price/Inventory.
+- ProductOption/ProductOptionValue = انتخاب‌های عمومی.
+- VariantOptionValue = اتصال Variant به Option Valueها.
+- ProductPresentation = نمونه بصری قابل نمایش در Listing و preset برای Product Detail.
+- PresentationOptionValue = Optionهای تصویری ازپیش‌انتخاب‌شده.
+- ProductImage = تصویر Product/Variant/Presentation با Type/Primary/Sort/Alt.
+- ProductSpecification = مشخصات Admin-driven.
+- Variant-aware Cart و OrderItem Option Snapshots.
+- Square/Round به‌صورت Option پیشنهاد شده‌اند، اما تغییر taxonomy هنوز Pending Approval است.
+
+### Known Issues
+
+- Known intermittent Navigation Freeze از Phase 11 باقی است؛ Root Cause قطعی ندارد و workaround حدسی ممنوع است.
+- Legacy/Demo Customer Recovery تا انتخاب SMS Provider و پیاده‌سازی Recovery واقعی باقی می‌ماند.
+- Admin Products و Public Catalog هنوز Mock-driven هستند.
+- تصویر رسمی ساعت در Repository فعلی Track نشده است.
+- image upload/storage provider هنوز انتخاب نشده است.
+- 90×90 مربع قیمت رسمی ندارد.
+
+### QA / Verification
+
+- git status، commit SHA و branch بررسی شدند.
+- Prisma Schema، relations و onDeleteهای مرتبط read-only audit شدند.
+- Public/Admin Catalog code و تمام Asset pathهای public بررسی شدند.
+- Cart/Checkout dependency audit انجام شد.
+- Aggregate countهای Catalog در Development Database به‌صورت read-only بررسی شدند و همگی صفر بودند.
+- git diff --check پس از History update باید اجرا شود.
+- هیچ Build/Lint لازم نیست چون Source code تغییر نکرده است.
+
+### Pending Decisions
+
+- تمام سؤال‌های بخش Pending Decisions از Omid / Developer.
+- تأیید یا اصلاح معماری پیشنهادی.
+- اجازه صریح برای Step 12B.
+- انتخاب SMS Provider برای Password Recovery آینده مستقل از Phase 12 باقی است.
+- Production Security pending items Phase 11 حفظ می‌شوند.
+
+### Exact NEXT ACTION
+
+- متوقف شو و Architecture Step 12A را برای تأیید ارائه کن.
+- پس از تأیید، فقط Step 12B و تصمیم‌های Business/Schema صریحاً مجازشده را آغاز کن.
+- بدون تأیید Schema یا Migration ایجاد نکن.
+
+### DO NOT CHANGE / Locked Decisions
+
+- Luxury Brand Experience First — E-Commerce Second.
+- طراحی، Typography، Motion، Official Logo، Signature Background، Header/Footer و Responsive behavior تأییدشده بدون ضرورت تغییر نکنند.
+- Real Auth، Admin authorization، First Admin Setup و Footer Admin Entry Phase 11 تغییر نکنند.
+- قیمت‌ها Integer Toman هستند.
+- اطلاعات تجاری تأییدنشده به Business Rule قطعی تبدیل نشوند.
+- برای رنگ، فینیش، فرم یا سایز فیلد خاص ساعت ساخته نشود.
+- Product cardهای تصویری به Product تکراری Database تبدیل نشوند.
+- Background تصاویر رسمی فعلاً تغییر نکند و تصویر جعلی ساخته نشود.
+- Payment، Invoice، Wallet، VIP، Admin CRUD و Phase 13 شروع نشوند.
+- Known Navigation issue بدون Evidence با workaround حدسی تغییر نکند.
+
+### How to Resume
+
+1. git status و Last Approved Commit را بررسی کن.
+2. این Step را Architecture-only و NOT YET IMPLEMENTED در نظر بگیر.
+3. پاسخ Omid/Developer به Pending Decisions را ثبت کن.
+4. قبل از Schema design نهایی، taxonomy فرم، Product model boundaries، SKU، Inventory و image storage را تعیین تکلیف کن.
+5. Step 12B را فقط با دستور صریح شروع کن.
+6. هر واحد معنادار کار را در همین History/Handoff ثبت کن.
+7. بدون تأیید User Commit یا Push نکن.
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12B ARCHITECTURE DECISIONS
+
+### Status
+
+- تاریخ: 2026-10-06
+- Step 12B فقط Design Decision و Schema Blueprint است.
+- Prisma Schema، Migration، Runtime code، UI و Assetها تغییر نکردند.
+- تمام مدل‌ها و فیلدهای این بخش تا شروع Step 12C وضعیت NOT YET IMPLEMENTED دارند.
+
+### Final Product Boundary Decision — NOT YET IMPLEMENTED
+
+- Product نماینده یک مدل/طراحی تجاری مستقل است، نه یک تصویر، رنگ یا SKU.
+- ProductModel table جدا در معماری فعلی لازم نیست؛ خود Product نقش مدل تجاری را دارد.
+- اولین ساعت مربع به‌عنوان یک Product مستقل مدل می‌شود؛ نام رسمی مدل هنوز Pending است.
+- ساعت گرد به همان Product مربع اجباراً متصل نمی‌شود.
+- اگر مدل گرد طراحی، مشخصات یا Optionهای متفاوت داشته باشد، Product مستقل خواهد بود.
+- فقط اگر Omid بعداً تأیید کند مربع و گرد دو فرم از دقیقاً یک مدل تجاری هستند، فرم می‌تواند ProductOption همان Product باشد.
+- معماری Option عمومی این سناریو را پشتیبانی می‌کند و هیچ فیلد Clock-specific نیاز نیست.
+
+### Final Taxonomy Decision — NOT YET IMPLEMENTED
+
+- Category و Subcategory فعلی حفظ می‌شوند و در Step 12B تغییر نمی‌کنند.
+- اولین Product مربع می‌تواند فعلاً زیر Category ساعت و Subcategory ساعت دیواری مربع قرار بگیرد.
+- مربع/گرد به‌صورت global و اجباری نه Product هستند و نه Option.
+- مرز Product و Option بر اساس مدل تجاری هر محصول تعیین می‌شود.
+- تبدیل Routeهای مربع/گرد به Filtered Landing در آینده ممکن است، اما اکنون تصمیم قطعی یا Scope Step 12C نیست.
+
+### Final Proposed Prisma Models — NOT YET IMPLEMENTED
+
+#### Existing Models to Keep
+
+- Category: دسته اصلی Catalog.
+- Subcategory: زیرساخت navigation و merchandising؛ تعلق آن به Category باید در Application Layer Validate شود.
+- Collection: مجموعه editorial قابل مدیریت.
+- ProductCollection: عضویت چندبه‌چند Product در Collection با Sort Order.
+- Product: مدل/طراحی تجاری، محتوای اصلی، وضعیت انتشار و VIP.
+- OrderItem: Snapshot تجاری؛ در آینده Variant-aware می‌شود.
+
+#### Product
+
+مسئولیت نهایی:
+
+- identity مدل تجاری.
+- categoryId و subcategoryId.
+- name، slug و در صورت نیاز productCode مستقل از SKU.
+- shortDescription برای Listing/SEO.
+- longDescription برای متن رسمی درباره محصول.
+- isActive، isPublished، publishedAt و isVipOnly.
+- Product-level fallback media و specifications از relationها.
+- sku، priceToman و stock فعلی فقط Legacy fields هستند و منبع نهایی Catalog جدید نخواهند بود.
+
+#### ProductVariant
+
+مسئولیت نهایی:
+
+- یک ترکیب معتبر قابل سفارش از Option Valueها.
+- productId.
+- sku به‌صورت String unique؛ convention آن Pending است.
+- priceToman به‌صورت Integer و required برای Variant قابل‌خرید.
+- position، isActive و isPurchasable.
+- جایگاه عمومی برای inventoryPolicy و stockQuantity nullable، بدون تعریف رفتار تجاری تا زمان تصمیم.
+- combinationKey پایدار برای جلوگیری از Variant تکراری در یک Product؛ نحوه تولید دقیق آن در Application Layer Step 12C تعریف می‌شود.
+- ProductVariant فقط ترکیب معتبر است؛ تمام Cartesian combinationها خودکار معتبر نیستند.
+
+#### ProductOption
+
+مسئولیت نهایی:
+
+- تعریف محور انتخاب عمومی برای یک Product.
+- نمونه‌ها: سایز، رنگ بدنه، فینیش، متریال یا فرم در Productهایی که فرم واقعاً انتخاب است.
+- productId، name، slug، position، isRequired و displayType عمومی.
+- هیچ Option خاص ساعت در Schema ساخته نمی‌شود.
+
+#### ProductOptionValue
+
+مسئولیت نهایی:
+
+- مقدار Admin-driven یک ProductOption.
+- optionId، label، slug، position، isActive.
+- swatchValue یا presentation metadata می‌تواند nullable باشد و فقط برای UI مناسب استفاده شود.
+- Value به‌تنهایی قیمت ندارد و وجود آن به معنی قابل‌خرید بودن ترکیب نیست.
+
+#### VariantOptionValue
+
+مسئولیت نهایی:
+
+- Join بین ProductVariant و ProductOptionValue.
+- انتخاب‌های سازنده هر Variant را ثبت می‌کند.
+- Application validation باید تضمین کند Value متعلق به Option همان Product است.
+- هر Variant برای هر Option required باید دقیقاً یک Value داشته باشد.
+- Duplicate combination باید رد شود.
+
+#### ProductPresentation
+
+مسئولیت نهایی:
+
+- نمونه بصری/مرچندایزینگ برای Listing و Product Detail preset.
+- Presentation نه Product است، نه Variant و نه SKU.
+- productId، slug، title اختیاری، position، isActive و showInListing.
+- سه نمونه تیره/طلایی، تیره/سیلور و تیره/دودی سه Presentation از Product مربع هستند.
+- Presentation می‌تواند فقط Optionهای بصری مثل رنگ و فینیش را preselect کند و لازم نیست سایز داشته باشد.
+
+#### PresentationOptionValue
+
+مسئولیت نهایی:
+
+- Join بین ProductPresentation و ProductOptionValue.
+- Optionهای ازپیش‌انتخاب‌شده هر نمونه تصویری را ثبت می‌کند.
+- کلیک Listing از این داده برای preselect کردن Product Detail استفاده می‌کند.
+
+#### ProductImage
+
+مسئولیت نهایی:
+
+- همه تصاویر Catalog با Product مالک اصلی.
+- productId required.
+- variantId nullable برای تصویر دقیق یک Variant.
+- presentationId nullable برای تصویر یک Presentation.
+- imageType عمومی: PRODUCT، LIFESTYLE یا DETAIL.
+- url، storageKey nullable/provider-neutral، altText، position و isPrimary.
+- Provider خاص در Schema hardcode نمی‌شود.
+- Application validation باید تضمین کند Variant/Presentation متعلق به همان Product است.
+- Primary uniqueness در scope Product/Variant/Presentation باید در Application Layer یا constraint مناسب Step 12C کنترل شود.
+
+#### ProductSpecification
+
+مسئولیت نهایی:
+
+- مشخصات فنی Admin-driven و category-agnostic.
+- productId، label، value، group nullable و position.
+- مواردی مانند فلز، استیل 304، ضخامت 1 میلی‌متر، موتور، ضمانت، بسته‌بندی و کشور تولید در داده ثبت می‌شوند، نه React component.
+- اگر در آینده Specification definitionهای مشترک دسته‌ای لازم شد، مدل definition جدا می‌تواند بعد از نیاز واقعی اضافه شود؛ اکنون Overengineering نمی‌شود.
+
+#### OrderItemOptionSnapshot
+
+مسئولیت نهایی:
+
+- Snapshot immutable انتخاب‌های خرید.
+- orderItemId، optionName، optionValue، optionSlugSnapshot nullable، valueSlugSnapshot nullable و position.
+- گزارش و Invoice را از Catalog زنده مستقل می‌کند.
+- OrderItem در آینده variantId nullable با onDelete: SetNull و variantSkuSnapshot خواهد داشت.
+
+### Final Model Relationships — NOT YET IMPLEMENTED
+
+- Category 1 → N Subcategory.
+- Category 1 → N Product.
+- Subcategory 1 → N Product.
+- Product N ↔ N Collection از طریق ProductCollection.
+- Product 1 → N ProductVariant.
+- Product 1 → N ProductOption.
+- ProductOption 1 → N ProductOptionValue.
+- ProductVariant N ↔ N ProductOptionValue از طریق VariantOptionValue.
+- Product 1 → N ProductPresentation.
+- ProductPresentation N ↔ N ProductOptionValue از طریق PresentationOptionValue.
+- Product 1 → N ProductImage.
+- ProductVariant 1 → N ProductImage به‌صورت optional scope.
+- ProductPresentation 1 → N ProductImage به‌صورت optional scope.
+- Product 1 → N ProductSpecification.
+- OrderItem N → 0..1 ProductVariant با SetNull.
+- OrderItem 1 → N OrderItemOptionSnapshot.
+
+### Final Pricing Decision — NOT YET IMPLEMENTED
+
+- منبع قطعی قیمت، ProductVariant.priceToman است.
+- قیمت Integer Toman باقی می‌ماند.
+- ProductOptionValue هیچ price delta ندارد.
+- تفاوت قیمت رنگ یا فینیش فرض نمی‌شود.
+- برای Variant قابل‌خرید priceToman الزامی است.
+- مربع 65×65، 80×80 و 100×100 Variantهای جدا با قیمت‌های تأییدشده خواهند بود.
+- برای 90×90 هیچ ProductVariant قابل‌خرید و هیچ قیمت ساخته نمی‌شود.
+- اینکه 90×90 به‌صورت Option disabled یا فقط Specification دیده شود Pending UI/Business decision است.
+- Copy و روش نمایش اختلاف قیمت در Listing همچنان Pending است؛ Architecture امکان min/max و matching-variant price را فراهم می‌کند.
+
+### Final Image and Fallback Decision — NOT YET IMPLEMENTED
+
+- Product-level image fallback پایه Gallery است.
+- Presentation-level image نمونه بصری Listing و preset است.
+- Variant-level image فقط برای عکس دقیق همان Variant استفاده می‌شود.
+- اولویت Gallery پس از انتخاب: exact Variant images، سپس matching Presentation images، سپس Product-level images.
+- در نبود تصویر دقیق، تصویر جعلی یا composited ساخته نمی‌شود.
+- UI باید در صورت نیاز به‌صورت ظریف روشن کند تصویر Product/Presentation نمایشی است.
+- تصاویر واقعی Omid بدون تغییر Background استفاده می‌شوند.
+- URL/storageKey provider-neutral هستند و انتخاب Production Storage Provider Pending می‌ماند.
+
+### Final Listing Behavior — NOT YET IMPLEMENTED
+
+- Query هر Product، ProductPresentationهای active و showInListing را دریافت می‌کند.
+- هر Presentation یک کارت تصویری مستقل با Primary Presentation image می‌سازد.
+- هر کارت به Product canonical route با presentation slug/preset لینک می‌شود.
+- Product Detail PresentationOptionValueها را preselect می‌کند.
+- Presentation فاقد Product یا SKU مستقل است و SEO/canonical identity روی Product باقی می‌ماند.
+- اگر Product هیچ Presentation قابل Listing نداشت، یک کارت Product-level با Primary Product image نمایش داده می‌شود.
+- قیمت‌های قابل استخراج برای هر کارت از Variantهای سازگار با Presentation محاسبه می‌شوند؛ Copy نمایش قیمت Pending است.
+
+### Future Product Readiness
+
+- هر Product Optionهای مخصوص خود را دارد؛ Product گرد مجبور به reuse کردن Optionهای مربع نیست.
+- مدل‌های جدید مربع Productهای مستقل با Variant/Presentationهای خود خواهند بود.
+- میز، روشنایی، اکسسوری و سرویس پذیرایی بدون Schema اختصاصی از همین ساختار استفاده می‌کنند.
+- Optionهایی مانند متریال فقط در Productهایی تعریف می‌شوند که واقعاً انتخاب مشتری هستند.
+- ویژگی توصیفی غیرقابل‌انتخاب در ProductSpecification قرار می‌گیرد.
+- افزودن Product، Option، Variant، Presentation، Spec و Image در Phase 13 باید Admin-driven باشد و تغییر کد نخواهد خواست.
+
+### Deliberately Pending Business Decisions
+
+- نام رسمی Product/مدل نخست ساعت مربع.
+- productCode و SKU convention.
+- فهرست رسمی رنگ‌های بدنه و swatchها.
+- معتبر بودن تمام یا بخشی از ترکیب‌های رنگ و فینیش.
+- مدل تجاری دقیق ساعت گرد و اینکه Product مستقل است یا Option همان مدل.
+- رفتار نمایشی 90×90 بدون قیمت.
+- Listing price copy و انتخاب default Variant.
+- Inventory policy values و رفتار Made-to-order/Tracked stock.
+- رفتار Out-of-stock، Preorder و Backorder.
+- Production Image Storage Provider و URL lifecycle.
+- Primary image نهایی و Alt Text تصاویر رسمی.
+- متن نهایی About Product.
+- نیاز واقعی Collection به Presentation-level merchandising.
+- هیچ‌یک از این موارد در Step 12B به Rule قطعی تبدیل نشدند.
+
+### Exact Step 12C Plan — Schema + Migration Only
+
+1. Preflight read-only:
+   - git status و commit baseline.
+   - count همه جدول‌های Catalog/Order.
+   - Backup یا Copy از Development DB برای Migration rehearsal.
+   - تأیید عدم وجود Product/OrderItem واقعی قبل از هر destructive cleanup.
+2. Prisma Schema additive update:
+   - افزودن ProductVariant، ProductOption، ProductOptionValue و VariantOptionValue.
+   - افزودن ProductPresentation و PresentationOptionValue.
+   - توسعه additive ProductImage.
+   - افزودن ProductSpecification.
+   - افزودن OrderItemOptionSnapshot و variantId nullable به OrderItem.
+   - افزودن index/uniqueهای لازم برای slug، SKU، ordering و queryهای publish.
+3. Legacy compatibility:
+   - sku، priceToman و stock فعلی Product در Migration اول حذف نمی‌شوند.
+   - این ستون‌ها deprecated باقی می‌مانند تا Runtime read path در Stepهای بعد منتقل شود.
+4. Migration:
+   - ساخت یک Migration additive و review کامل SQL تولیدشده.
+   - هیچ Product، Variant یا Seed رسمی داخل Migration hardcode نمی‌شود.
+5. Backfill preparation:
+   - اگر هر Product legacy وجود داشت، plan/script idempotent برای Default Variant تعریف و جداگانه review می‌شود.
+   - با توجه به Development DB فعلی که Catalog آن صفر است، Backfill آنجا no-op خواهد بود.
+   - Production هرگز خالی فرض نمی‌شود.
+6. Integrity validation:
+   - category/subcategory ownership.
+   - option/value/product ownership.
+   - unique SKU و duplicate combination.
+   - Presentation option ownership.
+   - ProductImage scope ownership.
+   - purchasable Variant باید قیمت معتبر داشته باشد.
+7. Migration QA:
+   - prisma format، validate و generate.
+   - migrate روی DB خالی.
+   - migrate روی Copy واقعی Development DB.
+   - migration status.
+   - lint، typecheck، production build و git diff --check.
+8. Handoff:
+   - History بعد از Step 12C به‌روزرسانی می‌شود.
+   - هیچ Storefront query، Cart change، Seed data یا Admin CRUD در Step 12C شروع نمی‌شود.
+   - حذف legacy Product fields فقط بعد از انتقال Runtime و QA در Migration بعدی مجاز است.
+
+------------------------------------------------------------------------
+
+## HANDOFF ARCHIVE — AFTER STEP 12B
+
+- **Last Updated:** 2026-10-06
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12B — Product/Catalog Architecture Decisions
+- **Current Status:** معماری نهایی پیشنهادی و Plan دقیق Step 12C تکمیل شده و در انتظار تأیید است. هیچ بخش آن هنوز پیاده‌سازی نشده است.
+- **Last Approved Commit:** c907bb652cd8096b4cd303673c6f32b5c73aafc4 — feat(auth): complete real customer and admin authentication
+- **Current Branch:** main
+- **Working Tree Status:** فقط ARFAM-Gallery-Master-Project-History-FA.md شامل تغییرات Uncommitted Step 12A و 12B است.
+
+### Work Completed
+
+- Product boundary، Variant، Option، Presentation، Image و Specification responsibilities نهایی شدند.
+- ProductPresentation برای Listing تصویری Omid حفظ و نهایی شد.
+- قیمت Variant-level و بدون Option price delta نهایی شد.
+- Image fallback chain و provider-neutral storage design نهایی شد.
+- معماری Productهای آینده و Product مستقل احتمالی ساعت گرد تثبیت شد.
+- Plan additive و کم‌ریسک Step 12C نوشته شد.
+- هیچ Schema، Migration یا Runtime implementation انجام نشد.
+
+### Work in Progress
+
+- هیچ کار اجرایی در حال انجام نیست.
+- Step 12C شروع نشده است.
+- معماری Step 12B منتظر تأیید User است.
+
+### Files Changed
+
+- ARFAM-Gallery-Master-Project-History-FA.md
+
+### Uncommitted Changes
+
+- History شامل Audit Step 12A، تصمیم‌های Step 12B و Current Handoff است.
+- هیچ Source code، Prisma Schema، Migration یا Asset تغییر نکرده است.
+
+### Final Architecture — NOT YET IMPLEMENTED
+
+- Product = مدل/طراحی تجاری.
+- ProductVariant = ترکیب معتبر قابل سفارش با SKU و Variant price.
+- ProductOption/ProductOptionValue = انتخاب‌های عمومی هر Product.
+- VariantOptionValue = ترکیب Option Valueهای Variant.
+- ProductPresentation/PresentationOptionValue = کارت تصویری Listing و Detail preset.
+- ProductImage = media در scope Product/Variant/Presentation.
+- ProductSpecification = توضیحات فنی Admin-driven.
+- OrderItemOptionSnapshot = Snapshot immutable انتخاب‌ها.
+- Product گرد به Product مربع اجباراً متصل نیست.
+- فرم فقط وقتی Option است که واقعاً انتخاب داخل همان مدل باشد.
+
+### Known Issues / Preserved Items
+
+- Navigation Freeze همچنان Known/Intermittent است و در این Step بررسی یا تغییر نکرد.
+- Legacy/Demo Customer Recovery و Password Recovery pending Phase 11 حفظ شده‌اند.
+- Public/Admin Catalog هنوز Mock-driven است.
+- هیچ تصویر رسمی ساعت در Repository Track نشده است.
+- 90×90 مربع قیمت ندارد و قابل خرید نیست.
+- Production image storage و Inventory policy هنوز Pending هستند.
+
+### QA / Verification
+
+- فقط Documentation تغییر کرده است.
+- git status و baseline commit بررسی شدند.
+- Schema و Catalog dependencies از Step 12A مبنا قرار گرفتند.
+- git diff --check پس از History update باید اجرا شود.
+- Lint/Build لازم نیست چون Runtime code تغییر نکرده است.
+
+### Pending Decisions
+
+- موارد بخش Deliberately Pending Business Decisions.
+- تأیید Step 12B.
+- اجازه صریح برای Step 12C.
+- SMS Provider و Production Security pending items خارج از Scope Phase 12 حفظ می‌شوند.
+
+### Exact NEXT ACTION
+
+- متوقف شو و Step 12B را برای تأیید ارائه کن.
+- پس از تأیید، فقط Step 12C — Prisma Schema + Additive Migration را طبق Plan ثبت‌شده آغاز کن.
+- Storefront، Cart، Seed و Admin CRUD را در Step 12C شروع نکن.
+
+### DO NOT CHANGE / Locked Decisions
+
+- Luxury Brand Experience First — E-Commerce Second.
+- UI، Typography، Motion، Logo، Signature Background، Header/Footer و Responsive design بدون ضرورت تغییر نکنند.
+- Authentication و Authorization Phase 11 تغییر نکنند.
+- Integer Toman و Variant-level pricing.
+- ProductPresentation برای Listing تصویری و جلوگیری از Product تکراری.
+- Option architecture عمومی و بدون clock-specific fields.
+- تصاویر رسمی بدون تغییر Background و بدون تولید تصویر جعلی.
+- Unknown Business Rules اختراع نشوند.
+- Schema/Migration قبل از تأیید Step 12B تغییر نکند.
+- Phase 13 Admin CRUD، Payment، Invoice، Wallet و VIP implementation شروع نشوند.
+
+### How to Resume
+
+1. git status و baseline commit c907bb652cd8096b4cd303673c6f32b5c73aafc4 را بررسی کن.
+2. Step 12A و 12B را Documentation/Architecture-only و NOT YET IMPLEMENTED در نظر بگیر.
+3. تأیید User و پاسخ Pending Decisions را ثبت کن.
+4. Step 12C را فقط با دستور صریح آغاز کن.
+5. Migration اول را additive نگه دار و legacy Product fields را حذف نکن.
+6. Migration را روی DB خالی و Copy واقعی تست کن.
+7. هیچ Seed یا Runtime Catalog implementation را وارد Step 12C نکن.
+8. History را بعد از هر واحد معنادار کار به‌روزرسانی کن.
+9. بدون تأیید User Commit یا Push نکن.
+
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12C PRODUCT/CATALOG SCHEMA + MIGRATION
+
+### Status
+
+- تاریخ اجرا: 2026-10-06
+- وضعیت: تکمیل شده و QA موفق؛ در انتظار تأیید Commit/Push.
+- Scope فقط Prisma Schema، Migration، مستند Prisma و History بوده است.
+- Storefront، Cart، Checkout، Admin CRUD، Seed/Import، Product Listing و Product Detail تغییر نکردند.
+
+### Preflight and Database Safety
+
+- Branch و baseline تأییدشده: `main` روی `c907bb652cd8096b4cd303673c6f32b5c73aafc4`.
+- تغییرات مستند Stepهای 12A/12B حفظ شدند.
+- پیش از Migration یک SQLite backup سازگار در `data/backups/arfam-pre-phase12c-20261006-191541.db` ساخته شد؛ مسیر `data/` در Git ignored است.
+- integrity backup برابر `ok` بود؛ در زمان Preflight تعداد Product و OrderItem صفر بود.
+- دیتابیس توسعه موجود Reset، Revert یا حذف نشد.
+
+### Implemented Schema
+
+- `ProductVariant`: Variant معتبر قابل سفارش با SKU unique، `priceToman` اجباری و Integer Toman، `combinationKey` یکتا در Product، ترتیب، active/purchasable state و extension pointهای nullable برای Inventory آینده.
+- `ProductOption` و `ProductOptionValue`: Optionهای عمومی و Admin-driven بدون فیلد Clock-specific و بدون price delta.
+- `VariantOptionValue`: اتصال چندبه‌چند Variant به Option Valueها.
+- `ProductPresentation` و `PresentationOptionValue`: preset تصویری Listing/Product Detail بدون Product، Variant یا SKU تکراری.
+- `ProductSpecification`: مشخصات فنی عمومی، مرتب‌شونده و دارای group اختیاری.
+- `ProductImage`: scope اجباری Product و scope اختیاری Variant/Presentation، `imageType` با مقادیر PRODUCT/LIFESTYLE/DETAIL، `url` و `storageKey` provider-neutral، alt، primary و position.
+- `OrderItem`: `variantId` nullable با `onDelete: SetNull` و `variantSkuSnapshot` nullable اضافه شد؛ Snapshotهای قبلی حفظ شدند.
+- `OrderItemOptionSnapshot`: Snapshot مستقل و immutable نام/مقدار Option و slugهای اختیاری.
+- `Product.shortDescription` و `Product.longDescription` اضافه شدند.
+- فیلدهای Legacy یعنی `Product.sku`، `Product.priceToman` و `Product.stock` عمداً حذف نشدند.
+
+### Migration
+
+- Migration جدید: `20261006194507_product_catalog_foundation`.
+- Migration فقط تغییرات Schema و کپی ایمن ردیف‌های موجود در redefineهای لازم SQLite را دارد؛ هیچ Product، Variant، Option، Presentation، تصویر یا داده تجاری Seed/Backfill نشده است.
+- یک drift قدیمی Phase 10 شناسایی شد: فایل init شامل `Order.deletedAt` بود اما checksum ثبت‌شده دیتابیس و Schema واقعی توسعه مربوط به نسخه پیش از آن بود.
+- `20260930142010_init/migration.sql` به checksum واقعاً اعمال‌شده `ba26b9e1ac2dcb227af1eff10fdc6b62d1c274a7a0fc68459d8328fb36b65c83` بازگردانده شد.
+- `Order.deletedAt` و index آن به Migration جدید منتقل شدند؛ بنابراین هم دیتابیس‌های موجود و هم نصب کاملاً خالی مسیر Migration یکسان و قابل تکرار دارند.
+- SQL جدید additive است؛ redefinitionهای `OrderItem` و `ProductImage` محدودیت فنی SQLite برای افزودن relation/FK هستند و ردیف‌های قدیمی را با `INSERT ... SELECT` حفظ می‌کنند.
+
+### Final Safety Review — Approved
+
+- تاریخ تأیید: 2026-10-07.
+- User تأیید کرد Development DB بررسی‌شده تنها دیتابیس شناخته‌شده‌ای است که Migrationهای پروژه روی آن اجرا شده‌اند و هیچ Production، Staging یا CI Database فعالی وجود ندارد.
+- نسخه Repository پیش از Step 12C دارای `Order.deletedAt` با checksum برابر `6a2fc49c3a6ddc9020482fe6e2d8a8d706367ad35fe09c01aceaff1765a28bdc` بود، اما Development DB نسخه اولیه واقعی بدون این ستون و با checksum برابر `ba26b9e1ac2dcb227af1eff10fdc6b62d1c274a7a0fc68459d8328fb36b65c83` را اجرا کرده بود.
+- Root cause این بود که Migration اولیه در Phase 10 پس از اجرا ویرایش شده بود، بدون اینکه Development DB reset یا یک Migration forward جدید دریافت کند.
+- تصمیم نهایی تأییدشده: فایل init روی checksum واقعاً اجراشده `ba26...` باقی بماند و `Order.deletedAt` همراه index آن فقط در Migration forward جدید Step 12C ایجاد شود.
+- این مسیر برای Development DB موجود و نصب جدید آزموده و موفق است؛ با توجه به نبود هر دیتابیس شناخته‌شده با checksum `6a2...`، ریسک شناخته‌شده Deploy باقی نمانده است.
+- ساختار Schema و Migration Step 12C پس از Safety Review بدون تغییر بیشتر تأیید شد.
+
+### Application-layer Integrity Rules
+
+- تعلق Subcategory به Category باید هنگام create/update Product Validate شود.
+- Option Value، Variant، Presentation و image scope باید متعلق به همان Product باشند.
+- هر Variant برای هر Option required دقیقاً یک Value داشته باشد.
+- `combinationKey` canonical باید duplicate Variant را رد کند؛ الگوریتم دقیق آن در write layer تعیین می‌شود.
+- Variant قابل‌خرید باید قیمت معتبر Toman داشته باشد.
+- ProductImage باید حداقل یک locator قابل resolve از `url` یا `storageKey` داشته باشد و primary uniqueness در scope توسط write layer enforce شود.
+- Catalog edit نباید Snapshotهای تاریخی OrderItem را بازنویسی کند.
+
+### Backfill Plan
+
+- هیچ Backfill در Step 12C اجرا نشد و هیچ SKU یا ترکیب ساختگی تولید نشد.
+- اگر محیط دیگری Product legacy بدون Variant داشته باشد، Backfill باید بعد از تصویب SKU/Inventory rules به‌صورت idempotent و جداگانه review شود.
+- حذف فیلدهای Legacy فقط پس از انتقال کامل read/write pathهای Storefront، Cart، Checkout و Order و QA مجاز است.
+
+### QA Results
+
+- Prisma format: PASS.
+- Prisma validate: PASS.
+- Prisma generate با Prisma Client 7.10.0: PASS؛ generated client ignored و Untracked/Tracked نشده است.
+- Migration روی دیتابیس خالی: PASS؛ هر دو Migration اعمال شدند، status up to date و integrity برابر `ok`.
+- Migration روی کپی واقعی Development DB: PASS؛ دو User موجود حفظ شدند، Product/OrderItem صفر باقی ماند و integrity برابر `ok`.
+- Migration روی Development DB پس از Backup: PASS؛ status up to date، schema diff خالی و integrity برابر `ok`.
+- Lint: PASS.
+- Type Check: PASS.
+- Production Build: PASS؛ 67 صفحه static/dynamic بدون خطا تولید شد.
+- `git diff --check`: PASS.
+
+### Deliberately Pending
+
+- نام رسمی مدل ساعت، productCode و SKU convention.
+- رنگ‌های رسمی آینده، Swatchها و تمام ترکیب‌های معتبر رنگ/فینیش.
+- جزئیات ساعت گرد و تصمیم نهایی Product/Option آن.
+- رفتار 90×90 بدون قیمت؛ هیچ Variant قابل‌خرید یا قیمت برای آن ساخته نشده است.
+- Listing price copy و default Variant.
+- Inventory/Made-to-order policy و Out-of-stock/Preorder behavior.
+- Production Image Storage Provider، URL lifecycle و Alt Textهای نهایی.
+- اطلاعات و تصاویر واقعی ساعت، Seed/Import، runtime query layer و Admin CRUD.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-07
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12C — Product/Catalog Schema + Additive Migration
+- **Current Status:** Step 12C و Safety Review تأیید نهایی شدند؛ آماده Commit/Push با پیام `feat(catalog): add real product catalog foundation`. Step 12D شروع نشده است.
+- **Last Approved Commit:** c907bb652cd8096b4cd303673c6f32b5c73aafc4 — feat(auth): complete real customer and admin authentication
+- **Current Branch:** main
+- **Working Tree Status:** تغییرات تأییدشده Stepهای 12A تا 12C آماده Commit هستند؛ هیچ تغییر Storefront، Cart، Admin یا داده محصول در Scope نیست.
+
+### Files Changed
+
+- `ARFAM-Gallery-Master-Project-History-FA.md`
+- `prisma/schema.prisma`
+- `prisma/README.md`
+- `prisma/migrations/20260930142010_init/migration.sql`
+- `prisma/migrations/20261006194507_product_catalog_foundation/migration.sql`
+
+### Known Issues
+
+- Navigation Freeze همان Known/Intermittent قبلی است و در Step 12C بررسی یا تغییر نکرد.
+- Public/Admin Catalog هنوز Mock-driven است؛ Schema جدید هنوز به Runtime متصل نشده است.
+- Legacy Product fields موقتاً باقی مانده‌اند و باید پس از مهاجرت runtime حذف شوند.
+- Password Recovery و Production security pendingهای قبلی Phase 11 حفظ شده‌اند.
+
+### Exact NEXT ACTION
+
+- تغییرات تأییدشده Stepهای 12A تا 12C با پیام `feat(catalog): add real product catalog foundation` روی `main` Commit و به `origin/main` Push شوند.
+- پس از Push متوقف شو و Step 12D را صرفاً با دستور صریح جداگانه شروع کن.
+
+### DO NOT CHANGE
+
+- Luxury UI، Storefront، Product routes، Cart، Checkout، Auth/Admin behavior، Logo، Signature Background، Motion و Responsive design.
+- Variant-level Integer Toman pricing و ProductPresentation architecture.
+- تصاویر رسمی بدون تغییر Background و بدون تولید تصویر جعلی.
+- هیچ SKU، Inventory rule، Variant combination، قیمت 90×90 یا Storage Provider اختراع نشود.
+- در Step 12C هیچ Seed، Product data، Admin CRUD یا Runtime Catalog integration اضافه نشود.
+
+### How to Resume
+
+1. `git status` و diff پنج مسیر ثبت‌شده بالا را بررسی کن.
+2. Migration SQL و checksum baseline init را دوباره تأیید کن.
+3. نتایج Prisma/Lint/Type Check/Build/diff-check این Handoff را مبنا قرار بده.
+4. تأیید Commit/Push در 2026-10-07 صادر شده است؛ بعد از Push وضعیت sync و clean بودن Working Tree را گزارش کن.
+5. Step 12D را فقط با درخواست مستقل آغاز کن.
