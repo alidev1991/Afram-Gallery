@@ -3543,7 +3543,7 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 
 ------------------------------------------------------------------------
 
-## CURRENT PROJECT STATE / HANDOFF
+## HANDOFF ARCHIVE — AFTER STEP 12E-2
 
 - **Last Updated:** 2026-10-08
 - **Current Phase:** Phase 12 — Real Product & Catalog
@@ -3585,3 +3585,109 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 2. Lint، Type Check، Build و Direct Repository QA ثبت‌شده را مبنا قرار بده.
 3. تأیید User را برای Step 12E-2 دریافت کن.
 4. Step 12E-3 Hybrid Read Integration را فقط با دستور صریح جداگانه شروع کن.
+
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12E-3 HYBRID READ INTEGRATION
+
+### Status
+
+- تاریخ اجرا: 2026-10-08.
+- وضعیت: پیاده‌سازی و QA تکمیل شده و در انتظار بررسی و تأیید است.
+- Scope فقط مسیر `clocks / square-wall-clocks` و Resolver صفحه Product Detail است.
+- Product واقعی ساعت همچنان `isPublished = false` و slug موقت آن همچنان `internal-square-wall-clock` است.
+- Homepage، Collections، سایر Category/Subcategoryها، چهار Product قدیمی Mock، Cart، Checkout و Admin بدون تغییر باقی مانده‌اند.
+
+### Hybrid Architecture and Fallback Rule
+
+- Adapter جدید `src/lib/catalog/hybrid-storefront.ts` یک مرز Server-only میان Public Repository و Mock Catalog ایجاد می‌کند.
+- برای Subcategory هدف، Public Database Presentation Cards ابتدا خوانده می‌شوند؛ اگر Card عمومی وجود داشته باشد فقط Database منبع نتیجه است و اگر وجود نداشته باشد فقط Legacy Mock همان Subcategory برگردانده می‌شود.
+- DB و Mock هرگز با هم Merge نمی‌شوند؛ بنابراین Duplicate Product، Presentation یا Slug conflict ایجاد نمی‌شود.
+- سایر Subcategoryها مستقیماً همان مسیر Mock قبلی را ادامه می‌دهند و اصلاً Query Database اجرا نمی‌کنند.
+- Product Detail Resolver ابتدا Public Database Product را با slug بررسی می‌کند، سپس فقط در صورت نبود آن به Mock Product قدیمی fallback می‌کند و در نبود هر دو `notFound` اجرا می‌شود.
+- Public integration فقط `getPublicStorefrontProductBySlug` و `getPublicPresentationCardsForSubcategory` را مصرف می‌کند؛ هیچ Internal QA Query به Route عمومی وارد نشده است.
+
+### Publish and Product Configurator Protection
+
+- Product unpublished ساعت از Public Repository عبور نمی‌کند؛ سه Presentation طلایی، سیلور و دودی در Public UI نمایش داده نمی‌شوند.
+- Product Detail واقعی تا زمان Product Configurator و تصمیم‌های لازم درباره Variant/Price/Cart به UI فعلی تزریق نمی‌شود؛ این Gate موقت از نمایش ناقص Product published آینده جلوگیری می‌کند.
+- UI فعلی Listing و Product Detail، Classها، Typography، Spacing، Card proportions، Image behavior، Motion و Responsive behavior بازطراحی یا تغییر داده نشدند.
+- هیچ Listing Price Rule، SKU، slug رسمی، Publish state، Inventory rule یا Cart variant behavior تعیین نشد.
+
+### Files Changed
+
+- `src/lib/catalog/hybrid-storefront.ts` — جدید؛ Server-only hybrid resolver، scope guard و DB-or-Mock fallback بدون Merge.
+- `src/app/(storefront)/products/category/[categorySlug]/[subcategorySlug]/page.tsx` — اتصال محدود فقط Subcategory ساعت مربع به Hybrid resolver.
+- `src/app/(storefront)/products/[slug]/page.tsx` — Public DB-first / Mock-second Product resolver با حفظ UI Mock موجود.
+- `ARFAM-Gallery-Master-Project-History-FA.md` — ثبت Step 12E-3 و Handoff.
+
+### QA Results
+
+- Direct Hybrid Resolver QA روی Development Database: PASS.
+- Scope guard فقط برای `clocks / square-wall-clocks`: PASS.
+- منبع فعلی مسیر هدف به دلیل unpublished بودن Product واقعی: Mock؛ تعداد Product قابل نمایش فعلی: صفر.
+- چهار Product Detail قدیمی Mock با source صحیح Mock resolve شدند.
+- `internal-square-wall-clock` در Public resolver برابر null و در Production HTTP برابر 404 است.
+- Public target listing هیچ internal slug یا Asset واقعی ساعت را Render نکرد.
+- سایر Subcategoryها مسیر Mock قبلی را حفظ کردند؛ `decorative-vases` همچنان Product Mock مربوط را نمایش می‌دهد.
+- Homepage، Collections، Collections detail و چهار Product Detail Mock در Production HTTP با Status 200 پاسخ دادند.
+- Missing Product نیز 404 باقی ماند.
+- هیچ Internal QA helper در Public Route یا Hybrid adapter import نشده است.
+- Lint: PASS.
+- Type Check: PASS.
+- Production Build: PASS؛ 67 Route تولید شد و چهار Mock Product route همچنان SSG هستند.
+- Schema، Migration، Database record، Cart، Admin، Homepage و Collections تغییر نکردند.
+
+### Pending Decisions Preserved
+
+- Product Configurator و UI/behavior انتخاب Size، Finish و Variant.
+- Listing Price Rule و نحوه نمایش قیمت‌های Variant در Card.
+- Slug رسمی Product و Publish state.
+- SKU، وضعیت و قیمت 90×90، Inventory/Made-to-order و Color Option رسمی بدنه.
+- Variant-aware Cart و migration داده localStorage.
+- زمان حذف Gate موقت Product Detail واقعی فقط پس از آماده‌شدن Configurator و تأیید Publish.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-08
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12E-3 — Hybrid Read Integration
+- **Current Status:** اتصال محدود Hybrid برای ساعت دیواری مربع و DB-first Product resolver پیاده‌سازی و QA شده‌اند؛ Product واقعی همچنان unpublished و از Public UI پنهان است. در انتظار بررسی و تأیید Step 12E-3.
+- **Last Approved Commit:** 7c97e17bda6141a3c7f13b8ff62ddf7446322768 — feat(catalog): add storefront database query foundation
+- **Current Branch:** main
+- **Working Tree Status:** فقط چهار فایل مربوط به Step 12E-3 Uncommitted هستند؛ Commit/Push انجام نشده است.
+
+### Files Changed
+
+- `src/lib/catalog/hybrid-storefront.ts`
+- `src/app/(storefront)/products/category/[categorySlug]/[subcategorySlug]/page.tsx`
+- `src/app/(storefront)/products/[slug]/page.tsx`
+- `ARFAM-Gallery-Master-Project-History-FA.md`
+
+### Runtime State
+
+- مسیر هدف DB-first است، اما به دلیل unpublished بودن ساعت Public DB Card ندارد و فقط Legacy Mock همان Subcategory را fallback می‌کند؛ آن Subcategory اکنون Product Mock ندارد، پس صفحه خالی قبلی حفظ شده است.
+- سایر Subcategoryها و تمام Mock Productها رفتار قبلی دارند.
+- Product Detail ابتدا Public DB و سپس Mock را resolve می‌کند؛ Product unpublished با slug داخلی قابل دسترسی عمومی نیست.
+- DB و Mock در هیچ Listing با هم Merge نمی‌شوند.
+
+### Exact NEXT ACTION
+
+- بررسی و تأیید Step 12E-3 قبل از Product Configurator.
+- تا پیش از تأیید صریح، Step 12E-4 شروع نشود و هیچ Productی Publish نشود.
+
+### DO NOT CHANGE
+
+- Product Publish state و slug موقت `internal-square-wall-clock`.
+- Luxury UI، Layout، Typography، Motion، Logo، Signature Background و Responsive behavior.
+- Homepage، Collections، سایر Category/Subcategoryها، Mock Catalog، Cart، Checkout، Admin و Auth.
+- Schema/Migration، Database records، Product/Variant/Option/Price/SKU و تصاویر رسمی.
+
+### How to Resume
+
+1. `git status` و Diff چهار فایل Step 12E-3 را بررسی کن.
+2. Lint، Type Check، Production Build، Direct Resolver QA و HTTP Route QA ثبت‌شده را مبنا قرار بده.
+3. تأیید User را برای Step 12E-3 دریافت کن.
+4. Product Configurator را فقط با دستور صریح مرحله بعد آغاز کن.

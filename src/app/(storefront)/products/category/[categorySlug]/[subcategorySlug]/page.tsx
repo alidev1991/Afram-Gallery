@@ -7,6 +7,10 @@ import { Reveal, RevealGroup } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
 import { getProductsForSubcategory } from "@/data/catalog";
 import {
+  getSquareWallClockHybridCatalog,
+  isSquareWallClockDatabaseScope,
+} from "@/lib/catalog/hybrid-storefront";
+import {
   getProductCategory,
   getProductSubcategory,
   productCategories,
@@ -41,7 +45,16 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
     notFound();
   }
 
-  const products = getProductsForSubcategory(category.slug, subcategory.slug);
+  const catalog = isSquareWallClockDatabaseScope(category.slug, subcategory.slug)
+    ? await getSquareWallClockHybridCatalog()
+    : {
+        source: "mock" as const,
+        products: getProductsForSubcategory(category.slug, subcategory.slug),
+      };
+
+  // Database Presentation cards stay behind the current publish/configurator gate.
+  // Step 12E-4 will adapt them to the locked card UI without inventing a price rule.
+  const products = catalog.source === "mock" ? catalog.products : [];
 
   return (
     <main id="main-content" className="bg-canvas">

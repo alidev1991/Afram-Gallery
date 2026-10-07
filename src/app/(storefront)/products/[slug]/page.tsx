@@ -6,9 +6,10 @@ import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import { ProductGallery } from "@/components/catalog/product-gallery";
 import { Reveal } from "@/components/motion/reveal";
 import { Container } from "@/components/ui/container";
-import { catalogProducts, getProductBySlug } from "@/data/catalog";
+import { catalogProducts } from "@/data/catalog";
 import { getProductCategory } from "@/data/site-structure";
 import { formatToman } from "@/lib/format-price";
+import { resolveHybridStorefrontProductBySlug } from "@/lib/catalog/hybrid-storefront";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -22,26 +23,41 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const resolution = await resolveHybridStorefrontProductBySlug(slug);
 
-  if (!product) {
+  if (!resolution) {
     return {};
   }
 
+  const description =
+    resolution.source === "database"
+      ? resolution.product.shortDescription ??
+        resolution.product.description ??
+        resolution.product.longDescription ??
+        undefined
+      : resolution.product.description;
+
   return {
-    title: product.name,
-    description: product.description,
+    title: resolution.product.name,
+    description,
   };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const resolution = await resolveHybridStorefrontProductBySlug(slug);
 
-  if (!product) {
+  if (!resolution) {
     notFound();
   }
 
+  // Public Database products remain behind the Product Configurator gate.
+  // The current real product is unpublished, so this guard cannot affect public UI.
+  if (resolution.source === "database") {
+    notFound();
+  }
+
+  const product = resolution.product;
   const category = getProductCategory(product.categorySlug);
 
   return (
