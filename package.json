@@ -13,7 +13,8 @@
     "prisma:generate": "prisma generate",
     "db:migrate": "cross-env RUST_LOG=info prisma migrate dev",
     "db:migrate:deploy": "cross-env RUST_LOG=info prisma migrate deploy",
-    "db:migrate:status": "cross-env RUST_LOG=info prisma migrate status"
+    "db:migrate:status": "cross-env RUST_LOG=info prisma migrate status",
+    "catalog:import:square-clock": "node prisma/imports/official-square-wall-clock.mjs"
   },
   "dependencies": {
     "@node-rs/argon2": "2.2.1",

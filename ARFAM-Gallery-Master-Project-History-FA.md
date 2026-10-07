@@ -3139,7 +3139,7 @@ AI/Codex بتواند پروژه را از صفر بفهمد و بدون از د
 
 ------------------------------------------------------------------------
 
-## CURRENT PROJECT STATE / HANDOFF
+## HANDOFF ARCHIVE — AFTER STEP 12C
 
 - **Last Updated:** 2026-10-07
 - **Current Phase:** Phase 12 — Real Product & Catalog
@@ -3184,3 +3184,165 @@ AI/Codex بتواند پروژه را از صفر بفهمد و بدون از د
 3. نتایج Prisma/Lint/Type Check/Build/diff-check این Handoff را مبنا قرار بده.
 4. تأیید Commit/Push در 2026-10-07 صادر شده است؛ بعد از Push وضعیت sync و clean بودن Working Tree را گزارش کن.
 5. Step 12D را فقط با درخواست مستقل آغاز کن.
+
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12D-1 FIRST REAL ARFAM PRODUCT IMPORT
+
+### Status
+
+- تاریخ اجرا: 2026-10-07.
+- وضعیت: پیاده‌سازی، QA و نتیجه Step 12D-1 توسط User تأیید نهایی شده‌اند؛ آماده Commit/Push.
+- اولین Product واقعی ARFAM در Development Database ثبت شد.
+- Scope فقط nullable SKU migration، import idempotent داده رسمی ساعت مربع و مستندات است.
+- Storefront، Cart، Checkout، Admin CRUD و تصاویر تغییر نکردند؛ Step 12D-2 شروع نشده است.
+
+### Nullable SKU Decision and Migration
+
+- هنگام شروع import مشخص شد `Product.sku` و `ProductVariant.sku` required هستند، درحالی‌که SKU رسمی هنوز تعیین نشده و ساخت SKU موقت/تجاری ممنوع است.
+- با تأیید صریح User هر دو فیلد به `String? @unique` تغییر کردند؛ SKU همچنان در صورت وجود unique است و چند رکورد بدون SKU می‌توانند `null` داشته باشند.
+- Migration جدید: `20261007164151_allow_null_catalog_sku`.
+- Migration با redefinition ایمن SQLite مقدار تمام SKUهای موجود را حفظ می‌کند و فقط nullability را آزاد می‌کند.
+- Backup پیش از Migration: `data/backups/arfam-pre-step12d1-nullable-sku-20261007.db`؛ مسیر `data/` Git ignored است.
+- Migration روی دیتابیس خالی و کپی واقعی Development DB آزمایش شد؛ integrity برابر `ok`، foreign key error برابر صفر و تعداد Product/Variant پیش از import صفر بود.
+
+### Idempotent Import
+
+- Import source: `prisma/imports/official-square-wall-clock.mjs`.
+- Command: `npm run catalog:import:square-clock`.
+- Import فقط پس از تأیید applied بودن Migration nullable SKU اجرا می‌شود، داخل transaction است و اجرای دوباره duplicate ایجاد نمی‌کند.
+- اجرای دوم idempotency نیز انجام شد و تمام countها ثابت ماندند.
+
+### Records Created
+
+- Category: یک رکورد `ساعت` با slug موجود سایت `clocks`.
+- Subcategory: یک رکورد `ساعت دیواری مربع` با slug موجود سایت `square-wall-clocks`.
+- Product: یک رکورد با نام عمومی و واقعی `ساعت دیواری مربع`.
+- Product internal id: `product_square_wall_clock`.
+- Product temporary internal slug: `internal-square-wall-clock`؛ این مقدار نام رسمی مدل نیست و Product فعلاً unpublished است.
+- Product `model = null` و `sku = null` باقی ماندند.
+- Product legacy `priceToman = 9,800,000` فقط برای سازگاری ستون Legacy و از پایین‌ترین قیمت رسمی استفاده می‌کند؛ منبع قیمت Catalog، Variant است.
+- Product legacy `stock = 0` است؛ هیچ Inventory/Made-to-order rule از آن استنتاج نمی‌شود.
+- متن رسمی پنج‌پاراگرافی Product بدون بازنویسی در `longDescription` ذخیره و exact-match آن در QA تأیید شد.
+
+### Options and Values
+
+- Option required `سایز` با slug داخلی `size`.
+- سه Value رسمی: `65×65 سانتی‌متر`، `80×80 سانتی‌متر` و `100×100 سانتی‌متر`.
+- Option required `فینیش استیل` با slug داخلی `steel-finish`.
+- سه Value رسمی: `طلایی`، `سیلور` و `دودی`.
+- هیچ Color Option یا Color Value ساخته نشد، زیرا نام و کد رسمی رنگ بدنه هنوز تأیید نشده است.
+- `90×90` هیچ Option Value، Variant یا قیمت ندارد و Pending باقی مانده است.
+
+### Variants and Prices
+
+- ۹ Variant معتبر از سه سایز × سه فینیش ساخته شد.
+- هر Variant دقیقاً دو Option Value دارد: یک سایز و یک فینیش.
+- هر ۹ مقدار `ProductVariant.sku` برابر `null` است؛ هیچ SKU موقت یا ساختگی تولید نشد.
+- سه Variant سایز `65×65`، هرکدام `9,800,000` تومان.
+- سه Variant سایز `80×80`، هرکدام `10,800,000` تومان.
+- سه Variant سایز `100×100`، هرکدام `11,800,000` تومان.
+- `inventoryPolicy` و `stockQuantity` همه Variantها `null` هستند و Inventory rule هنوز Pending است.
+- `combinationKey`ها شناسه فنی داخلی canonical بر پایه size/finish slug هستند و نام یا SKU تجاری محسوب نمی‌شوند.
+
+### Presentations
+
+- سه Presentation متعلق به همان Product ساخته شد؛ هیچ Product یا SKU تکراری ایجاد نشد.
+- `تیره + طلایی` با slug داخلی `internal-dark-gold`.
+- `تیره + سیلور` با slug داخلی `internal-dark-silver`.
+- `تیره + دودی` با slug داخلی `internal-dark-smoke`.
+- هر Presentation فقط به Finish Value مربوط متصل است؛ `تیره` به‌عنوان Color Value رسمی ذخیره نشد.
+- تعداد ProductImage صفر است و هیچ تصویر یا Asset در Step 12D-1 اضافه نشد.
+
+### Specifications
+
+- ۲۲ Specification رسمی و Admin-driven ثبت شد: خانواده، فرم، برند، طراحی و تولید، نوع، جنس بدنه، رنگ بدنه، جنس اعداد، جنس فریم، ضخامت استیل، فینیش استیل، قابلیت شخصی‌سازی، سبک‌های پیشنهادی، نوع موتور، صدای موتور، نحوه نصب، ضمانت موتور، ضمانت رنگ بدنه، بسته‌بندی، ارسال، کشور تولیدکننده و سازنده.
+- مقادیر دقیق از متن تأییدشده User وارد شدند و مشخصات ساعت گرد یا مقدار ساختگی اضافه نشد.
+
+### QA Results
+
+- Prisma format: PASS.
+- Prisma validate: PASS.
+- Prisma generate با Prisma Client 7.10.0: PASS.
+- Migration status: PASS؛ سه Migration و Database schema up to date.
+- Migration روی Empty DB: PASS.
+- Migration روی Copy واقعی Development DB: PASS.
+- SQLite integrity: `ok`.
+- SQLite foreign key check: صفر خطا.
+- Import idempotency: PASS.
+- Product/Option/Variant/Presentation ownership و relation counts: PASS.
+- Product SKU null و تمام Variant SKUها null: PASS.
+- قیمت‌ها: PASS؛ سه گروه 9,800,000 / 10,800,000 / 11,800,000 و هر گروه سه Variant.
+- متن رسمی Product exact-match: PASS.
+- نبود `90×90`، Color Value، تصویر و ساعت گرد: PASS.
+- Lint: PASS.
+- Type Check: PASS.
+- Production Build: PASS؛ 67 route بدون خطا تولید شد.
+
+### Pending Decisions
+
+- نام رسمی مدل و Product slug نهایی.
+- SKU convention و SKU رسمی Product/Variantها.
+- نام‌ها، کدها و Swatchهای رسمی رنگ بدنه.
+- وضعیت و قیمت `90×90`.
+- Inventory/Made-to-order، Out-of-stock و Preorder behavior.
+- تصاویر Product/Presentation/Variant، Alt Text و Production Storage Provider.
+- اطلاعات و مدل تجاری ساعت گرد.
+- اتصال Runtime Storefront/Cart/Admin به Catalog Database.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-07
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12D-1 — First Real ARFAM Product Import
+- **Current Status:** nullable SKU migration و ورود idempotent ساعت مربع تکمیل، QA و تأیید نهایی شده‌اند؛ آماده Commit/Push با پیام `feat(catalog): import first real ARFAM product`. Step 12D-2 شروع نشده است.
+- **Last Approved Commit:** e060cf1a8d661ae03f9a049eae5e14f7849f2788 — feat(catalog): add real product catalog foundation
+- **Current Branch:** main
+- **Working Tree Status:** فقط تغییرات تأییدشده Step 12D-1 آماده Commit هستند؛ هیچ تصویر یا تغییر Storefront، Cart و Admin در Scope نیست.
+
+### Files Changed
+
+- `prisma/schema.prisma`
+- `prisma/migrations/20261007164151_allow_null_catalog_sku/migration.sql`
+- `prisma/imports/official-square-wall-clock.mjs`
+- `package.json`
+- `ARFAM-Gallery-Master-Project-History-FA.md`
+
+### Database State
+
+- Category: 1، Subcategory: 1، Product: 1.
+- ProductOption: 2، ProductOptionValue: 6.
+- ProductVariant: 9، VariantOptionValue: 18.
+- ProductPresentation: 3، PresentationOptionValue: 3.
+- ProductSpecification: 22، ProductImage: 0.
+- Product SKU و تمام Variant SKUها: `null`.
+- Product منتشر نشده است و Storefront همچنان Mock-driven باقی مانده است.
+
+### Known Issues / Preserved Items
+
+- Navigation Freeze همان Known/Intermittent قبلی است و در این Step تغییر نکرد.
+- تصاویر هنوز متصل نشده‌اند و ساعت گرد وارد Database نشده است.
+- Legacy Product price/stock هنوز برای Migration تدریجی باقی مانده‌اند.
+- Password Recovery و Production security pendingهای Phase 11 حفظ شده‌اند.
+
+### Exact NEXT ACTION
+
+- تغییرات تأییدشده Step 12D-1 با پیام `feat(catalog): import first real ARFAM product` روی `main` Commit و به `origin/main` Push شوند.
+- پس از Push متوقف شو؛ Step 12D-2 فقط با دستور صریح جداگانه و برای اتصال تصاویر رسمی آغاز شود.
+
+### DO NOT CHANGE
+
+- Storefront، Cart، Checkout، Admin CRUD، Auth، Luxury UI، Logo، Motion و Signature Background.
+- متن رسمی Product بدون بازنویسی.
+- SKUها تا دریافت مقدار رسمی `null` بمانند.
+- برای رنگ بدنه، 90×90، ساعت گرد، Inventory یا Storage Provider داده و Rule اختراع نشود.
+
+### How to Resume
+
+1. `git status` و پنج مسیر Uncommitted ثبت‌شده را بررسی کن.
+2. Migration status و Database counts این Handoff را تأیید کن.
+3. در صورت نیاز `npm run catalog:import:square-clock` را idempotent اجرا کن.
+4. تأیید Commit/Push صادر شده است؛ پس از Push وضعیت clean و sync را گزارش کن.
+5. Step 12D-2 را فقط با Assetها و دستور صریح آغاز کن.

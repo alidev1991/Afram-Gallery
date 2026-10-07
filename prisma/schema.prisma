@@ -147,7 +147,7 @@ model Product {
   shortDescription String?
   longDescription  String?
   model            String?
-  sku              String    @unique
+  sku              String?   @unique
   priceToman       Int
   stock            Int       @default(0)
   isActive         Boolean   @default(true)
@@ -213,7 +213,7 @@ model ProductImage {
 model ProductVariant {
   id              String   @id @default(cuid())
   productId       String
-  sku             String   @unique
+  sku             String?  @unique
   priceToman      Int
   combinationKey  String
   position        Int      @default(0)
