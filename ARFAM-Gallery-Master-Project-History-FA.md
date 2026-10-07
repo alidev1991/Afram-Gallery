@@ -3426,7 +3426,7 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 
 ------------------------------------------------------------------------
 
-## CURRENT PROJECT STATE / HANDOFF
+## HANDOFF ARCHIVE — AFTER STEP 12D-2
 
 - **Last Updated:** 2026-10-07
 - **Current Phase:** Phase 12 — Real Product & Catalog
@@ -3472,3 +3472,116 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 2. Migration status و رکوردهای 7 تصویر را دوباره تأیید کن.
 3. در صورت تأیید User، تغییرات Step 12D-2 را Commit و Push کن.
 4. تا پیش از دستور مستقل، Storefront را به Database متصل نکن و مرحله بعد را شروع نکن.
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12E-2 STOREFRONT QUERY FOUNDATION
+
+### Status
+
+- تاریخ اجرا: 2026-10-08.
+- وضعیت: پیاده‌سازی و QA تکمیل شده و در انتظار بررسی و تأیید است.
+- Scope فقط DTOهای مستقل و Repository امن Server-only برای خواندن Catalog واقعی است.
+- هیچ Route یا UI به Repository متصل نشد؛ Product واقعی منتشر نشد و Mock Data، Cart، Checkout، Admin، Schema و Migration تغییر نکردند.
+
+### Architecture
+
+- DTOهای Catalog در `src/types/storefront-catalog.ts` از Prisma مستقل‌اند و فقط داده‌های JSON-serializable دارند؛ هیچ Raw Prisma Model، Relation object یا Date به Client boundary منتقل نمی‌شود.
+- Repository در `src/lib/catalog/storefront-repository.ts` با `server-only` و Prisma singleton موجود کار می‌کند.
+- Selectهای Prisma فقط فیلدها و Relationهای لازم Product، Category، Subcategory، Option/Value، Variant/VariantOptionValue، Presentation/PresentationOptionValue، ProductImage و Specification را می‌خوانند.
+- `Product.priceToman` Legacy عمداً select نمی‌شود؛ تمام قیمت‌های DTO از `ProductVariant.priceToman` می‌آیند.
+- DTO تصویر در سه سطح Variant، Presentation و Product نگه داشته می‌شود تا Fallback آینده به ترتیب Variant → Presentation → Product و بدون تصویر ساختگی ممکن باشد.
+- Product-level images فقط رکوردهایی هستند که `variantId` و `presentationId` هر دو null دارند؛ `SIZE_GUIDE` فعلی در همین سطح قرار گرفت.
+
+### Public Query Rules
+
+- `getPublicStorefrontProductBySlug` فقط Product فعال، published و non-VIP با Category فعال و Subcategory فعال یا null را برمی‌گرداند.
+- `getPublicPresentationCardsForSubcategory` همان Visibility rules را همراه Category/Subcategory slug enforce می‌کند.
+- فقط Option/Value، Variant و Presentation فعال خوانده می‌شوند.
+- Listing Card فقط از Presentationهای `showInListing = true` ساخته می‌شود.
+- Primary Image در Scope همان Presentation انتخاب می‌شود، نه در سطح عمومی Product.
+- Repository هیچ Import یا وابستگی به `src/data/catalog.ts` و سایر Mock Dataها ندارد.
+
+### Internal QA Queries
+
+- `getInternalStorefrontProductBySlugForQa` امکان بررسی Product unpublished موجود را بدون تغییر Publish state فراهم می‌کند.
+- `getInternalPresentationCardsByProductSlugForQa` سه Listing DTO Presentation را از همان Product می‌سازد.
+- Helperهای QA در `NODE_ENV=production` عمداً Error می‌دهند و قابل استفاده به‌عنوان Public bypass نیستند.
+
+### Presentation and PDP DTOs
+
+- هر Presentation Card شامل Product ID، Presentation ID، `cardKey` یکتا، نام Product، عنوان Presentation، Product slug، Primary Presentation image، preselected Option Valueها و قیمت Variantهای سازگار است.
+- سه Presentation طلایی، سیلور و دودی از یک Product و یک Product slug، با سه `cardKey` مستقل استخراج شدند.
+- هر Card فینیش متصل خود را به‌عنوان `steel-finish` preselection دارد و سه Variant قیمت‌دار متناظر با سایزهای رسمی را حمل می‌کند؛ هیچ Listing Price Rule در این Step انتخاب نشد.
+- Product Detail DTO شامل content، taxonomy، options/values، variant matrix، variant prices، presentations، تصاویر سه‌سطحی، specifications و `SIZE_GUIDE` است.
+
+### QA Results
+
+- Direct Repository QA روی Development Database: PASS.
+- Public Product Query برای `internal-square-wall-clock`: null، مطابق unpublished بودن Product.
+- Public Presentation Query برای `clocks/square-wall-clocks`: صفر Card.
+- Internal Product Query: یک ساعت دیواری مربع، 2 Option، 6 Option Value، 9 Variant، 3 Presentation و 22 Specification.
+- Internal Presentation Cards: سه Card با عنوان‌های تیره + طلایی، تیره + سیلور و تیره + دودی.
+- Variant prices: سه Variant با 9,800,000، سه Variant با 10,800,000 و سه Variant با 11,800,000 تومان.
+- Images: هفت رکورد؛ شش Presentation image و یک Product-level `SIZE_GUIDE`؛ Variant image صفر.
+- هر سه Product Shot همان Presentation primary هستند؛ سه Lifestyle image non-primary هستند.
+- DTO serialization: PASS؛ هیچ `createdAt`، `updatedAt` یا Date در خروجی وجود ندارد.
+- Production guard برای Internal QA helpers: PASS.
+- Lint: PASS.
+- Type Check: PASS.
+- هیچ Route، Component، Mock Data، Database record، Schema یا Migration تغییر نکرد.
+
+### Pending Decisions Preserved
+
+- Slug رسمی Product و Publish state.
+- SKU و Color Option رسمی بدنه.
+- وضعیت و قیمت 90×90.
+- Listing Price Rule؛ DTO فقط قیمت Variantهای سازگار را ارائه می‌کند.
+- Inventory/Made-to-order behavior.
+- Image dimensions metadata و Production Storage Provider.
+- Variant-aware Cart و migration داده localStorage.
+- اتصال Hybrid صفحات Public در Step 12E-3.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-08
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12E-2 — Storefront Query Foundation
+- **Current Status:** DTOهای Serializable و Repository Server-only پیاده‌سازی و با داده واقعی ساعت QA شده‌اند؛ در انتظار بررسی و تأیید Step 12E-2. هیچ Public Route هنوز به Database متصل نیست.
+- **Last Approved Commit:** 0dde9ae444541cbb55ae964ea7b10f1c994150b0 — feat(catalog): add official square clock imagery
+- **Current Branch:** main
+- **Working Tree Status:** فقط سه فایل مربوط به Step 12E-2 Uncommitted هستند؛ Commit/Push انجام نشده است.
+
+### Files Changed
+
+- `src/types/storefront-catalog.ts` — جدید؛ DTOهای مستقل از Prisma.
+- `src/lib/catalog/storefront-repository.ts` — جدید؛ Query/Mapper server-only و Internal QA helpers.
+- `ARFAM-Gallery-Master-Project-History-FA.md` — ثبت Step 12E-2 و Handoff.
+
+### Repository State
+
+- Public queries Product unpublished، inactive، VIP یا دارای taxonomy غیرفعال را برنمی‌گردانند.
+- ساعت فعلی به دلیل `isPublished = false` در Public Query پنهان باقی مانده است.
+- Internal QA بدون تغییر Database، سه Presentation، 9 Variant، 7 Image و `SIZE_GUIDE` را تأیید کرده است.
+- هیچ Mock fallback یا UI adapter هنوز در Repository وجود ندارد و هیچ Route آن را import نمی‌کند.
+
+### Exact NEXT ACTION
+
+- بررسی و تأیید Step 12E-2 قبل از Hybrid Read Integration.
+- پس از تأیید، فقط تغییرات Step 12E-2 Commit/Push شوند یا با دستور صریح User برنامه Step 12E-3 آغاز شود.
+- تا پیش از دستور مستقل، هیچ Route عمومی به Repository متصل نشود و Product publish نشود.
+
+### DO NOT CHANGE
+
+- Luxury UI، Layout، Typography، Motion، Logo، Signature Background و Responsive behavior.
+- Storefront Routes، Mock Catalog، Cart، Checkout، Admin و Auth در Step 12E-2.
+- Product slug، Publish state، SKU، Price data، Variantها، Options و تصاویر رسمی.
+- Schema/Migration و Database records.
+
+### How to Resume
+
+1. `git status` و Diff سه فایل Step 12E-2 را بررسی کن.
+2. Lint، Type Check، Build و Direct Repository QA ثبت‌شده را مبنا قرار بده.
+3. تأیید User را برای Step 12E-2 دریافت کن.
+4. Step 12E-3 Hybrid Read Integration را فقط با دستور صریح جداگانه شروع کن.
