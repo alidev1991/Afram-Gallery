@@ -3814,3 +3814,92 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 2. Matrix QA، Visual QA، Lint، Type Check، Build و Production route checks ثبت‌شده را مبنا قرار بده.
 3. تأیید User را برای Step 12E-4 دریافت کن.
 4. Step 12E-5 را فقط با دستور صریح جداگانه شروع کن.
+
+------------------------------------------------------------------------
+
+## OFFICIAL ABOUT ARFAM & BRAND STORY COMPLETION
+
+### Status — 2026-10-11
+
+- مرجع رسمی محتوا در `ARFAM-Official-Brand-Content-FA.md` حفظ و هر سه متن بدون بازنویسی، حذف یا حدس محتوایی وارد Storefront شدند.
+- Homepage اکنون متن کامل «جهان آرفام، فراتر از یک انتخاب» را در DOM دارد؛ کاهش دید تدریجی فقط Presentation بصری است و CTA دقیق «بیشتر درباره آرفام» به `/about` متصل است.
+- `/about` متن معرفی را کامل و خوانا نمایش می‌دهد و دو مسیر Editorial برای `/about/brand-story` و `/about/design-production` دارد.
+- دو صفحه مستقل، تمام عنوان‌ها و بندهای رسمی «داستان آرفام؛ جایی که انتخاب، به هویت تبدیل می‌شود» و «طراحی و تولید در آرفام؛ از ایده تا فرم» را نمایش می‌دهند.
+- تطبیق خودکار خط‌به‌خط با مرجع رسمی: متن معرفی 6/6، داستان برند 26/26 و طراحی و تولید 33/33، همگی Exact Match.
+- QA فنی: Lint، Type Check و Production Build موفق؛ سه Route مربوط به About در Build تولید شدند.
+- QA کمکی Browser در 1440px و 390px: Routeها، Click/Back، Hit Target لینک‌ها، 5 بند معرفی، تمام Headingها، نبود Horizontal Overflow، صفر Broken Image و صفر Console/Network error تأیید شد.
+- دسترسی به Chrome واقعی User به علت خروج غیرمنتظره ابزار کنترل مرورگر ممکن نشد؛ QA ایزوله فقط کمکی است و تأیید دستی User همچنان الزامی است.
+- مشکل intermittent Rendering قبلی باز و بدون Root Cause قطعی باقی مانده است؛ این تغییر آن را Fixed اعلام نمی‌کند.
+- Hero، Header، Footer، Catalog، Cart، Admin، Auth، Checkout، Product publish state و داده‌های رسمی محصول تغییر داده نشدند.
+
+### Permanent Official Content Rule
+
+- **هر محتوای رسمی که مستقیماً توسط Client/Omid ارائه می‌شود، مرجع قطعی است و بدون تأیید صریح Client نباید حذف، بازنویسی، خلاصه‌سازی، جایگزین یا با متن حدسی تکمیل شود.**
+- Presentation بصری مانند Fade مجاز است فقط اگر متن رسمی کامل در Source/DOM حفظ و مسیر دسترسی کامل و خوانا فراهم باشد.
+
+### Files Added / Changed for This Work
+
+- Added: `src/content/official-brand-content.ts`
+- Added: `src/components/brand/official-brand-article.tsx`
+- Added: `src/app/(storefront)/about/brand-story/page.tsx`
+- Added: `src/app/(storefront)/about/design-production/page.tsx`
+- Changed: `src/components/home/brand-story.tsx`
+- Changed: `src/app/(storefront)/about/page.tsx`
+- Changed: `src/app/globals.css`
+- Changed: `ARFAM-Gallery-Master-Project-History-FA.md`
+- Reference preserved: `ARFAM-Official-Brand-Content-FA.md`
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-11
+- **Current Phase:** Phase 12 — Real Product & Catalog + Official Brand Content Completion
+- **Current Status:** بخش رسمی About/Brand Story پیاده‌سازی و از نظر فنی QA شده است؛ تأیید دستی Visual/Text در Chrome واقعی User پیش از Commit/Push Pending است. Rendering intermittent قبلی همچنان باز است.
+- **Last Approved Commit:** `29bd003d644cb64a0a6c327b743dd7754d4252b9` — `feat(catalog): add real product configurator`
+- **Current Branch:** `main`
+- **Working Tree:** تغییرات About در کنار تمام تغییرات Uncommitted قبلی Step 12E-5 حفظ شده‌اند؛ Commit/Push انجام نشده است.
+
+### Completed Work
+
+- منبع داده مشترک و Type-safe برای سه متن رسمی ایجاد شد.
+- Homepage preview با Fade غیرمخرب و CTA رسمی تکمیل شد.
+- About overview و دو صفحه Editorial مستقل تکمیل شدند.
+- Exact content comparison، Lint، Type Check، Build و Browser QA کمکی موفق بودند.
+
+### QA Done / Pending
+
+- Done: تطبیق Exact متن‌ها؛ Desktop 1440 و Mobile 390 کمکی؛ Route/Click/Back؛ overflow؛ Console/Network؛ Lint؛ Type Check؛ Production Build.
+- Pending: مشاهده و تأیید دستی Homepage، About و دو صفحه رسمی در Chrome معمولی User؛ Mobile 390 واقعی User؛ بررسی Rendering intermittent در همان Profile.
+
+### DO NOT CHANGE
+
+- متن‌های رسمی Client/Omid بدون تأیید صریح بازنویسی، حذف یا خلاصه نشوند.
+- Luxury Design Lock، Hero، Header/Footer، Official Logo، Signature Background و Motion بدون نیاز تغییر نکنند.
+- Product unpublished و Publish gate حفظ شوند؛ Catalog/Cart/Admin/Auth/Checkout/Order/Payment خارج از Scope این کار تغییر نکنند.
+- تغییرات Uncommitted قبلی Step 12E-5 Reset/Revert/Discard نشوند.
+
+### Exact NEXT ACTION
+
+- **بررسی و تأیید دستی Homepage، صفحه About، داستان برند و طراحی و تولید توسط کاربر، همراه با تأیید تطابق کامل متن‌های رسمی پیش از Commit/Push.**
+
+### How to Resume
+
+1. Dev Server تازه را روی `http://localhost:3000` در Chrome معمولی User باز کن.
+2. Homepage → «بیشتر درباره آرفام» → About → هر دو مطلب Editorial را بررسی کن.
+3. متن‌ها، Fade Homepage، خوانایی کامل About و Mobile 390 را با مرجع رسمی تأیید کن.
+4. اگر Rendering گیر کرد، قبل از Refresh شواهد Console/RSC/Server Log را ثبت کن.
+5. تا تأیید User هیچ Commit/Push یا Phase جدید انجام نشود.
+
+
+------------------------------------------------------------------------
+
+## OFFICIAL ABOUT ARFAM — FINAL USER APPROVAL
+
+### Status — 2026-10-14
+
+- Homepage Brand Introduction، صفحه About، داستان برند و طراحی و تولید توسط User تأیید نهایی شدند.
+- هر سه متن با `ARFAM-Official-Brand-Content-FA.md` Exact Match باقی مانده‌اند.
+- این تأیید فقط Scope رسمی About/Brand را پوشش می‌دهد؛ تغییرات Uncommitted مربوط به Step 12E-5 همچنان تأییدنشده، حفظ‌شده و خارج از Commit این بخش هستند.
+- مشکل intermittent Rendering همچنان Open است و این تأیید یا Commit آن را Fixed اعلام نمی‌کند.
+- اقدام مجاز بعدی فقط Commit/Push انتخابی فایل‌های About/Brand و مرجع رسمی با پیام مصوب است؛ هیچ Feature یا Phase جدیدی آغاز نمی‌شود.

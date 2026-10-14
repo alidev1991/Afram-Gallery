@@ -129,6 +129,23 @@ a {
     var(--arfam-color-matte);
 }
 
+.brand-preview-fade {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 48%,
+    rgb(0 0 0 / 82%) 74%,
+    rgb(0 0 0 / 46%) 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 48%,
+    rgb(0 0 0 / 82%) 74%,
+    rgb(0 0 0 / 46%) 100%
+  );
+}
+
 .storefront-signature-background {
   background-image: url("/media/brand/arfam-signature-background.webp");
   background-position: 28% center;
@@ -153,6 +170,13 @@ body:has(.home-hero) .site-header {
   backdrop-filter: none;
 }
 
+@media (prefers-contrast: more) {
+  .brand-preview-fade {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
 @media (max-width: 47.999rem) {
   :root {
     --arfam-header-height: 4.5rem;
@@ -160,6 +184,23 @@ body:has(.home-hero) .site-header {
 
   body {
     font-size: 0.9375rem;
+  }
+
+  .brand-preview-fade {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 58%,
+      rgb(0 0 0 / 86%) 80%,
+      rgb(0 0 0 / 68%) 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 58%,
+      rgb(0 0 0 / 86%) 80%,
+      rgb(0 0 0 / 68%) 100%
+    );
   }
 
   .storefront-signature-background {
