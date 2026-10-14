@@ -81,7 +81,9 @@ export function ProductConfigurator({
                 delay={Math.min(index * 0.06, 0.18)}
               >
                 <figure
-                  className={`relative aspect-square overflow-hidden bg-matte ${
+                  className={`relative aspect-square overflow-hidden ${
+                    image.imageType === "PRODUCT" ? "bg-transparent" : "bg-matte"
+                  } ${
                     index === 0 ? "" : "sm:ms-auto sm:w-4/5"
                   }`}
                   data-image-type={image.imageType}
