@@ -3903,3 +3903,184 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 - این تأیید فقط Scope رسمی About/Brand را پوشش می‌دهد؛ تغییرات Uncommitted مربوط به Step 12E-5 همچنان تأییدنشده، حفظ‌شده و خارج از Commit این بخش هستند.
 - مشکل intermittent Rendering همچنان Open است و این تأیید یا Commit آن را Fixed اعلام نمی‌کند.
 - اقدام مجاز بعدی فقط Commit/Push انتخابی فایل‌های About/Brand و مرجع رسمی با پیام مصوب است؛ هیچ Feature یا Phase جدیدی آغاز نمی‌شود.
+
+------------------------------------------------------------------------
+
+## OFFICIAL ARFAM HERO SLIDER — THREE OMID IMAGES
+
+### Status — 2026-10-14
+
+- Hero ثابت Homepage با یک اسلایدر سه‌تصویری محدود و هماهنگ با طراحی Luxury موجود جایگزین شد.
+- سه تصویر رسمی ارائه‌شده توسط امید، دقیقاً مطابق ترتیب فایل‌های دریافتی، بدون ویرایش محتوایی یا recompression در `public/media/hero` نگهداری شدند.
+- SHA-256 هر Source و Asset مقصد برابر است؛ تصویر قبلی `public/media/hero-demo.webp` نیز حذف نشد.
+- تصاویر هر 5 ثانیه با Fade نرم 1200ms تعویض می‌شوند و پس از اسلاید سوم به اول بازمی‌گردند.
+- کنترل دستی قبلی/بعدی چرخه‌ای، 44×44، دارای label دسترس‌پذیری، Hover/Focus/Active و مناسب Touch اضافه شد؛ هر تعامل دستی Timer پنج‌ثانیه‌ای را از نو آغاز می‌کند.
+- هنگام hidden شدن Tab، Timer پاک می‌شود و پس از visible شدن دوباره از نو شروع می‌شود؛ Cleanup کامل Effectها هنگام خروج انجام می‌شود.
+- در `prefers-reduced-motion: reduce`، autoplay متوقف، Transition برابر none/0s و کنترل دستی فوری باقی می‌ماند.
+- Desktop از `object-cover` با نسبت اصلی و Mobile از `object-contain` استفاده می‌کند تا تصاویر کشیده یا در Mobile Crop نشوند.
+- Overlay، متن، CTA، ارتفاع و Composition تأییدشده Hero حفظ شدند؛ Header/Footer و سایر بخش‌ها تغییر نکردند.
+
+### Official Assets
+
+1. `public/media/hero/arfam-hero-01.jpg` — Source: `IMG_20261014_142722_205.jpg`
+2. `public/media/hero/arfam-hero-02.jpg` — Source: `IMG_20261014_142724_815.jpg`
+3. `public/media/hero/arfam-hero-03.jpg` — Source: `IMG_20261014_142726_971.jpg`
+
+### Files Changed
+
+- `src/app/(storefront)/page.tsx`
+- `src/components/home/hero-media.tsx`
+- `public/media/hero/arfam-hero-01.jpg`
+- `public/media/hero/arfam-hero-02.jpg`
+- `public/media/hero/arfam-hero-03.jpg`
+- `ARFAM-Gallery-Master-Project-History-FA.md`
+
+### QA Results
+
+- Chrome واقعی User: در دسترس نبود؛ دو تلاش ابزار کنترل مرورگر با خروج غیرمنتظره Trusted Node process شکست خورد. تأیید دستی User همچنان الزامی است.
+- Chrome ایزوله کمکی، Desktop 1440×900 و Mobile 390×844: هر سه تصویر load شدند؛ بدون distortion، horizontal overflow یا broken image.
+- Autoplay: 5092ms، 4986ms و 4986ms؛ loop سوم به اول PASS.
+- پس از Next دستی، autoplay بعدی در 5081ms اجرا شد؛ Previous/Next و hit target واقعی PASS.
+- متن ARFAM و CTA «مشاهده مجموعه» روی هر سه اسلاید خوانا بودند؛ Visual QA هر سه Desktop و Mobile انجام شد.
+- Mobile controls پس از رفع overlap با کنترل شناور موجود، هر دو hit target صحیح و 44×44 بودند.
+- Reduced Motion: media query فعال، autoplay پس از 5.2s متوقف، transition none/0s و کنترل دستی سالم.
+- `/about` و `/products` بدون overflow و Runtime regression در QA کمکی باز شدند.
+- Runtime/Console/Network/Hydration error جدید: صفر؛ پیام اطلاع‌رسانی Motion در تست عمدی Reduced Motion خطا نیست.
+- Lint: PASS.
+- Type Check: PASS.
+- Production Build: PASS؛ 69 Route.
+- `git diff --check`: در Final Safety Check این Step اجرا می‌شود.
+
+### Rendering and Git State
+
+- مشکل intermittent Rendering/Navigation در Chrome واقعی User همچنان Open است؛ این تغییر آن را Fixed اعلام نمی‌کند.
+- Last approved commit: `d5bbb05b56110988bacc20341a511ac12ecdcd74`.
+- تغییرات Uncommitted Step 12E-5 و Follow-upهای قبلی بدون Reset/Revert حفظ شدند و تغییرات Hero نیز جداگانه Uncommitted هستند.
+- Commit/Push برای Hero انجام نشده است.
+
+### Permanent Official Asset Rule
+
+- تصاویر و محتوای رسمی ارائه‌شده توسط Client/Omid بدون تأیید صریح نباید حذف، بازطراحی، بازتولید، جایگزین یا از نظر محتوایی دستکاری شوند؛ فقط آماده‌سازی فنی ضروری و قابل‌ردیابی برای Web مجاز است.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-14
+- **Current Phase:** Official Homepage Hero Slider Review
+- **Current Status:** اسلایدر سه‌تصویری رسمی پیاده‌سازی و از نظر فنی/کمکی QA شده است؛ تأیید دستی User روی لپ‌تاپ پیش از Commit/Push Pending است. Rendering intermittent همچنان Open است.
+- **Last Approved Commit:** `d5bbb05b56110988bacc20341a511ac12ecdcd74` — `feat(brand): complete official ARFAM about pages`
+- **Current Branch:** `main`
+- **Working Tree:** تغییرات Hero در کنار تغییرات Uncommitted و محفوظ Step 12E-5 قرار دارند؛ Commit/Push انجام نشده است.
+
+### Exact NEXT ACTION
+
+- **بررسی و تأیید دستی اسلایدر Hero توسط کاربر روی لپ‌تاپ، قبل از Commit/Push.**
+
+### DO NOT CHANGE
+
+- سه تصویر رسمی، ترتیب آن‌ها، متن و CTA فعلی Hero بدون تأیید User تغییر نکنند.
+- Header/Footer، About، Catalog/Database، Cart/Checkout، Admin و Auth خارج از Scope باقی بمانند.
+- تغییرات Uncommitted Step 12E-5 حذف، Reset یا Revert نشوند.
+- مشکل Rendering بدون Evidence و تأیید Chrome واقعی Fixed اعلام نشود.
+
+### How to Resume
+
+1. Homepage را در Chrome معمولی User روی لپ‌تاپ و با عرض‌های Desktop و 390px بررسی کن.
+2. هر سه اسلاید، Loop پنج‌ثانیه‌ای، دو فلش، Fade، خوانایی و Mobile framing را تأیید کن.
+3. اگر Rendering گیر کرد، قبل از Refresh شواهد Console/RSC/Server Log را ثبت کن.
+4. تا تأیید User هیچ Commit/Push یا مرحله جدیدی انجام نشود.
+
+
+------------------------------------------------------------------------
+
+## HERO SLIDER TIMING REVISION — 10 SECONDS
+
+### Status — 2026-10-14
+
+- به درخواست User، فاصله Autoplay اسلایدر Hero از 5 ثانیه به دقیقاً 10 ثانیه تغییر کرد.
+- مقدار `AUTOPLAY_DELAY_MS` از `5_000` به `10_000` تغییر یافت.
+- Fade نرم 1200ms، ترتیب سه تصویر رسمی، فلش‌های قبلی/بعدی، Loop، Mobile/Desktop framing و Assetها بدون تغییر باقی ماندند.
+- با هر جابه‌جایی دستی، `activeIndex` تغییر می‌کند؛ Effect قبلی Cleanup و Timer ده‌ثانیه‌ای تازه آغاز می‌شود.
+- رفتار Tab visibility و `prefers-reduced-motion` بدون تغییر حفظ شد.
+- سوابق پنج‌ثانیه‌ای قبلی در History به‌عنوان وضعیت تاریخی حفظ شده‌اند و این Revision وضعیت فعلی را به ده ثانیه تغییر می‌دهد.
+
+### Files Changed
+
+- `src/components/home/hero-media.tsx`
+- `ARFAM-Gallery-Master-Project-History-FA.md`
+
+### QA Results
+
+- Source assertion برای Delay دقیق 10000ms، اتصال `setTimeout`، Restart پس از کنترل دستی و Reduced Motion guard: PASS.
+- Lint: PASS.
+- Type Check: PASS.
+- `git diff --check`: PASS.
+- هیچ Layout، Fade، Asset، Control styling یا رفتار Responsive تغییر نکرد؛ QA بصری قبلی Hero همچنان معتبر است.
+- مشکل intermittent Rendering همچنان Open است و Fixed اعلام نمی‌شود.
+- تمام تغییرات Uncommitted قبلی Step 12E-5 و Hero حفظ شدند.
+- Commit/Push انجام نشد.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-14
+- **Current Phase:** Official Homepage Hero Slider Review
+- **Current Status:** اسلایدر رسمی با Autoplay دقیق 10 ثانیه آماده بررسی دستی User است؛ Fade، کنترل‌ها و Reduced Motion حفظ شده‌اند. Rendering intermittent همچنان Open است.
+- **Last Approved Commit:** `d5bbb05b56110988bacc20341a511ac12ecdcd74` — `feat(brand): complete official ARFAM about pages`
+- **Current Branch:** `main`
+- **Working Tree:** تغییرات Hero و Revision ده‌ثانیه‌ای در کنار تغییرات Uncommitted محفوظ Step 12E-5 قرار دارند؛ Commit/Push انجام نشده است.
+
+### Exact NEXT ACTION
+
+- **بررسی و تأیید دستی اسلایدر Hero با فاصله تعویض 10 ثانیه توسط کاربر روی لپ‌تاپ، قبل از Commit/Push.**
+
+### DO NOT CHANGE
+
+- سه تصویر رسمی، ترتیب آن‌ها، Fade، متن، CTA و کنترل‌های Hero بدون تأیید User تغییر نکنند.
+- Header/Footer، About، Catalog/Database، Cart/Checkout، Admin و Auth خارج از Scope باقی بمانند.
+- تغییرات Uncommitted Step 12E-5 حذف، Reset یا Revert نشوند.
+- مشکل Rendering بدون Evidence و تأیید Chrome واقعی Fixed اعلام نشود.
+
+### How to Resume
+
+1. Homepage را در Chrome معمولی User روی لپ‌تاپ بررسی کن.
+2. فاصله دقیق ده‌ثانیه‌ای، Restart تایمر پس از فلش دستی، Fade و Mobile/Desktop framing را تأیید کن.
+3. اگر Rendering گیر کرد، قبل از Refresh شواهد Console/RSC/Server Log را ثبت کن.
+4. تا تأیید User هیچ Commit/Push یا مرحله جدیدی انجام نشود.
+
+
+------------------------------------------------------------------------
+
+## OFFICIAL ARFAM HERO SLIDER — FINAL USER APPROVAL
+
+### Status — 2026-10-14
+
+- اسلایدر سه‌تصویری Hero آرفام با سه تصویر رسمی امید و فاصله تعویض خودکار دقیق 10 ثانیه توسط User تأیید نهایی شد.
+- Fade نرم، فلش‌های دستی قبلی/بعدی، Restart تایمر ده‌ثانیه‌ای پس از جابه‌جایی دستی، Reduced Motion و رفتار Responsive بدون تغییر تأیید شدند.
+- سه Asset رسمی در `public/media/hero` باید بدون حذف یا دستکاری محتوایی حفظ شوند.
+- این تأیید فقط Scope اسلایدر Hero را پوشش می‌دهد؛ تغییرات Uncommitted مربوط به Step 12E-5، Cart، Admin و Catalog خارج از Commit Hero باقی می‌مانند.
+- مشکل intermittent Rendering همچنان Open است و این تأیید آن را Fixed اعلام نمی‌کند.
+- Commit مصوب: `feat(hero): add approved luxury three-image slider`.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-14
+- **Current Phase:** Official Homepage Hero Slider — Approved
+- **Current Status:** اسلایدر رسمی سه‌تصویری با Autoplay دقیق 10 ثانیه تأیید نهایی User را دریافت کرده و فقط تغییرات Hero برای Commit/Push انتخاب می‌شوند. Rendering intermittent همچنان Open است.
+- **Last Approved Commit before Hero:** `d5bbb05b56110988bacc20341a511ac12ecdcd74` — `feat(brand): complete official ARFAM about pages`
+- **Current Branch:** `main`
+- **Working Tree:** تغییرات تأییدنشده Step 12E-5، Cart، Admin و Catalog باید بدون Reset/Revert و خارج از Commit Hero باقی بمانند.
+
+### Exact NEXT ACTION
+
+- **Commit/Push انتخابی Hero انجام شود؛ سپس Working Tree باقی‌مانده برای دستور بعدی بدون تغییر حفظ شود.**
+
+### DO NOT CHANGE
+
+- سه تصویر رسمی، ترتیب آن‌ها، فاصله 10 ثانیه، Fade، کنترل‌های دستی و Reduced Motion.
+- تغییرات Uncommitted Step 12E-5، Cart، Admin و Catalog.
+- مشکل Rendering بدون Evidence و تأیید Chrome واقعی Fixed اعلام نشود.

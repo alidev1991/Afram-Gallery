@@ -11,7 +11,13 @@ export default function HomePage() {
   return (
     <main id="main-content" className="-mt-[var(--arfam-header-height)] bg-canvas">
       <section className="home-hero relative min-h-[100svh] overflow-hidden bg-matte">
-        <HeroMedia desktopSrc="/media/hero-demo.webp" />
+        <HeroMedia
+          slides={[
+            "/media/hero/arfam-hero-01.jpg",
+            "/media/hero/arfam-hero-02.jpg",
+            "/media/hero/arfam-hero-03.jpg",
+          ]}
+        />
 
         <div
           aria-hidden="true"
