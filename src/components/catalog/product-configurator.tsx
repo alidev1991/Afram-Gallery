@@ -20,6 +20,24 @@ type ProductConfiguratorProps = {
   initialPresentationSlug?: string;
 };
 
+const squareClockSizeGuides = [
+  {
+    valueSlug: "65x65-cm",
+    label: "۶۵×۶۵ سانتی‌متر",
+    src: "/media/products/square-wall-clock/square-wall-clock-size-guide-65.png",
+  },
+  {
+    valueSlug: "80x80-cm",
+    label: "۸۰×۸۰ سانتی‌متر",
+    src: "/media/products/square-wall-clock/square-wall-clock-size-guide-80.png",
+  },
+  {
+    valueSlug: "100x100-cm",
+    label: "۱۰۰×۱۰۰ سانتی‌متر",
+    src: "/media/products/square-wall-clock/square-wall-clock-size-guide-100.png",
+  },
+] as const;
+
 export function ProductConfigurator({
   product,
   initialPresentationSlug,
@@ -42,6 +60,18 @@ export function ProductConfigurator({
         : [],
     [presentation, product, variant],
   );
+  const isSquareWallClock = product.slug === "internal-square-wall-clock";
+  const galleryImages = isSquareWallClock
+    ? images.filter(
+        (image) =>
+          image.imageType !== "LIFESTYLE" && image.imageType !== "SIZE_GUIDE",
+      )
+    : images;
+  const lifestyleImage = isSquareWallClock
+    ? (presentation?.images.find(
+        (image) => image.imageType === "LIFESTYLE" && image.url !== null,
+      ) ?? null)
+    : null;
   const description =
     product.shortDescription ??
     product.description ??
@@ -57,18 +87,18 @@ export function ProductConfigurator({
 
   return (
     <div
-      className="grid gap-14 pt-12 sm:gap-20 sm:pt-16 lg:grid-cols-12 lg:items-start lg:gap-x-10"
       data-configurator-product={product.id}
       data-selected-variant={variant.id}
       data-selected-price={variant.priceToman}
       data-selected-presentation={presentation?.slug ?? ""}
     >
+      <div className="grid gap-14 pt-12 sm:gap-20 sm:pt-16 lg:grid-cols-12 lg:items-start lg:gap-x-10">
       <div className="lg:col-span-7">
         <div
           aria-label="گالری تصاویر محصول"
           className="space-y-8 sm:space-y-12"
         >
-          {images.map((image, index) => {
+          {galleryImages.map((image, index) => {
             if (!image.url) {
               return null;
             }
@@ -105,6 +135,86 @@ export function ProductConfigurator({
             );
           })}
         </div>
+
+        {isSquareWallClock ? (
+          <section
+            aria-labelledby="square-clock-size-guide-heading"
+            className="mt-10 border-t border-line pt-10 sm:mt-12 sm:pt-12"
+          >
+            <Reveal direction="bottom" distance={32}>
+              <div className="flex items-end justify-between gap-6">
+                <h2
+                  id="square-clock-size-guide-heading"
+                  className="text-2xl font-light text-silver-bright sm:text-3xl"
+                >
+                  راهنمای انتخاب سایز
+                </h2>
+                <p className="hidden text-xs text-muted sm:block">
+                  انتخاب تصویر، سایز محصول را تغییر می‌دهد
+                </p>
+              </div>
+            </Reveal>
+            <div className="mt-10 grid gap-8 sm:grid-cols-3 sm:gap-4 lg:gap-6">
+              {squareClockSizeGuides.map((guide, index) => {
+                const isSelected = selection.size === guide.valueSlug;
+                const isAvailable = isOptionValueAvailable(
+                  product,
+                  selection,
+                  "size",
+                  guide.valueSlug,
+                );
+
+                return (
+                  <Reveal
+                    key={guide.valueSlug}
+                    direction="bottom"
+                    distance={24}
+                    delay={Math.min(index * 0.05, 0.1)}
+                  >
+                    <button
+                      type="button"
+                      disabled={!isAvailable}
+                      aria-pressed={isSelected}
+                      className={`group block w-full border p-2 text-right transition-[transform,border-color,background-color] duration-500 ease-[var(--arfam-ease)] motion-reduce:transform-none motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-35 ${
+                        isSelected
+                          ? "-translate-y-2 border-silver bg-matte"
+                          : "border-line bg-transparent hover:border-line-strong"
+                      }`}
+                      onClick={() => {
+                        if (!isAvailable) {
+                          return;
+                        }
+
+                        setSelection((currentSelection) => ({
+                          ...currentSelection,
+                          size: guide.valueSlug,
+                        }));
+                      }}
+                    >
+                      <Image
+                        src={guide.src}
+                        alt={`راهنمای ساعت دیواری مربع ${guide.label}`}
+                        width={775}
+                        height={680}
+                        sizes="(max-width: 639px) calc(100vw - 2.5rem), 30vw"
+                        className="h-auto w-full object-contain"
+                      />
+                      <span className="mt-3 flex min-h-8 items-center justify-between gap-3 border-t border-line px-2 pt-3 text-xs">
+                        <span className="text-silver">{guide.label}</span>
+                        <span
+                          className={isSelected ? "text-silver-bright" : "text-transparent"}
+                          aria-hidden={!isSelected}
+                        >
+                          انتخاب‌شده
+                        </span>
+                      </span>
+                    </button>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
       </div>
 
       <Reveal
@@ -116,12 +226,20 @@ export function ProductConfigurator({
           <p className="arfam-eyebrow text-subtle" dir="ltr">
             {product.category.name}
           </p>
-          <h1 className="mt-5 text-[clamp(2.5rem,5vw,5.5rem)] font-light leading-[1.15] tracking-[-0.035em] text-silver-bright">
+          <h1
+            className={`mt-5 font-light leading-[1.15] tracking-[-0.035em] text-silver-bright ${
+              product.slug === "internal-square-wall-clock"
+                ? "whitespace-nowrap text-[clamp(2rem,3.5vw,3.25rem)]"
+                : "text-[clamp(2.5rem,5vw,5.5rem)]"
+            }`}
+          >
             {product.name}
           </h1>
-          <p className="mt-7 text-base text-silver">
-            {formatToman(variant.priceToman)}
-          </p>
+          {product.slug !== "internal-square-wall-clock" ? (
+            <p className="mt-7 text-base text-silver">
+              {formatToman(variant.priceToman)}
+            </p>
+          ) : null}
           {description ? (
             <p className="mt-8 whitespace-pre-line border-t border-line pt-7 text-sm leading-8 text-muted">
               {description}
@@ -129,6 +247,14 @@ export function ProductConfigurator({
           ) : null}
 
           <div className="mt-10 space-y-8 border-t border-line pt-8">
+            {product.slug === "internal-square-wall-clock" ? (
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-xs text-muted">قیمت انتخاب‌شده</span>
+                <p className="text-base text-silver">
+                  {formatToman(variant.priceToman)}
+                </p>
+              </div>
+            ) : null}
             {product.options.map((option) => (
               <fieldset key={option.id}>
                 <legend className="text-sm font-medium text-silver-bright">
@@ -203,6 +329,37 @@ export function ProductConfigurator({
           </section>
         </aside>
       </Reveal>
+      </div>
+
+      {isSquareWallClock && lifestyleImage?.url ? (
+        <section
+          aria-labelledby="square-clock-lifestyle-heading"
+          className="mt-16 border-t border-line pt-12 sm:mt-20 sm:pt-16"
+        >
+          <Reveal direction="bottom" distance={32}>
+            <h2
+              id="square-clock-lifestyle-heading"
+              className="text-2xl font-light text-silver-bright sm:text-3xl"
+            >
+              تصویر محیطی
+            </h2>
+          </Reveal>
+          <Reveal direction="bottom" distance={32}>
+            <figure
+              className="relative mt-8 aspect-square overflow-hidden bg-matte sm:mt-10"
+              data-image-type={lifestyleImage.imageType}
+            >
+              <Image
+                src={lifestyleImage.url}
+                alt={lifestyleImage.altText ?? `${product.name} در فضای دکوراسیون`}
+                fill
+                sizes="(max-width: 1023px) calc(100vw - 2.5rem), 88vw"
+                className="object-contain"
+              />
+            </figure>
+          </Reveal>
+        </section>
+      ) : null}
     </div>
   );
 }

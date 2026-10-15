@@ -4247,3 +4247,140 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 - Hunk مستقل شفافیت Product Shot در `product-configurator.tsx` برای این Commit جدا شد.
 - تغییر مرتبط `product-editorial-card.tsx` به‌دلیل درهم‌تنیدگی با ساختار تأییدنشده Step 12E-5 Stage نشد و بدون تغییر در Working Tree باقی ماند.
 - Scope این Commit فقط سه PNG، اصلاح مستقل PDP و مستندات تأییدشده است.
+------------------------------------------------------------------------
+
+## SQUARE WALL CLOCK PDP TITLE — SINGLE-LINE FIX — 2026-10-15
+
+- فقط عنوان Product Detail محصول `internal-square-wall-clock` به اندازه واکنش‌گرای کوچک‌تر و `whitespace-nowrap` محدود شد تا «ساعت دیواری مربع» در Desktop و Mobile یک‌خطی بماند.
+- استایل عنوان سایر Productها، قیمت، Configurator، تصاویر و Layout بدون تغییر باقی ماند.
+- QA محدود: Lint، Type Check و `git diff --check`.
+- Commit/Push انجام نشد؛ تغییرات Uncommitted قبلی حفظ شدند.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-15
+- **Current Status:** اصلاح اول صفحه ساعت دیواری مربع انجام شد؛ فقط عنوان همان Product یک‌خطی شده و منتظر تأیید کاربر است.
+- **Working Tree:** تغییرات قبلی Step 12E-5 و سایر فایل‌های Uncommitted حفظ شده‌اند.
+- **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است.
+- **Exact NEXT ACTION:** بررسی و تأیید دستی عنوان یک‌خطی ساعت توسط کاربر؛ بدون Commit/Push و بدون شروع تغییرهای بعدی.
+------------------------------------------------------------------------
+
+## SQUARE WALL CLOCK PDP PRICE PLACEMENT — 2026-10-15
+
+- مرحله اول (عنوان یک‌خطی همین محصول) توسط کاربر تأیید و حفظ شد.
+- در مرحله دوم، قیمت Variant انتخاب‌شده فقط برای `internal-square-wall-clock` از زیر عنوان حذف و به ابتدای بخش انتخاب سایز و فینیش استیل منتقل شد.
+- منبع قیمت همان `variant.priceToman` واقعی است؛ با تغییر Size/Finish و Variant به‌صورت خودکار به‌روزرسانی می‌شود.
+- منطق Variant، قیمت‌گذاری، Cart و Add to Cart تغییر نکرد؛ عنوان و قیمت سایر Productها نیز مسیر قبلی را حفظ کردند.
+- QA محدود: Lint، Type Check و `git diff --check`.
+- Commit/Push انجام نشد؛ Product unpublished و تغییرات Uncommitted قبلی حفظ شدند.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-15
+- **Current Status:** مرحله اول عنوان یک‌خطی تأیید شده و مرحله دوم جابه‌جایی قیمت پیاده‌سازی شده و منتظر تأیید کاربر است.
+- **Scope:** فقط نمایش قیمت در PDP ساعت دیواری مربع؛ Database، Admin، Cart، تصاویر و سایر صفحات بدون تغییر.
+- **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است.
+- **Exact NEXT ACTION:** بررسی و تأیید دستی محل جدید قیمت توسط کاربر؛ بدون شروع تغییر سوم یا چهارم و بدون Commit/Push.
+------------------------------------------------------------------------
+
+## SQUARE WALL CLOCK PDP LIFESTYLE SECTION — 2026-10-15
+
+- مراحل اول و دوم (عنوان یک‌خطی و محل جدید قیمت Variant) تأییدشده و بدون تغییر حفظ شدند.
+- در مرحله سوم، فقط برای `internal-square-wall-clock` تصاویر `LIFESTYLE` از گالری بالای PDP فیلتر و در بخش مستقل «تصاویر محیطی» پس از Configurator و مشخصات نمایش داده شدند.
+- سه Lifestyle رسمی از Presentationهای طلایی، سیلور و دودی با deduplication بر اساس Image ID جمع‌آوری می‌شوند؛ Product Shot و `SIZE_GUIDE` در گالری قبلی باقی ماندند.
+- تصاویر با نسبت `aspect-square` و `object-contain` نمایش داده می‌شوند؛ Crop و Distortion اعمال نمی‌شود و Asset رسمی ویرایش یا جایگزین نشده است.
+- Scope فقط `src/components/catalog/product-configurator.tsx` و این History است؛ Database، Cart، Admin، سایر Productها و Publish state بدون تغییر هستند.
+- QA محدود: Lint PASS؛ Type Check PASS؛ `git diff --check` PASS (فقط هشدار line-ending معمول Windows).
+- Commit/Push انجام نشد؛ تغییرات Uncommitted قبلی، به‌ویژه Step 12E-5، حفظ شدند.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-15
+- **Current Status:** مراحل اول و دوم تأیید شده‌اند؛ مرحله سوم انتقال سه Lifestyle به بخش مستقل پایین PDP پیاده‌سازی و QA شده و منتظر بررسی کاربر است.
+- **Scope:** فقط نمایش Lifestyleهای ساعت دیواری مربع؛ Product Shot، Size Guide، Configurator، Database، Admin و Cart بدون تغییر.
+- **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است.
+- **Exact NEXT ACTION:** بررسی و تأیید دستی بخش «تصاویر محیطی» توسط کاربر؛ تغییر چهارم راهنمای سایز آغاز نشود و Commit/Push انجام نشود.
+------------------------------------------------------------------------
+
+## SQUARE WALL CLOCK PDP LIFESTYLE SECTION — CORRECTED REVISION — 2026-10-15
+
+- نسخه قبلی مرحله سوم توسط کاربر رد شد.
+- علت رد شدن: نمایش هم‌زمان سه Lifestyle به‌جای تصویر متناظر با فینیش انتخاب‌شده و قرارگرفتن بخش Lifestyle داخل Grid دارای Sidebar `sticky` که رفتار نامناسب Scroll ایجاد می‌کرد.
+- نسخه اصلاحی فقط یک Lifestyle را از `presentation` فعال نمایش می‌دهد؛ بنابراین طلایی، سیلور و دودی همواره Product Shot و Lifestyle متناظر خود را هم‌زمان دریافت می‌کنند.
+- Size فقط Variant و قیمت را تعیین می‌کند؛ Mapping تصویر همچنان بر اساس Finish و Presentation فعال است.
+- بخش Lifestyle از Grid/محدوده Sticky خارج و به انتهای محتوای PDP، پیش از Footer، منتقل شد تا Scroll طبیعی باشد.
+- Product Shot، Size Guide، عنوان یک‌خطی، محل قیمت، Variant logic، Cart، Database و Admin تغییر نکردند.
+- QA هدفمند کدی: Resolver و Presentation mapping بررسی شد؛ Lint PASS؛ Type Check PASS؛ `git diff --check` PASS.
+- نسخه اصلاحی مرحله سوم در انتظار تأیید کاربر است؛ Commit/Push انجام نشد.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-15
+- **Current Status:** مرحله سوم اولیه رد و نسخه اصلاحی همگام‌سازی Product/Lifestyle بر اساس Finish پیاده‌سازی شده و منتظر تأیید کاربر است.
+- **Scroll Fix:** Lifestyle بیرون از Grid دارای Sticky و در انتهای محتوای PDP قرار دارد؛ تنها یک تصویر متناظر نمایش داده می‌شود.
+- **Preserved:** مراحل اول و دوم، Step 12E-5 و همه تغییرات Uncommitted قبلی حفظ شده‌اند.
+- **Rendering:** مشکل intermittent Navigation/Rendering عمومی همچنان Open است.
+- **Exact NEXT ACTION:** بررسی دستی Finishهای طلایی/سیلور/دودی و Scroll طبیعی توسط کاربر؛ مرحله چهارم آغاز نشود و Commit/Push انجام نشود.
+------------------------------------------------------------------------
+
+## SQUARE WALL CLOCK INTERACTIVE SIZE GUIDE — 2026-10-15
+
+- نسخه اصلاحی مرحله سوم (همگام‌سازی Product Shot و Lifestyle با Finish و قرارگیری Lifestyle در انتهای PDP) توسط کاربر تأیید و بدون تغییر حفظ شد.
+- در مرحله چهارم، Asset رسمی `square-wall-clock-size-guide.png` بررسی و سه ساعت ۶۵×۶۵، ۸۰×۸۰ و ۱۰۰×۱۰۰ با Crop قطعی از همان Source تفکیک شدند.
+- هیچ Image Generation، بازسازی AI یا Resize روی ساعت‌ها انجام نشد؛ Cropها با پیکسل‌های اصلی روی Canvas هم‌اندازه 775×680 قرار گرفتند تا مقیاس نسبی حفظ شود.
+- Assetهای جدید: `square-wall-clock-size-guide-65.png`، `square-wall-clock-size-guide-80.png` و `square-wall-clock-size-guide-100.png`.
+- راهنمای یکپارچه فقط برای `internal-square-wall-clock` از گالری بالا حذف و سه کارت تعاملی قبل از Lifestyle نمایش داده شدند.
+- کلیک کارت، همان `selection.size` Configurator را با slugهای واقعی `65x65-cm`، `80x80-cm` و `100x100-cm` تغییر می‌دهد؛ Variant و قیمت از منطق موجود محاسبه می‌شوند.
+- انتخاب فعال با جابه‌جایی Transform کوچک، Border/Background ملایم و متن «انتخاب‌شده» مشخص می‌شود؛ Transform فضای Layout را تغییر نمی‌دهد و `prefers-reduced-motion` با `motion-reduce` رعایت شده است.
+- Desktop: سه ستون؛ Mobile: یک ستون خوانا و بدون Horizontal Overflow.
+- Database، Cart، Admin، Product رسمی، Publish state و سایر تصاویر تغییری نکردند.
+- QA محدود: بررسی مستقیم هر سه Crop PASS؛ Lint PASS؛ Type Check PASS؛ `git diff --check` PASS.
+- Commit/Push انجام نشد؛ تغییرات Uncommitted Step 12E-5 حفظ شدند.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-15
+- **Current Status:** مرحله سوم تأیید شده؛ راهنمای سایز تعاملی مرحله چهارم پیاده‌سازی و QA شده و منتظر بررسی کاربر است.
+- **Files:** سه Asset Crop جدید، `src/components/catalog/product-configurator.tsx` و Master History.
+- **Preserved:** عنوان یک‌خطی، محل قیمت، Finish-synced Product/Lifestyle، Scroll fix و تمام تغییرات Uncommitted قبلی.
+- **Rendering:** مشکل intermittent Navigation/Rendering عمومی همچنان Open است.
+- **Exact NEXT ACTION:** بررسی دستی راهنمای سه‌تصویری و انتخاب هر سه سایز توسط کاربر؛ بدون Commit/Push یا شروع تغییر دیگر.
+------------------------------------------------------------------------
+
+## SQUARE WALL CLOCK SIZE GUIDE — PLACEMENT REVISION — 2026-10-15
+
+- محل اولیه راهنمای سایز تعاملی در پایین Grid توسط کاربر تأیید نشد.
+- همان راهنمای سه‌تصویری، بدون تغییر Asset، Crop، مقیاس یا منطق انتخاب، مستقیماً زیر Product Shot و داخل ستون گالری محصول منتقل شد.
+- در Desktop سه تصویر کنار هم هستند و Sidebar مشخصات/Configurator هم‌زمان در ستون مجاور قابل مشاهده است؛ در Mobile راهنما یک ستون خوانا و بدون Overflow دارد.
+- انتخاب فعال همچنان با Transform بدون Layout Shift، Border و متن «انتخاب‌شده» مشخص می‌شود؛ کلیک تصویر همان `selection.size`، Variant و قیمت را به‌روزرسانی می‌کند.
+- هیچ Auto-scroll، Scroll Lock یا تغییر در Lifestyle انتهای صفحه، Product Shot، عنوان، قیمت، Cart، Database و Admin ایجاد نشد.
+- مرحله چهارم همچنان Pending و در انتظار تأیید کاربر است.
+- QA محدود: Lint PASS؛ Type Check PASS؛ `git diff --check` PASS.
+- Commit/Push انجام نشد؛ تغییرات Uncommitted قبلی حفظ شدند.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-15
+- **Current Status:** محل اولیه مرحله چهارم تأیید نشد؛ راهنمای سایز اکنون زیر Product Shot قرار دارد و مرحله چهارم همچنان Pending است.
+- **Preserved:** سه مرحله قبلی، Finish-synced Product/Lifestyle، Lifestyle انتهای PDP، Cropهای رسمی و همه تغییرات Uncommitted.
+- **Exact NEXT ACTION:** بررسی و تأیید دستی محل جدید راهنمای سایز و انتخاب ۶۵/۸۰/۱۰۰ توسط کاربر؛ بدون Commit/Push یا شروع مرحله دیگر.
+------------------------------------------------------------------------
+
+## FOUR APPROVED SQUARE WALL CLOCK PDP REFINEMENTS — FINAL APPROVAL — 2026-10-15
+
+- کاربر هر چهار اصلاح ظاهری صفحه «ساعت دیواری مربع» را تأیید نهایی کرد: عنوان یک‌خطی Responsive، انتقال قیمت واقعی Variant به بخش Configurator، نمایش یک Lifestyle هماهنگ با Finish فعال در انتهای محتوای صفحه، و راهنمای تعاملی سه‌تصویری سایز زیر Product Shot.
+- فایل اجرایی مرتبط: `src/components/catalog/product-configurator.tsx`.
+- Assetهای تأییدشده: `square-wall-clock-size-guide-65.png`، `square-wall-clock-size-guide-80.png` و `square-wall-clock-size-guide-100.png` در مسیر `public/media/products/square-wall-clock/`.
+- نتیجه QA نهایی این Commit: Staged Diff و سه Asset صحیح؛ هماهنگی Size/Variant/Price و Finish/Product Shot/Lifestyle تأیید شد؛ Lifestyle خارج از ساختار Sticky است؛ Lint، Type Check مستقل و `git diff --cached --check` همگی PASS شدند.
+- تغییرات تأییدنشده Step 12E-5 در Working Tree حفظ می‌شوند و وارد این Commit مستقل نمی‌شوند.
+- مشکل intermittent Navigation/Rendering همچنان Open است و با این Commit رفع‌شده اعلام نمی‌شود.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-15
+- **Current Status:** چهار اصلاح ظاهری PDP ساعت دیواری مربع تأیید نهایی شده‌اند و برای Commit/Push مستقل آماده‌اند؛ Step 12E-5 همچنان Uncommitted باقی می‌ماند.
+- **Last Approved Commit Before This Commit:** `cb36ca6f3985b00127fd0efb81dc57abcd1d5710`.
+- **Current Branch:** `main`.
+- **Working Tree:** تغییرات تأییدنشده Cart، Admin، Database/Catalog و سایر بخش‌های Step 12E-5 بدون Reset/Revert و خارج از این Commit حفظ می‌شوند.
+- **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است.
+- **Exact NEXT ACTION:** فقط Commit و Push همین چهار اصلاح تأییدشده؛ سپس توقف و انتظار برای دستور بعدی کاربر.
