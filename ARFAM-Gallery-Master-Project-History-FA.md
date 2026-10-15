@@ -4384,3 +4384,24 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 - **Working Tree:** تغییرات تأییدنشده Cart، Admin، Database/Catalog و سایر بخش‌های Step 12E-5 بدون Reset/Revert و خارج از این Commit حفظ می‌شوند.
 - **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است.
 - **Exact NEXT ACTION:** فقط Commit و Push همین چهار اصلاح تأییدشده؛ سپس توقف و انتظار برای دستور بعدی کاربر.
+------------------------------------------------------------------------
+
+## SQUARE WALL CLOCK — LIFESTYLE CTA — 2026-10-15
+
+- CTA «مشاهده محصول در محیط» توسط کاربر بررسی و تأیید نهایی شد.
+- زیر Product Shot و پیش از راهنمای تعاملی سایز، CTA با عنوان دقیق «مشاهده محصول در محیط» فقط برای internal-square-wall-clock اضافه شد.
+- CTA با کادر ظریف نقره‌ای، سطح کلیک مناسب و فلش رو به پایین به بخش Lifestyle فعال در انتهای همان PDP متصل است.
+- اسکرول با scrollIntoView انجام می‌شود؛ حالت عادی نرم است و در prefers-reduced-motion: reduce بدون Animation اجرا می‌شود.
+- بخش Lifestyle دارای Anchor و scroll-margin متناسب است تا هدف زیر Header ثابت پوشانده نشود؛ Sticky، Footer، Finish mapping و اسکرول طبیعی تغییری نکردند.
+- Product Shot، راهنمای سایز، عنوان، قیمت، Variant، Cart، Admin، Assetهای رسمی و Publish state بدون تغییر باقی ماندند.
+- تغییرات Uncommitted Step 12E-5 حفظ شده‌اند؛ Commit/Push انجام نشد.
+- QA هدفمند: جایگاه CTA و Lifestyle target بررسی شد؛ Finish mapping موجود بدون تغییر حفظ شد؛ Lint، Type Check و git diff --check همگی PASS شدند.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-15
+- **Current Status:** CTA «مشاهده محصول در محیط» تأیید نهایی شده و برای Commit/Push مستقل آماده است؛ Step 12E-5 همچنان Uncommitted باقی می‌ماند.
+- **Scope:** فقط src/components/catalog/product-configurator.tsx و ثبت این تغییر در Master History.
+- **Preserved:** چهار اصلاح تأییدشده قبلی و تمام تغییرات Uncommitted Step 12E-5.
+- **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است.
+- **Exact NEXT ACTION:** فقط Commit و Push مستقل CTA تأییدشده؛ سپس توقف و انتظار برای دستور بعدی کاربر.

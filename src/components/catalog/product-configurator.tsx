@@ -77,6 +77,20 @@ export function ProductConfigurator({
     product.description ??
     product.longDescription;
 
+  const scrollToLifestyle = () => {
+    const lifestyleSection = document.getElementById("square-clock-lifestyle");
+    if (!lifestyleSection) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    lifestyleSection.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  };
+
   if (!variant) {
     return (
       <p className="border-y border-line py-8 text-sm text-muted" role="alert">
@@ -135,6 +149,20 @@ export function ProductConfigurator({
             );
           })}
         </div>
+
+        {isSquareWallClock && lifestyleImage?.url ? (
+          <button
+            type="button"
+            onClick={scrollToLifestyle}
+            className="mt-8 flex min-h-12 w-full items-center justify-between gap-4 border border-silver/60 px-5 py-3 text-sm font-medium text-silver-bright transition-colors duration-200 hover:border-silver hover:bg-matte focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-silver sm:mt-10 sm:px-6 sm:text-base"
+            aria-controls="square-clock-lifestyle"
+          >
+            <span>مشاهده محصول در محیط</span>
+            <span aria-hidden="true" className="text-lg leading-none">
+              ↓
+            </span>
+          </button>
+        ) : null}
 
         {isSquareWallClock ? (
           <section
@@ -333,8 +361,9 @@ export function ProductConfigurator({
 
       {isSquareWallClock && lifestyleImage?.url ? (
         <section
+          id="square-clock-lifestyle"
           aria-labelledby="square-clock-lifestyle-heading"
-          className="mt-16 border-t border-line pt-12 sm:mt-20 sm:pt-16"
+          className="mt-16 scroll-mt-28 border-t border-line pt-12 sm:mt-20 sm:scroll-mt-32 sm:pt-16"
         >
           <Reveal direction="bottom" distance={32}>
             <h2
