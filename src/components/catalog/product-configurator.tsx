@@ -12,12 +12,15 @@ import {
   resolveConfiguratorImages,
   resolveInitialConfiguratorSelection,
 } from "@/lib/catalog/product-configurator";
+import { toPreviewCartItem } from "@/lib/catalog/preview-cart";
 import { formatToman } from "@/lib/format-price";
+import { useCart } from "@/providers/cart-provider";
 import type { StorefrontProductDetailDto } from "@/types/storefront-catalog";
 
 type ProductConfiguratorProps = {
   product: StorefrontProductDetailDto;
   initialPresentationSlug?: string;
+  enablePreviewCart?: boolean;
 };
 
 const squareClockSizeGuides = [
@@ -41,7 +44,10 @@ const squareClockSizeGuides = [
 export function ProductConfigurator({
   product,
   initialPresentationSlug,
+  enablePreviewCart = false,
 }: ProductConfiguratorProps) {
+  const { addConfiguredItem } = useCart();
+  const [isAdded, setIsAdded] = useState(false);
   const [selection, setSelection] = useState(() =>
     resolveInitialConfiguratorSelection(product, initialPresentationSlug),
   );
@@ -137,6 +143,7 @@ export function ProductConfigurator({
                     alt={image.altText ?? product.name}
                     fill
                     priority={index === 0}
+                    unoptimized={image.imageType === "PRODUCT"}
                     sizes={
                       index === 0
                         ? "(max-width: 1023px) calc(100vw - 2.5rem), 58vw"
@@ -213,6 +220,7 @@ export function ProductConfigurator({
                           return;
                         }
 
+                        setIsAdded(false);
                         setSelection((currentSelection) => ({
                           ...currentSelection,
                           size: guide.valueSlug,
@@ -314,6 +322,7 @@ export function ProductConfigurator({
                             return;
                           }
 
+                          setIsAdded(false);
                           setSelection((currentSelection) => ({
                             ...currentSelection,
                             [option.slug]: value.slug,
@@ -329,9 +338,28 @@ export function ProductConfigurator({
             ))}
           </div>
 
-          <Button className="mt-10 w-full sm:w-auto lg:w-full" disabled>
-            افزودن به سبد خرید — به‌زودی
-          </Button>
+          {enablePreviewCart ? (
+            <Button
+              className="mt-10 w-full sm:w-auto lg:w-full"
+              onClick={() => {
+                const item = toPreviewCartItem(product, variant);
+                if (!item) return;
+                addConfiguredItem(item);
+                setIsAdded(true);
+              }}
+            >
+              {isAdded ? "به سبد خرید اضافه شد" : "افزودن به سبد خرید"}
+            </Button>
+          ) : (
+            <Button className="mt-10 w-full sm:w-auto lg:w-full" disabled>
+              افزودن به سبد خرید — به‌زودی
+            </Button>
+          )}
+          {enablePreviewCart ? (
+            <p className="mt-3 text-[0.6875rem] leading-5 text-subtle">
+              این محصول منتشر نشده و فقط برای پیش‌نمایش توسعه به سبد اضافه می‌شود.
+            </p>
+          ) : null}
 
           <section
             aria-labelledby="product-specifications"

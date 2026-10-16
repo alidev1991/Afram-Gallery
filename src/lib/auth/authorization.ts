@@ -1,6 +1,8 @@
 import "server-only";
 
-import type { UserRole } from "@/generated/prisma/enums";
+import { redirect } from "next/navigation";
+
+import { UserRole } from "@/generated/prisma/enums";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -33,6 +35,20 @@ export async function getAuthorizedUser(role: UserRole) {
 
   if (!user || user.role !== role) {
     return null;
+  }
+
+  return user;
+}
+
+export async function requireAdminUser() {
+  const user = await getAuthenticatedUser();
+
+  if (!user) {
+    redirect("/admin/login?next=/admin");
+  }
+
+  if (user.role !== UserRole.ADMIN) {
+    redirect("/");
   }
 
   return user;

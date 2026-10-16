@@ -35,14 +35,14 @@ export function AdminLoginForm({
     const validationResult = loginSchema.safeParse({ mobile, password });
 
     if (!validationResult.success) {
-      setError("شماره موبایل یا رمز عبور صحیح نیست.");
+      setError("اطلاعات ورود مدیر معتبر نیست.");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn("admin-credentials", {
         mobile: validationResult.data.mobile,
         password: validationResult.data.password,
         redirect: false,
@@ -50,14 +50,14 @@ export function AdminLoginForm({
       });
 
       if (!result.ok || result.error) {
-        setError("شماره موبایل یا رمز عبور صحیح نیست.");
+        setError("اطلاعات ورود مدیر معتبر نیست.");
         return;
       }
 
       router.replace(nextPath);
       router.refresh();
     } catch {
-      setError("شماره موبایل یا رمز عبور صحیح نیست.");
+      setError("اطلاعات ورود مدیر معتبر نیست.");
     } finally {
       setIsSubmitting(false);
     }

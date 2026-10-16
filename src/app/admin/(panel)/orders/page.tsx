@@ -1,8 +1,11 @@
 import { AdminPageHeading } from "@/components/admin/admin-page-heading";
 import { adminOrders } from "@/data/admin-demo";
+import { requireAdminUser } from "@/lib/auth/authorization";
 import { formatToman } from "@/lib/format-price";
 
-export default function AdminOrdersPage() {
+export default async function AdminOrdersPage() {
+  await requireAdminUser();
+
   return (
     <>
       <AdminPageHeading eyebrow="ORDERS" title="سفارش‌ها" description="فهرست سفارش‌ها و وضعیت پردازش" />

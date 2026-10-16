@@ -6,6 +6,8 @@ import {
   type CatalogProduct,
 } from "@/data/catalog";
 import {
+  getInternalPresentationCardsByProductSlugForQa,
+  getInternalStorefrontProductBySlugForQa,
   getPublicPresentationCardsForSubcategory,
   getPublicStorefrontProductBySlug,
 } from "@/lib/catalog/storefront-repository";
@@ -18,6 +20,8 @@ const squareWallClockScope = {
   categorySlug: "clocks",
   subcategorySlug: "square-wall-clocks",
 } as const;
+
+export const squareWallClockDevelopmentSlug = "internal-square-wall-clock";
 
 export type HybridSubcategoryCatalog =
   | {
@@ -50,10 +54,20 @@ export function isSquareWallClockDatabaseScope(
 }
 
 export async function getSquareWallClockHybridCatalog(): Promise<HybridSubcategoryCatalog> {
-  const presentationCards = await getPublicPresentationCardsForSubcategory(
+  let presentationCards = await getPublicPresentationCardsForSubcategory(
     squareWallClockScope.categorySlug,
     squareWallClockScope.subcategorySlug,
   );
+
+  if (
+    presentationCards.length === 0 &&
+    process.env.NODE_ENV === "development"
+  ) {
+    presentationCards =
+      await getInternalPresentationCardsByProductSlugForQa(
+        squareWallClockDevelopmentSlug,
+      );
+  }
 
   if (presentationCards.length > 0) {
     return {
@@ -81,6 +95,21 @@ export async function resolveHybridStorefrontProductBySlug(
       source: "database",
       product: databaseProduct,
     };
+  }
+
+  if (
+    process.env.NODE_ENV === "development" &&
+    slug === squareWallClockDevelopmentSlug
+  ) {
+    const developmentProduct =
+      await getInternalStorefrontProductBySlugForQa(slug);
+
+    if (developmentProduct) {
+      return {
+        source: "database",
+        product: developmentProduct,
+      };
+    }
   }
 
   const mockProduct = getProductBySlug(slug);

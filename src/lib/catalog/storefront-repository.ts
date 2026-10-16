@@ -299,6 +299,7 @@ function toPresentationCards(
       return {
         productId: product.id,
         presentationId: presentation.id,
+        presentationSlug: presentation.slug,
         cardKey: `${product.id}:${presentation.id}`,
         productName: product.name,
         presentationTitle: presentation.title,

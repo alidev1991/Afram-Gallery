@@ -111,6 +111,7 @@ export type StorefrontPresentationVariantPriceDto = {
 export type StorefrontPresentationCardDto = {
   productId: string;
   presentationId: string;
+  presentationSlug: string;
   cardKey: string;
   productName: string;
   presentationTitle: string | null;

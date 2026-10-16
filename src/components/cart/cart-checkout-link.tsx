@@ -3,8 +3,22 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
-export function CartCheckoutLink({ className }: { className: string }) {
+export function CartCheckoutLink({
+  className,
+  isBlocked = false,
+}: {
+  className: string;
+  isBlocked?: boolean;
+}) {
   const { status } = useSession();
+
+  if (isBlocked) {
+    return (
+      <span className={`${className} cursor-not-allowed opacity-70`} aria-disabled="true">
+        تسویه برای محصول پیش‌نمایش غیرفعال است
+      </span>
+    );
+  }
 
   if (status === "loading") {
     return (

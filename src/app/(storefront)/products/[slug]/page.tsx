@@ -92,6 +92,10 @@ export default async function ProductPage({
           <ProductConfigurator
             product={resolution.product}
             initialPresentationSlug={initialPresentationSlug}
+            enablePreviewCart={
+              process.env.NODE_ENV === "development" &&
+              !resolution.product.isPublished
+            }
           />
         </Container>
       </main>

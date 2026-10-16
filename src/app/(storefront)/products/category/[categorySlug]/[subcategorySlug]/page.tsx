@@ -52,9 +52,9 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
         products: getProductsForSubcategory(category.slug, subcategory.slug),
       };
 
-  // Database Presentation cards stay behind the current publish/configurator gate.
-  // Step 12E-4 will adapt them to the locked card UI without inventing a price rule.
   const products = catalog.source === "mock" ? catalog.products : [];
+  const presentationCards =
+    catalog.source === "database" ? catalog.presentationCards : [];
 
   return (
     <main id="main-content" className="bg-canvas">
@@ -76,12 +76,26 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
           <Reveal direction="fade">
             <h2 id="subcategory-products" className="text-2xl font-light text-silver-bright">محصولات</h2>
           </Reveal>
-          {products.length > 0 ? (
+          {presentationCards.length > 0 ? (
+            <RevealGroup className="mt-12 grid gap-16 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-8">
+              {presentationCards.map((card, index) => (
+                <ProductEditorialCard
+                  key={card.cardKey}
+                  presentationCard={card}
+                  priority={index === 0}
+                />
+              ))}
+            </RevealGroup>
+          ) : products.length > 0 ? (
             <RevealGroup className="mt-12 grid gap-16 sm:grid-cols-2 lg:mt-16 lg:gap-12">
-              {products.map((product) => <ProductEditorialCard key={product.slug} product={product} />)}
+              {products.map((product) => (
+                <ProductEditorialCard key={product.slug} product={product} />
+              ))}
             </RevealGroup>
           ) : (
-            <p className="mt-10 border-y border-line py-8 text-sm text-muted">در حال حاضر محصولی در این زیرمجموعه ثبت نشده است.</p>
+            <p className="mt-10 border-y border-line py-8 text-sm text-muted">
+              در حال حاضر محصولی در این زیرمجموعه ثبت نشده است.
+            </p>
           )}
         </section>
       </Container>

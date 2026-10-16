@@ -1,5 +1,6 @@
 import { AdminPageHeading } from "@/components/admin/admin-page-heading";
 import { adminDashboard, adminOrders } from "@/data/admin-demo";
+import { requireAdminUser } from "@/lib/auth/authorization";
 import { formatToman } from "@/lib/format-price";
 
 const metrics = [
@@ -9,7 +10,9 @@ const metrics = [
   { label: "فروش", value: formatToman(adminDashboard.salesToman) },
 ] as const;
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  await requireAdminUser();
+
   return (
     <>
       <AdminPageHeading eyebrow="DASHBOARD" title="داشبورد" description="نمای کلی فروشگاه" />

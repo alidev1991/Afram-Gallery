@@ -19,6 +19,7 @@ export default function CartPage() {
     itemCount,
     totalToman,
     isHydrated,
+    hasCheckoutBlockedItems,
     setQuantity,
     removeItem,
   } = useCart();
@@ -53,16 +54,17 @@ export default function CartPage() {
         ) : (
           <div className="grid gap-12 pt-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-16">
             <ul className="divide-y divide-line border-y border-line">
-              {items.map((item) => (
-                <li key={item.productSlug} className="grid grid-cols-[6.5rem_1fr] gap-5 py-6 sm:grid-cols-[9rem_1fr_auto] sm:gap-7">
+              {items.map((item, index) => (
+                <li key={item.key} className="grid grid-cols-[6.5rem_1fr] gap-5 py-6 sm:grid-cols-[9rem_1fr_auto] sm:gap-7">
                   <Link
-                    href={`/products/${item.productSlug}`}
+                    href={item.productHref}
                     className="relative aspect-[4/5] overflow-hidden bg-matte"
                   >
                     <Image
                       src={item.imageSrc}
                       alt={item.imageAlt}
                       fill
+                      priority={index === 0}
                       sizes="(max-width: 640px) 104px, 144px"
                       className="object-contain"
                     />
@@ -71,12 +73,20 @@ export default function CartPage() {
                   <div className="flex min-w-0 flex-col justify-between py-1">
                     <div>
                       <Link
-                        href={`/products/${item.productSlug}`}
+                        href={item.productHref}
                         className="text-base text-silver-bright transition-colors hover:text-silver"
                       >
                         {item.name}
                       </Link>
-                      <p className="mt-2 text-xs text-muted">{formatToman(item.priceToman)}</p>
+                      <p className="mt-2 text-xs text-muted">{formatToman(item.unitPriceToman)}</p>
+                      {item.selectedOptions.length > 0 ? (
+                        <p className="mt-2 text-[0.6875rem] leading-5 text-subtle">
+                          {item.selectedOptions.map((option) => `${option.optionName}: ${option.valueLabel}`).join(" · ")}
+                        </p>
+                      ) : null}
+                      {item.checkoutBlocked ? (
+                        <p className="mt-2 text-[0.6875rem] text-muted">پیش‌نمایش توسعه — غیرقابل تسویه</p>
+                      ) : null}
                     </div>
 
                     <div className="mt-6 flex flex-wrap items-center gap-4">
@@ -84,7 +94,7 @@ export default function CartPage() {
                         <button
                           type="button"
                           className="size-10 text-lg text-muted transition-colors hover:text-silver-bright"
-                          onClick={() => setQuantity(item.productSlug, item.quantity - 1)}
+                          onClick={() => setQuantity(item.key, item.quantity - 1)}
                           aria-label={`کاهش تعداد ${item.name}`}
                         >
                           −
@@ -95,7 +105,7 @@ export default function CartPage() {
                         <button
                           type="button"
                           className="size-10 text-lg text-muted transition-colors hover:text-silver-bright disabled:opacity-40"
-                          onClick={() => setQuantity(item.productSlug, item.quantity + 1)}
+                          onClick={() => setQuantity(item.key, item.quantity + 1)}
                           disabled={item.quantity >= 20}
                           aria-label={`افزایش تعداد ${item.name}`}
                         >
@@ -105,7 +115,7 @@ export default function CartPage() {
                       <button
                         type="button"
                         className="text-xs text-muted underline-offset-4 transition-colors hover:text-danger hover:underline"
-                        onClick={() => removeItem(item.productSlug)}
+                        onClick={() => removeItem(item.key)}
                       >
                         حذف
                       </button>
@@ -113,7 +123,7 @@ export default function CartPage() {
                   </div>
 
                   <p className="col-span-2 mt-2 text-start text-sm text-silver sm:col-span-1 sm:mt-0 sm:py-1 sm:text-end">
-                    {formatToman(item.priceToman * item.quantity)}
+                    {formatToman(item.unitPriceToman * item.quantity)}
                   </p>
                 </li>
               ))}
@@ -126,7 +136,10 @@ export default function CartPage() {
                 <strong className="font-normal text-silver-bright">{formatToman(totalToman)}</strong>
               </div>
               <p className="mt-4 text-xs leading-6 text-subtle">هزینه ارسال در مرحله بعد مشخص می‌شود.</p>
-              <CartCheckoutLink className={`${primaryCheckoutClass} mt-7 w-full`} />
+              <CartCheckoutLink
+                className={`${primaryCheckoutClass} mt-7 w-full`}
+                isBlocked={hasCheckoutBlockedItems}
+              />
             </aside>
           </div>
         )}

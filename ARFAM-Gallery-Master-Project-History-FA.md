@@ -4405,3 +4405,302 @@ SHA-256 هر Source و Destination برابر بود؛ کیفیت، ابعاد �
 - **Preserved:** چهار اصلاح تأییدشده قبلی و تمام تغییرات Uncommitted Step 12E-5.
 - **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است.
 - **Exact NEXT ACTION:** فقط Commit و Push مستقل CTA تأییدشده؛ سپس توقف و انتظار برای دستور بعدی کاربر.
+
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12E-5 REAL PRODUCT VERTICAL INTEGRATION
+
+### Status and Product-Centric Plan
+
+- تاریخ اجرا: 2026-10-08.
+- وضعیت: پیاده‌سازی و QA تکمیل شده و در انتظار بررسی و تأیید Commit/Push است.
+- الگوی توسعه محصول‌محور ثبت شد: هر محصول جدید باید در چهار محور Database، Storefront، Cart و Admin به‌صورت هماهنگ تکمیل و آزمایش شود.
+- ساعت دیواری مربع همچنان `isPublished = false`، slug آن `internal-square-wall-clock` و SKUهای آن null هستند.
+- هیچ Schema، Migration، Product/Variant/Option/Image record یا Publish state تغییر نکرد.
+
+### Storefront Preview
+
+- مسیر Development-only `/dev-qa/catalog` سه Presentation واقعی طلایی، سیلور و دودی را به‌صورت سه Card مستقل از همان Product نمایش می‌دهد.
+- هر Card با `?presentation=<presentation-slug>` وارد Configurator می‌شود و فینیش متناظر را preselect می‌کند.
+- Configurator هر 9 Variant واقعی، قیمت `ProductVariant.priceToman`، Product Shot، Lifestyle Shot و `SIZE_GUIDE` را حفظ می‌کند.
+- Public Repository و Route عمومی همچنان Product unpublished را نمایش نمی‌دهند.
+- Listing، Product QA و API بازاعتبارسنجی Cart در Production با 404 بسته هستند.
+
+### Variant-aware Cart and Checkout Safety
+
+- Cart storage از `arfam.demo.cart.v1` به `arfam.cart.v2` ارتقا یافت و migration امن legacy فقط پس از نوشتن V2، کلید قدیمی را حذف می‌کند.
+- Identity محصول واقعی برابر `Product ID + Variant ID` است؛ Variant متفاوت Line جدا و افزودن تکراری همان Variant افزایش Quantity ایجاد می‌کند.
+- Size، Finish، تصویر، قیمت نمایشی و Link پیش‌نمایش در Cart نگهداری می‌شوند.
+- Price محصول واقعی Preview هنگام Hydration از API Development-only و Database بازاعتبارسنجی می‌شود؛ مقدار Browser authority خرید نیست.
+- آیتم Database Preview همیشه `checkoutBlocked = true` است؛ CTA Cart غیرفعال و Checkout/Payment برای آن قابل ثبت نیست. سیستم فعلی هیچ Order/Payment write ندارد.
+- Cart محصولات Mock، persistence، quantity، remove و total قبلی حفظ شدند.
+
+### Admin Database Product Management
+
+- لیست Products پنل به دو بخش صریح «محصولات Database» و «محصولات Demo» تقسیم شد.
+- صفحه محدود محصول واقعی، نام، توضیحات بلند، مشخصات فنی و قیمت 9 Variant را نمایش و ویرایش می‌کند.
+- Server Action علاوه بر Route-level guard، مجدداً `role = ADMIN` را روی Server بررسی می‌کند.
+- Zod server-side validation، Transaction اتمیک و تطبیق کامل IDهای Variant/Specification مانع Payload ناقص یا خارج از Product می‌شوند.
+- فرم عمداً Publish state، slug، SKU، تصاویر، Optionها و Presentationها را تغییر نمی‌دهد.
+- تست Write فقط روی Copy موقت Database انجام شد؛ Database رسمی با Read-only check سالم و Product رسمی unpublished تأیید شد.
+
+### Files Added
+
+- `src/app/(storefront)/dev-qa/catalog/page.tsx`
+- `src/app/api/dev-qa/catalog/cart-validation/route.ts`
+- `src/app/admin/(panel)/products/[productId]/page.tsx`
+- `src/app/admin/(panel)/products/[productId]/actions.ts`
+- `src/components/admin/admin-product-editor.tsx`
+- `src/lib/catalog/admin-product-repository.ts`
+- `src/lib/catalog/admin-product-validation.ts`
+- `src/lib/catalog/preview-cart.ts`
+- `src/types/admin-catalog.ts`
+- `src/types/cart.ts`
+
+### Files Updated
+
+- `src/app/(storefront)/cart/page.tsx`
+- `src/app/(storefront)/dev-qa/catalog/[slug]/page.tsx`
+- `src/app/admin/(panel)/products/page.tsx`
+- `src/components/cart/cart-checkout-link.tsx`
+- `src/components/catalog/product-configurator.tsx`
+- `src/components/checkout/checkout-content.tsx`
+- `src/lib/catalog/storefront-repository.ts`
+- `src/providers/cart-provider.tsx`
+- `src/types/storefront-catalog.ts`
+- `ARFAM-Gallery-Master-Project-History-FA.md`
+
+### QA Results
+
+- سه Presentation Development listing: PASS.
+- Matrix کامل 9 Variant و سه قیمت 9,800,000 / 10,800,000 / 11,800,000 تومان: PASS.
+- Product Shot، Lifestyle Shot و SIZE_GUIDE در هر 9 حالت: PASS.
+- URL Presentation preselection: PASS.
+- Add-to-Cart، Variantهای جدا، افزایش Variant تکراری، persistence پس از Refresh، total، quantity و remove: PASS.
+- Migration داده `localStorage` قدیمی: PASS.
+- Checkout block برای Product unpublished: PASS.
+- Browser Visual/Interaction QA در 1440×900، 500×900 و 390×900 بدون Horizontal Overflow: PASS.
+- Guest Admin redirect، Login واقعی، Role guard، تفکیک Database/Demo، Write و persistence Admin روی Database Copy: PASS.
+- تغییر Admin Copy در Storefront Preview منعکس شد و Publish state تغییر نکرد.
+- Public unpublished Product: 404؛ Production Preview listing/detail/API: 404؛ Mock Product: 200.
+- Lint: PASS.
+- Type Check: PASS.
+- Production Build: PASS؛ 67 Route.
+- `git diff --check`: PASS.
+- Temporary Browser profile، Database Copy، QA scripts و فایل‌های خودکار Dev Server پاک شدند.
+
+### Pending Preserved
+
+- Publish state و slug رسمی Product.
+- Listing Price Rule عمومی.
+- SKU، 90×90، Inventory/Made-to-order و رنگ رسمی بدنه.
+- عمومی‌سازی Admin CRUD برای محصولات آینده.
+- Order/Payment واقعی و server-authoritative checkout pricing.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-08
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12E-5 — Real Product Vertical Integration
+- **Current Status:** چرخه ساعت دیواری مربع در Development Preview، Variant-aware Cart و Admin Database editor تکمیل و QA شده است؛ Product همچنان unpublished و خرید واقعی آن مسدود است. در انتظار بررسی و تأیید Step 12E-5.
+- **Last Approved Commit:** 29bd003d644cb64a0a6c327b743dd7754d4252b9 — feat(catalog): add real product configurator
+- **Current Branch:** main
+- **Working Tree Status:** فقط تغییرات Step 12E-5 و این History Uncommitted هستند؛ Commit/Push انجام نشده است.
+
+### Runtime State
+
+- Development: `/dev-qa/catalog` سه Presentation واقعی را نمایش می‌دهد و Product QA می‌تواند Variant واقعی را فقط به Cart مسدودشده اضافه کند.
+- Production: Preview listing، Preview PDP و validation API برابر 404 هستند؛ Public Product unpublished نیز 404 است.
+- Admin: محصول واقعی Database از Demo جدا و فقط برای ADMIN قابل ویرایش محدود است.
+- Cart Mock قبلی و چهار Mock Product سالم باقی مانده‌اند.
+- Database رسمی: Product نام و داده رسمی قبلی، 9 Variant، 3 Presentation و 7 Image را حفظ کرده و `isPublished = false` است.
+
+### Exact NEXT ACTION
+
+- بررسی و تأیید Step 12E-5؛ در صورت تأیید، فقط همین تغییرات Commit/Push شوند.
+- پیش از دستور صریح بعدی Product Publish نشود و Product بعدی آغاز نشود.
+
+### DO NOT CHANGE
+
+- Publish state، slug موقت، SKUها و داده رسمی Product/Variant/Image.
+- Schema/Migration و SQLite architecture.
+- Homepage، Collections، Luxury UI، Header/Footer، Logo، Signature Background و Motion.
+- Payment، Order واقعی و Pricing authority سمت Server تا فاز مربوط.
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## PHASE 12 — STEP 12E-5 STOREFRONT NATURAL INTEGRATION REVISION
+
+### Status and Decision
+
+- تاریخ اجرا: 2026-10-08.
+- وضعیت: Revision پیاده‌سازی و QA شد؛ Uncommitted و در انتظار تأیید User است.
+- نمایش جداگانه «محصول واقعی Database» و CTA «مشاهده پیش‌نمایش واقعی» از `/products` حذف شد.
+- Routeهای جداگانه `/dev-qa/catalog` و `/dev-qa/catalog/[slug]` بازنشسته شدند؛ محصول واقعی در Development فقط داخل ساختار طبیعی Storefront نمایش داده می‌شود.
+- Product رسمی ساعت مربع همچنان `isPublished = false` و slug موقت آن `internal-square-wall-clock` است؛ Database/Product data و Schema/Migration تغییر نکردند.
+
+### Natural Storefront Flow
+
+- مسیر تأییدشده Development: `/products` → `/products/category/clocks` → `/products/category/clocks/square-wall-clocks`.
+- زیردسته «ساعت دیواری مربع» در Development سه `ProductPresentation` واقعی طلایی، سیلور و دودی را به‌صورت سه کارت Editorial با تصاویر رسمی نمایش می‌دهد.
+- هر کارت به URL طبیعی `/products/internal-square-wall-clock?presentation=<slug>` متصل است و فینیش متناظر را از URL preselect می‌کند.
+- Component موجود `ProductEditorialCard` برای DTO واقعی Presentation توسعه یافت؛ Mock cardها حذف نشدند و فقط در زیردسته‌های Legacy خود باقی ماندند.
+- Listing price rule جدیدی اختراع نشد؛ قیمت واقعی فقط از Variant انتخاب‌شده در PDP خوانده می‌شود.
+- `ProductConfigurator` در Development برای همین Product unpublished، 9 Variant، Product/Lifestyle images، SIZE_GUIDE و Add to Cart آزمایشی را فعال می‌کند.
+- Link آیتم Cart از Route قدیمی QA به URL طبیعی Product تغییر کرد.
+- Revalidation پنل Admin نیز به زیردسته طبیعی و PDP طبیعی منتقل شد.
+
+### Security and Publish Protection
+
+- Public query همیشه قبل از Preview fallback اجرا می‌شود و همچنان `isPublished = true`، active Category/Subcategory و non-VIP را enforce می‌کند.
+- Fallback داخلی unpublished فقط وقتی `NODE_ENV === "development"` و slug دقیقاً `internal-square-wall-clock` است اجرا می‌شود.
+- Production Build هیچ Route مربوط به `/dev-qa/catalog` ندارد.
+- Production Browser/HTTP: زیردسته مربع 200 با Empty State و صفر کارت واقعی؛ PDP unpublished برابر 404؛ Routeهای قدیمی QA برابر 404؛ Cart validation API برابر 404.
+- Read-only Database check تأیید کرد `isPublished = 0` حفظ شده است.
+- Checkout آیتم Preview همچنان Block است و Order/Payment واقعی فعال نشده‌اند.
+
+### Browser and Visual QA
+
+- Chrome 154 ایزوله و بدون Extension/VeePN برای QA واقعی استفاده شد.
+- Click واقعی Home → Products → ساعت → ساعت دیواری مربع: PASS؛ `elementFromPoint` در تمام مراحل Anchor صحیح را نشان داد.
+- سه کارت واقعی و تصاویر رسمی طلایی/سیلور/دودی: PASS.
+- ورود از هر سه کارت و Presentation preselection: PASS.
+- Matrix کامل 9 ترکیب: 65×65 = 9,800,000، 80×80 = 10,800,000 و 100×100 = 11,800,000 تومان برای هر سه فینیش: PASS.
+- Product Shot، Lifestyle و SIZE_GUIDE برای هر سه Presentation: PASS.
+- Add to Cart هر سه Finish، سه line مستقل، افزایش Variant تکراری به Quantity 2 و persistence بعد Refresh: PASS.
+- Checkout block و localStorage V2 حفظ شدند.
+- Visual QA در 1440×900، 500×900 و 390×900: سه کارت طبیعی، تصویر کامل، بدون Distortion و Horizontal Overflow؛ PASS.
+- Mock PDPها، Homepage، Collections، Categoryهای دیگر و «ساعت کنار سالنی» بدون Product ساختگی حفظ شدند.
+- هشدار LCP کارت اول با `priority` محدود به نخستین Presentation رفع شد.
+- Lint: PASS.
+- Type Check: PASS.
+- Production Build: PASS؛ 67 Route.
+- `git diff --check`: PASS.
+
+### Files Changed by This Revision
+
+- `src/app/(storefront)/products/page.tsx` — حذف Entry/Copy جداگانه Database Preview.
+- `src/app/(storefront)/products/category/[categorySlug]/[subcategorySlug]/page.tsx` — نمایش سه Presentation واقعی در زیردسته طبیعی Development.
+- `src/app/(storefront)/products/[slug]/page.tsx` — فعال‌سازی Configurator/Cart Preview فقط برای unpublished Development resolution.
+- `src/components/catalog/product-editorial-card.tsx` — پشتیبانی از Presentation DTO واقعی با همان زبان بصری Card موجود و LCP priority.
+- `src/lib/catalog/hybrid-storefront.ts` — Development-only fallback محدود در Listing/PDP پس از Public query.
+- `src/lib/catalog/preview-cart.ts` — Product link طبیعی Cart.
+- `src/app/admin/(panel)/products/[productId]/actions.ts` — Revalidation مسیرهای طبیعی.
+- `src/app/(storefront)/dev-qa/catalog/[slug]/page.tsx` — حذف Route جداگانه قدیمی.
+- `src/app/(storefront)/dev-qa/catalog/page.tsx` — حذف Listing جداگانه ایجادشده در Step 12E-5.
+- `ARFAM-Gallery-Master-Project-History-FA.md` — ثبت Revision و Handoff.
+
+### Pending Preserved
+
+- Publish state و slug رسمی Product.
+- Listing price rule عمومی، SKU، Inventory/Made-to-order، 90×90 و رنگ رسمی بدنه.
+- عمومی‌سازی Admin CRUD برای محصولات آینده.
+- Order/Payment واقعی و server-authoritative checkout pricing.
+
+------------------------------------------------------------------------
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-08
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12E-5 — Real Product Vertical Integration + Natural Storefront Revision
+- **Current Status:** چرخه Database/Storefront/Cart/Admin ساعت مربع و نمایش طبیعی Development تکمیل و QA شده‌اند؛ بخش Preview جداگانه حذف شده است. Product همچنان unpublished و خرید واقعی مسدود است. در انتظار بررسی و تأیید User؛ Commit/Push انجام نشده است.
+- **Last Approved Commit:** 29bd003d644cb64a0a6c327b743dd7754d4252b9 — feat(catalog): add real product configurator
+- **Current Branch:** main
+- **Working Tree Status:** تغییرات Step 12E-5، Full Browser QA، این Revision و History Uncommitted هستند.
+
+### Runtime State
+
+- Development: سه Presentation رسمی از مسیر طبیعی Products → ساعت → ساعت دیواری مربع دیده می‌شوند؛ URL طبیعی PDP فینیش را preselect می‌کند و Cart Preview مسدودشده فعال است.
+- Production: زیردسته هیچ Product unpublished نشان نمی‌دهد؛ PDP ساعت، Routeهای قدیمی QA و validation API همگی 404 هستند.
+- Cart: Product ID + Variant ID، persistence و quantity حفظ شده‌اند؛ Preview item Checkout را Block می‌کند.
+- Admin: Editor محدود Database فقط برای ADMIN فعال است و پس از Save مسیرهای طبیعی Storefront revalidate می‌شوند.
+- Mock catalog: داده‌ها حذف نشده‌اند؛ Mockها در مسیرهای Legacy باقی مانده و از Listing واقعی ساعت تفکیک هستند.
+- Database رسمی: Product با 9 Variant، 3 Presentation و 7 Image حفظ شده و `isPublished = false` است.
+
+### Exact NEXT ACTION
+
+- User گزارش Revision و Diff را بررسی و Step 12E-5 را تأیید یا Revision بعدی را مشخص کند.
+- تا قبل از تأیید، Commit/Push انجام نشود، Product Publish نشود و Product/Phase بعدی آغاز نشود.
+
+### DO NOT CHANGE
+
+- Publish state، slug موقت، SKUها و داده رسمی Product/Variant/Image.
+- Schema/Migration و SQLite architecture.
+- Luxury UI، Homepage، Header/Footer، Official Logo، Signature Background و Motion.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## PHASE 12 / STEP 12E-5 — ADMIN CUSTOMER ACCESS SECURITY FIX — 2026-10-16
+
+- گزارش دسترسی احتمالی CUSTOMER به Admin بررسی شد. Root Cause واقعی، اتکای انحصاری Routeهای پنل به Guard موجود در `src/app/admin/(panel)/layout.tsx` بود؛ در Next.js App Router و Partial Rendering، Layout به‌تنهایی مرز نهایی و مطمئن برای جلوگیری از رندر یا دریافت RSC صفحه فرزند نیست.
+- Helper متمرکز و DB-backed جدید `requireAdminUser()` در `src/lib/auth/authorization.ts` اضافه شد: Guest به `/admin/login?next=/admin` و نقش غیر ADMIN به `/` هدایت می‌شود؛ نقش از User فعلی Database بازخوانی می‌شود و فقط به Claim سمت Client اتکا ندارد.
+- Guard در ابتدای خود صفحات Dashboard، Orders، Customers، Products و Product Editor و پیش از هر رندر یا Query Database اجرا می‌شود؛ Guard در Layout نیز به‌عنوان Defense in Depth حفظ شد.
+- Server Action ویرایش محصول از قبل `getAuthorizedUser(UserRole.ADMIN)` را مستقل اجرا می‌کرد و بدون تغییر حفظ شد؛ بنابراین CUSTOMER حتی با فراخوانی مستقیم Action مجوز Mutation ندارد.
+- First Admin strategy، Auth UI، Session model، Cart/Checkout، Product data، Schema/Migration و تغییرات Uncommitted Step 12E-5 تغییر نکردند.
+- QA Runtime با Session واقعی Auth.js روی Copy موقت Development DB انجام شد: Guest برای `/admin` و `/admin/products` پاسخ 307 به Admin Login؛ CUSTOMER برای هر دو مسیر پاسخ 307 به `/` و بدون Admin content؛ فراخوانی مستقیم Product mutation توسط CUSTOMER پاسخ `{ok:false}` و پیام عدم دسترسی؛ ADMIN برای هر دو مسیر پاسخ 200 و همان Action معتبر با پاسخ `{ok:true}`؛ پس از Logout، Session بدون User و `/admin` دوباره 307 به Admin Login.
+- QA کدی: همه صفحات پنل Guard مستقل دارند؛ Product mutation Action Guard مستقل دارد؛ Lint PASS؛ Type Check PASS؛ `git diff --check` PASS (فقط هشدار معمول Line Ending).
+- Database رسمی در QA تغییر نکرد؛ هیچ Migration، Schema change، Commit یا Push انجام نشد.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-16
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12E-5 — Uncommitted vertical integration؛ Admin authorization hardening پیاده‌سازی و QA شده و در انتظار تأیید کاربر است.
+- **Security Status:** Guest و CUSTOMER در سطح خود Page و پیش از Admin data query مسدود هستند؛ ADMIN حفظ شده و Product mutation همچنان Server-side role guard مستقل دارد.
+- **Files Changed for This Fix:** `src/lib/auth/authorization.ts`، `src/app/admin/(panel)/layout.tsx`، صفحات Dashboard/Orders/Customers/Products/Product Editor و Master History.
+- **Preserved:** تمام تغییرات Uncommitted قبلی Step 12E-5، Cart، Catalog، Product Data و First Admin strategy.
+- **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است و با این Security Fix حل‌شده اعلام نمی‌شود.
+- **Exact NEXT ACTION:** بررسی و تأیید نتیجه انسداد CUSTOMER و حفظ دسترسی ADMIN توسط کاربر؛ سپس تصمیم جداگانه درباره Commit/Push، بدون شروع قابلیت جدید.
+------------------------------------------------------------------------
+
+## PHASE 12 / STEP 12E-5 — ADMIN LOGIN ROLE ENFORCEMENT — 2026-10-16
+
+- پس از اصلاح Guard صفحات Admin، یک نقص مستقل باقی مانده بود: فرم Admin Login همان Credentials Provider عمومی را صدا می‌زد و CUSTOMER با رمز صحیح می‌توانست Session عادی مشتری ایجاد کند، هرچند Page Guard ورود او به پنل را مسدود می‌کرد.
+- Provider مجزای Auth.js با شناسه `admin-credentials` اضافه شد. این Provider پس از اعتبارسنجی Mobile/Password و پیش از بازگرداندن User و صدور JWT/Session، نقش واقعی User را از Database با `UserRole.ADMIN` تطبیق می‌دهد.
+- Admin Login فقط Provider جدید را فراخوانی می‌کند؛ CUSTOMER، شماره ناشناخته و رمز اشتباه همگی پیام عمومی «اطلاعات ورود مدیر معتبر نیست.» دریافت می‌کنند و Role یا وجود Mobile افشا نمی‌شود.
+- Provider عمومی `credentials` و Login عادی CUSTOMER بدون تغییر رفتاری حفظ شدند. Session callback، JWT callback، Sessionهای موجود، First Admin setup و Guardهای Server-side صفحات و Product mutation تغییر نکردند.
+- QA امنیتی با Session واقعی Auth.js روی Copy موقت Development DB انجام شد: CUSTOMER + رمز صحیح از Admin Provider هیچ Session نساخت؛ ADMIN + رمز صحیح Session با نقش ADMIN و `/admin` پاسخ 200 گرفت؛ ADMIN + رمز اشتباه Session نساخت؛ CUSTOMER + رمز صحیح از Provider عمومی Session CUSTOMER گرفت؛ CUSTOMER در URL مستقیم Admin پاسخ 307 به `/` گرفت و فراخوانی مستقیم Admin Product Action با پیام عدم دسترسی رد شد.
+- Database رسمی تغییر نکرد و Copy موقت QA پس از تست حذف شد.
+- Lint PASS؛ Type Check PASS؛ Production Build PASS (69 Route)؛ `git diff --check` PASS.
+- هیچ Schema/Migration، Cart، Checkout، Product data، Price، Commit یا Push ایجاد نشد.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-16
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12E-5 — Uncommitted vertical integration؛ Admin Login role enforcement و Admin route hardening پیاده‌سازی و QA شده‌اند و در انتظار تأیید کاربر هستند.
+- **Security Status:** Admin Login فقط ADMIN واقعی را پیش از Session می‌پذیرد؛ CUSTOMER Login عادی سالم است؛ Page/Data/Action guardهای Admin حفظ شده‌اند.
+- **Files Changed for This Fix:** `src/auth.ts`، `src/components/admin/admin-login-form.tsx` و Master History؛ تغییرات Guard مرحله قبل نیز همچنان Uncommitted هستند.
+- **Preserved:** تمام تغییرات Uncommitted Step 12E-5، Session model موجود، First Admin strategy، Cart، Checkout، Catalog، Product data و قیمت‌های رسمی.
+- **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است و با این Authentication fix حل‌شده اعلام نمی‌شود.
+- **Exact NEXT ACTION:** بررسی و تأیید رفتار فرم Admin Login توسط کاربر؛ سپس تصمیم جداگانه درباره Commit/Push، بدون شروع قابلیت جدید.
+------------------------------------------------------------------------
+
+## PHASE 12 / STEP 12E-5 — FINAL USER APPROVAL AND COMMIT SCOPE — 2026-10-16
+
+- کاربر پس از تست دستی، Step 12E-5 و هر دو اصلاح امنیتی Admin را تأیید نهایی کرد.
+- محدوده تأییدشده Commit شامل Vertical Integration ساعت دیواری مربع در Storefront Development، Variant-aware Cart، Checkout block محصول unpublished، مدیریت محدود Product واقعی در Admin، Page/Data/Action role guards و Provider مستقل `admin-credentials` است.
+- Product رسمی همچنان `isPublished = false` است؛ خرید/Checkout واقعی آن مسدود و هیچ Order یا Payment واقعی فعال نشده است.
+- QA معتبر این Scope: تست‌های Cart و Admin روی Copy موقت Database، تست Session واقعی Guest/CUSTOMER/ADMIN، رد مستقیم Admin Action برای CUSTOMER، موفقیت Action برای ADMIN روی DB موقت، Lint، Type Check، Production Build و diff-check همگی PASS هستند. Database رسمی تغییر نکرد.
+- فایل‌های Rendering/Navigation و فایل‌های نامرتبط `AGENTS.md` و `CLAUDE.md` خارج از Commit می‌مانند. مشکل intermittent Navigation/Rendering همچنان Open است.
+- تصمیم‌های Pending بدون تغییر: Publish state، Slug رسمی، SKU، Inventory/Made-to-order، سایز ۹۰×۹۰، Listing Price Rule و Order/Payment واقعی.
+- Commit message تأییدشده: `feat(catalog): finalize variant cart and admin product management`.
+
+## CURRENT PROJECT STATE / HANDOFF
+
+- **Last Updated:** 2026-10-16
+- **Current Phase:** Phase 12 — Real Product & Catalog
+- **Current Step:** Step 12E-5 — Final Approved؛ آماده Commit/Push انتخابی.
+- **Last Approved Commit Before This Commit:** `0b486108aea99775d9fa907ad00a2f0407d3f398`.
+- **Current Branch:** `main`.
+- **Product State:** ساعت دیواری مربع unpublished؛ Development integration فعال و Production public access/checkout مسدود.
+- **Security State:** Admin Login فقط ADMIN واقعی را پیش از Session می‌پذیرد؛ صفحات، داده‌ها و Actionهای مدیریتی دارای Guard سمت سرور هستند؛ Login عادی CUSTOMER حفظ شده است.
+- **Commit Scope:** فقط Step 12E-5، Natural Storefront integration و دو اصلاح امنیتی Admin؛ فایل‌ها و Hunkهای نامرتبط خارج از Stage.
+- **Rendering:** مشکل intermittent Navigation/Rendering همچنان Open است.
+- **Exact NEXT ACTION:** Commit و Push همین Scope تأییدشده؛ سپس توقف و تصمیم جداگانه کاربر درباره Publish/Slug/SKU/Inventory/90×90/Listing Price/Order/Payment.

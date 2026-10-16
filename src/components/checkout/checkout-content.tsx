@@ -15,7 +15,7 @@ type CheckoutCustomer = {
 };
 
 export function CheckoutContent({ customer }: { customer: CheckoutCustomer }) {
-  const { items, totalToman, isHydrated } = useCart();
+  const { items, totalToman, isHydrated, hasCheckoutBlockedItems } = useCart();
 
   if (!isHydrated) {
     return (
@@ -57,12 +57,12 @@ export function CheckoutContent({ customer }: { customer: CheckoutCustomer }) {
                 <h2 className="border-b border-line pb-5 text-lg text-silver-bright">کالاها</h2>
                 <ul className="divide-y divide-line">
                   {items.map((item) => (
-                    <li key={item.productSlug} className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-4 py-5">
+                    <li key={item.key} className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-4 py-5">
                       <div className="relative aspect-[4/5] overflow-hidden bg-matte">
                         <Image src={item.imageSrc} alt={item.imageAlt} fill sizes="72px" className="object-contain" />
                       </div>
-                      <div><p className="text-sm text-silver-bright">{item.name}</p><p className="mt-1 text-xs text-muted">تعداد: {item.quantity.toLocaleString("fa-IR")}</p></div>
-                      <p className="text-xs text-silver">{formatToman(item.priceToman * item.quantity)}</p>
+                      <div><p className="text-sm text-silver-bright">{item.name}</p>{item.selectedOptions.length > 0 ? <p className="mt-1 text-xs text-muted">{item.selectedOptions.map((option) => `${option.optionName}: ${option.valueLabel}`).join(" · ")}</p> : null}<p className="mt-1 text-xs text-muted">تعداد: {item.quantity.toLocaleString("fa-IR")}</p></div>
+                      <p className="text-xs text-silver">{formatToman(item.unitPriceToman * item.quantity)}</p>
                     </li>
                   ))}
                 </ul>
@@ -73,7 +73,7 @@ export function CheckoutContent({ customer }: { customer: CheckoutCustomer }) {
               <h2 className="text-lg text-silver-bright">خلاصه سفارش</h2>
               <div className="mt-7 flex justify-between border-y border-line py-5 text-sm"><span className="text-muted">مجموع</span><strong className="font-normal text-silver-bright">{formatToman(totalToman)}</strong></div>
               <button type="button" disabled aria-describedby="payment-status" className="mt-7 min-h-11 w-full border border-line-strong px-6 text-xs text-muted opacity-70">پرداخت آنلاین</button>
-              <p id="payment-status" className="mt-4 text-[0.6875rem] leading-5 text-subtle">در حال حاضر امکان پرداخت آنلاین وجود ندارد.</p>
+              <p id="payment-status" className="mt-4 text-[0.6875rem] leading-5 text-subtle">{hasCheckoutBlockedItems ? "محصول پیش‌نمایش منتشر نشده است و امکان ثبت سفارش یا پرداخت ندارد." : "در حال حاضر امکان پرداخت آنلاین وجود ندارد."}</p>
             </aside>
           </div>
         )}
